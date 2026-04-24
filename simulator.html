@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Microtubule Resonance Simulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <a href="index.html" style="color: var(--text-dim); text-decoration: none; font-size: 0.8rem; display: inline-block; margin-bottom: 0.5rem; transition: color 0.2s;" onmouseover="this.style.color='var(--cyan)'" onmouseout="this.style.color='var(--text-dim)'">&larr; Back to Overview</a>
+    <h1>Microtubule Resonance Simulator</h1>
+    <p class="subtitle">Interactive exploration of Bandyopadhyay's fractal electromagnetic resonance findings</p>
+    <div class="physics-toggle-wrap">
+      <button class="btn physics-toggle-btn" id="physicsToggle">Physics: Visual</button>
+      <span class="physics-toggle-hint" id="physicsHint">Switch to computed physics engine</span>
+    </div>
+  </header>
+
+  <nav class="panel-nav" id="panelNav">
+    <button class="panel-tab active" data-panel="spectrum">Fractal Spectrum</button>
+    <button class="panel-tab" data-panel="crosssection">Microtubule</button>
+    <button class="panel-tab" data-panel="cascade">Temporal Cascade</button>
+    <button class="panel-tab" data-panel="holographic">Holographic</button>
+    <button class="panel-tab" data-panel="hypothesis">Hypothesis Lab</button>
+  </nav>
+
+  <main class="panel-container">
+
+    <!-- ============ PANEL 1: Fractal Resonance Spectrum ============ -->
+    <section class="panel active" id="panel-spectrum">
+      <h2 class="panel-title">Fractal Resonance Spectrum</h2>
+      <p class="panel-desc">The "triplet of triplet" resonance pattern repeats across Hz, kHz, MHz, and GHz scales. Click any peak to zoom into its sub-structure.</p>
+
+      <div class="zoom-breadcrumbs" id="spectrumBreadcrumbs">
+        <span class="breadcrumb current" data-level="0">All Scales</span>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="spectrumCanvas" width="1100" height="400"></canvas>
+      </div>
+
+      <div class="controls">
+        <div class="control-group">
+          <label>Drive Freq</label>
+          <input type="range" id="driveFreqSlider" min="0" max="1000" value="0" step="1">
+          <span class="control-value" id="driveFreqValue">Off</span>
+        </div>
+        <div class="control-group">
+          <label>Animation</label>
+          <button class="btn" id="spectrumAnimToggle">Pulse On</button>
+        </div>
+        <div class="control-group">
+          <label>Scale</label>
+          <button class="btn" id="spectrumResetZoom">Reset Zoom</button>
+        </div>
+      </div>
+
+      <!-- Physics Mode Controls (Panel 1) -->
+      <div class="controls physics-controls" id="spectrumPhysicsControls" style="display:none;">
+        <div class="control-group">
+          <label>Noise</label>
+          <input type="range" id="noiseAmpSlider" min="0" max="200" value="50" step="1">
+          <span class="control-value" id="noiseAmpValue">0.50</span>
+        </div>
+        <div class="control-group">
+          <label>Stochastic</label>
+          <button class="btn" id="runMonteCarloBtn">Run Monte Carlo</button>
+          <span class="computation-badge" id="monteCarloStatus"></span>
+        </div>
+        <div class="control-group">
+          <label>Extend</label>
+          <button class="btn" id="extendScaleBtn">Show Sub-Hz / THz</button>
+        </div>
+      </div>
+
+      <div class="spectrum-legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#42a5f5"></span> Hz (Brain waves)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#69f0ae"></span> kHz (Filament)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#ffb300"></span> MHz (Microtubule)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#ff5252"></span> GHz (Tubulin)</div>
+      </div>
+
+      <!-- Physics results overlay for spectrum -->
+      <div class="results-overlay" id="spectrumResults" style="display:none;">
+        <h4>Stochastic Resonance Analysis</h4>
+        <div class="results-content" id="spectrumResultsContent"></div>
+      </div>
+
+      <div class="info-box">
+        <h4>What You're Seeing</h4>
+        <p>Each frequency band (Hz to GHz) contains <span class="highlight">three primary resonance peaks</span>, and each peak contains <span class="highlight">three sub-peaks</span> — a "triplet of triplet" pattern. This self-similar structure appears at every scale, from individual tubulin proteins to whole neurons. Click any peak to zoom in and see its fractal sub-structure.</p>
+      </div>
+    </section>
+
+    <!-- ============ PANEL 2: Microtubule Cross-Section ============ -->
+    <section class="panel" id="panel-crosssection">
+      <h2 class="panel-title">Microtubule Cross-Section</h2>
+      <p class="panel-desc">A microtubule: 13 protofilaments arranged in a hollow chiral cylinder (~25nm diameter). Sweep the driving frequency to find resonances.</p>
+
+      <div class="canvas-wrap">
+        <canvas id="mtCanvas" width="1100" height="500"></canvas>
+      </div>
+
+      <div class="controls">
+        <div class="control-group">
+          <label>Drive Freq</label>
+          <input type="range" id="mtFreqSlider" min="0" max="1000" value="0" step="1">
+          <span class="control-value" id="mtFreqValue">Off</span>
+        </div>
+        <div class="control-group">
+          <label>View</label>
+          <button class="btn active" id="mtViewCross">Cross-Section</button>
+          <button class="btn" id="mtViewSide">Side View</button>
+        </div>
+        <div class="control-group">
+          <label>Helix</label>
+          <button class="btn" id="mtHelixToggle">Show 3-Start</button>
+        </div>
+      </div>
+
+      <!-- Physics Mode Controls (Panel 2) -->
+      <div class="controls physics-controls" id="mtPhysicsControls" style="display:none;">
+        <div class="control-group">
+          <label>Pitch</label>
+          <input type="range" id="pitchAngleSlider" min="1" max="45" value="12" step="0.5">
+          <span class="control-value" id="pitchAngleValue">12.0 deg</span>
+        </div>
+        <div class="control-group">
+          <label>Compare</label>
+          <button class="btn" id="compareAchiralBtn">Show Achiral</button>
+        </div>
+        <div class="control-group">
+          <label>Sweep</label>
+          <button class="btn" id="runPitchSweepBtn">Run Pitch Sweep</button>
+          <span class="computation-badge" id="pitchSweepStatus"></span>
+        </div>
+      </div>
+
+      <!-- Physics results overlay for microtubule -->
+      <div class="results-overlay" id="mtResults" style="display:none;">
+        <h4>Chiral Mode Analysis</h4>
+        <div class="results-content" id="mtResultsContent"></div>
+      </div>
+
+      <div class="info-box">
+        <h4>Microtubule Architecture</h4>
+        <p>13 protofilaments form a hollow tube with a <span class="highlight">3-start helical lattice</span>. The chirality (handedness) of this helix is critical — it determines how electromagnetic waves propagate along the structure. At resonant frequencies, coherent wave patterns appear along the tube, with the structure acting as a nanoscale electromagnetic waveguide.</p>
+      </div>
+    </section>
+
+    <!-- ============ PANEL 3: Temporal Cascade ============ -->
+    <section class="panel" id="panel-cascade">
+      <h2 class="panel-title">Temporal Cascade</h2>
+      <p class="panel-desc">Filaments fire ~250&mu;s BEFORE the membrane ionic spike. ~4 filament bursts gate each ionic spike. This challenges the classical Hodgkin-Huxley model.</p>
+
+      <div class="canvas-wrap">
+        <canvas id="cascadeCanvas" width="1100" height="450"></canvas>
+      </div>
+
+      <div class="controls">
+        <div class="control-group">
+          <label>Playback</label>
+          <button class="btn active" id="cascadePlayBtn">Play</button>
+          <button class="btn" id="cascadeResetBtn">Reset</button>
+        </div>
+        <div class="control-group">
+          <label>Speed</label>
+          <input type="range" id="cascadeSpeedSlider" min="1" max="10" value="3" step="1">
+          <span class="control-value" id="cascadeSpeedValue">3x</span>
+        </div>
+        <div class="control-group">
+          <label>Model</label>
+          <button class="btn active" id="cascadeBandyBtn">Bandyopadhyay</button>
+          <button class="btn" id="cascadeHHBtn">Hodgkin-Huxley</button>
+        </div>
+        <div class="control-group">
+          <label>Order</label>
+          <button class="btn" id="cascadeFlipBtn">Flip Order</button>
+        </div>
+      </div>
+
+      <!-- Physics Mode Controls (Panel 3) -->
+      <div class="controls physics-controls" id="cascadePhysicsControls" style="display:none;">
+        <div class="control-group">
+          <label>Coupling</label>
+          <input type="range" id="couplingSlider" min="1" max="100" value="15" step="1">
+          <span class="control-value" id="couplingValue">0.15</span>
+        </div>
+        <div class="control-group">
+          <label>Damping</label>
+          <input type="range" id="dampingSlider" min="1" max="100" value="5" step="1">
+          <span class="control-value" id="dampingValue">0.05</span>
+        </div>
+        <div class="control-group">
+          <label>Physics</label>
+          <button class="btn" id="runCoupledOscBtn">Recompute RK4</button>
+          <span class="computation-badge" id="rk4Status"></span>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <h4>The Century-Old Picture Is Wrong?</h4>
+        <p>Classical neuroscience says the membrane ionic spike is the primary signal. Bandyopadhyay's team measured that <span class="highlight">cytoskeletal filaments fire 250&mu;s before</span> the membrane — operating in the microsecond (MHz) domain while the membrane operates in milliseconds (kHz). Approximately <span class="highlight">4 filament bursts regulate each ionic spike's timing</span>. Use "Flip Order" to test H4: does membrane-first produce coherent output?</p>
+      </div>
+    </section>
+
+    <!-- ============ PANEL 4: Holographic Projection ============ -->
+    <section class="panel" id="panel-holographic">
+      <h2 class="panel-title">Holographic Projection</h2>
+      <p class="panel-desc">Optical vortex rings emanating from a microtubule. Internal "clocks" project as distinct angular momentum states of light.</p>
+
+      <div class="canvas-wrap">
+        <canvas id="holoCanvas" width="1100" height="500"></canvas>
+      </div>
+
+      <div class="controls">
+        <div class="control-group">
+          <label>EM Stimulation</label>
+          <input type="range" id="holoStimSlider" min="0" max="100" value="50" step="1">
+          <span class="control-value" id="holoStimValue">50%</span>
+        </div>
+        <div class="control-group">
+          <label>Clock Layer</label>
+          <button class="btn active" id="holoClock1">MHz</button>
+          <button class="btn" id="holoClock2">GHz</button>
+          <button class="btn" id="holoClock3">THz</button>
+          <button class="btn" id="holoClockAll">All</button>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <h4>Polyatomic Time Crystals</h4>
+        <p>When illuminated with polarized laser light, ordered structures inside neurons impart <span class="highlight">angular momentum to photons</span>, creating distinct optical vortex rings. Each internal "clock" — operating at a different frequency — generates a unique ring pattern. Selective EM stimulation can <span class="highlight">brighten specific frequency components</span>, revealing the nested clock assembly. This is the most controversial claim and needs independent replication.</p>
+      </div>
+    </section>
+
+    <!-- ============ PANEL 5: Hypothesis Lab ============ -->
+    <section class="panel" id="panel-hypothesis">
+      <h2 class="panel-title">Hypothesis Lab</h2>
+      <p class="panel-desc">Testable predictions from the simulation. Click a hypothesis to expand, then run computational tests.</p>
+
+      <div class="hypothesis-actions-bar">
+        <button class="btn physics-action-btn" id="runAllTestsBtn">Run All Computations</button>
+        <span class="computation-badge" id="allTestsStatus"></span>
+      </div>
+
+      <div class="hypothesis-grid" id="hypothesisGrid">
+        <!-- Cards generated by JS -->
+      </div>
+
+      <!-- Meta-Analysis Section -->
+      <div class="meta-analysis-section" id="metaAnalysisSection">
+        <h3 class="meta-title">Meta-Analysis</h3>
+        <p class="meta-desc">Tests that interrogate the simulator itself — not Bandyopadhyay's claims, but our model's assumptions.</p>
+
+        <div class="meta-actions">
+          <button class="btn meta-btn" id="runSensitivityBtn">
+            <span class="meta-btn-icon">&#x2194;</span>
+            Run Sensitivity Analysis
+          </button>
+          <button class="btn meta-btn" id="runStructureBtn">
+            <span class="meta-btn-icon">&#x25B3;</span>
+            Run Structure Comparison
+          </button>
+          <button class="btn meta-btn" id="runEnergyBtn">
+            <span class="meta-btn-icon">&#x26A1;</span>
+            Run Energy Budget
+          </button>
+        </div>
+
+        <div class="meta-results" id="metaResults">
+          <!-- Results populated by JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="physics.js"></script>
+  <script src="sim.js"></script>
+</body>
+</html>

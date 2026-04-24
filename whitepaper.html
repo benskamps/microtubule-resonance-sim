@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whitepaper — Microtubule Resonance Simulator</title>
+  <meta name="description" content="Computational Exploration of Fractal Electromagnetic Resonance in Microtubule Structures: A 10-Engine Simulation Framework">
+  <link rel="stylesheet" href="whitepaper.css">
+</head>
+<body>
+
+  <!-- ============ HEADER ============ -->
+  <header class="wp-header">
+    <h1>Computational Exploration of Fractal Electromagnetic Resonance in Microtubule Structures</h1>
+    <p class="wp-subtitle">A 10-Engine Simulation Framework for Testing Bandyopadhyay's Resonance Hypotheses</p>
+    <p class="wp-meta">Built with Claude Opus 4.6 &mdash; February 2026</p>
+    <nav class="wp-nav">
+      <a href="index.html">&larr; Back to Overview</a>
+      <a href="simulator.html">Launch Simulator</a>
+    </nav>
+  </header>
+
+  <div class="wp-container">
+
+    <!-- ============ TABLE OF CONTENTS ============ -->
+    <nav class="toc">
+      <h2>Contents</h2>
+      <ol>
+        <li><a href="#abstract">Abstract</a></li>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#background">Background</a></li>
+        <li><a href="#methodology">Methodology</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#meta-analysis">Meta-Analysis</a></li>
+        <li><a href="#discussion">Discussion</a></li>
+        <li><a href="#open-questions">Open Questions</a></li>
+        <li><a href="#references">References</a></li>
+      </ol>
+    </nav>
+
+    <!-- ============ 1. ABSTRACT ============ -->
+    <section class="wp-section" id="abstract">
+      <h2>1. Abstract</h2>
+      <p>We present a client-side computational framework comprising 10 physics engines that test hypotheses about electromagnetic resonance in microtubule structures, based on findings reported by Bandyopadhyay et al. (2020, 2022). The framework implements 4th-order Runge-Kutta integration for coupled oscillator dynamics, Monte Carlo sampling for statistical validation, Berry phase accumulation for coherent amplification analysis, Euler-Maruyama stochastic differential equations for noise-driven resonance, and energy budget calculations for biophysical feasibility.</p>
+      <p>Of seven hypotheses tested, two are <span class="emphasis">plausible</span> (fractal coherent amplification, stochastic resonance), two are <span class="emphasis">consistent</span> but tautological (boundary dominance, temporal cascade), one is <span class="emphasis">inconclusive</span> (pitch angle optimality), one is <span class="emphasis">unvalidated</span> (Schumann alignment, p=0.179), and one is <span class="emphasis">falsified</span> (chirality creating triplets). Meta-analysis reveals that simpler ordered structures match or exceed the fractal pattern's coherent amplification, and that active MHz oscillation exceeds a neuron's energy budget by 16x, constraining any valid mechanism to passive thermal resonance.</p>
+      <p>This is an exploratory computational tool, not peer-reviewed research. Its value lies in sharpening the questions that laboratory experiments must answer.</p>
+    </section>
+
+    <!-- ============ 2. INTRODUCTION ============ -->
+    <section class="wp-section" id="introduction">
+      <h2>2. Introduction</h2>
+      <p>Microtubules are hollow cylindrical polymers of tubulin protein, ~25 nm in outer diameter, that form the structural scaffolding of eukaryotic cells. In neurons, they are abundant: approximately 100,000 microtubules per neuron, each composed of ~1,625 tubulin dimers per 10 &mu;m length, arranged in 13 protofilaments with a characteristic 3-start helical lattice.</p>
+      <p>In 2020, Bandyopadhyay et al. reported measuring <span class="highlight">fractal electromagnetic resonance</span> in single brain-extracted microtubule nanowires, observing a "triplet of triplet" pattern of resonance peaks that repeats self-similarly across four frequency decades: Hz (brain-wave scale), kHz (filament scale), MHz (microtubule scale), and GHz (tubulin scale) [1]. In 2022, the same group reported that <span class="highlight">cytoskeletal filaments fire approximately 250 &mu;s before the membrane ionic spike</span>, with roughly 4 filament bursts gating each ionic spike, challenging the century-old Hodgkin-Huxley model of neural signaling [2].</p>
+      <p>These claims are extraordinary. If confirmed, they would fundamentally alter our understanding of neural information processing. If wrong, they represent a measurement artifact or misinterpretation. In either case, they deserve rigorous computational scrutiny.</p>
+      <p>This whitepaper documents a simulation framework designed to do precisely that: model the claimed phenomena numerically, test whether the patterns are mathematically plausible and internally consistent, identify where the model merely confirms its own assumptions, and determine what experimental measurements would actually settle the question.</p>
+    </section>
+
+    <!-- ============ 3. BACKGROUND ============ -->
+    <section class="wp-section" id="background">
+      <h2>3. Background</h2>
+
+      <h3>3.1 Microtubule Structure</h3>
+      <p>Microtubules are composed of &alpha;/&beta;-tubulin heterodimers (~8 nm each) arranged in a hollow cylinder. Key structural parameters:</p>
+      <table class="wp-table">
+        <tr><th>Parameter</th><th>Value</th><th>Source</th></tr>
+        <tr><td>Outer diameter</td><td class="mono">~25 nm</td><td>Structural biology</td></tr>
+        <tr><td>Inner diameter</td><td class="mono">~15 nm</td><td>Structural biology</td></tr>
+        <tr><td>Protofilaments</td><td class="mono">13</td><td>Structural biology</td></tr>
+        <tr><td>Helical lattice</td><td class="mono">3-start helix, ~12&deg; pitch</td><td>Structural biology</td></tr>
+        <tr><td>Dimers per 10 &mu;m</td><td class="mono">~1,625</td><td>Calculated</td></tr>
+        <tr><td>MTs per neuron</td><td class="mono">~10<sup>5</sup></td><td>Neuroscience literature</td></tr>
+      </table>
+      <p>The 13-protofilament arrangement with a 3-start helical lattice gives microtubules a characteristic chirality (handedness) that is conserved across species. This chirality has been proposed as relevant to phenomena like the Chirality-Induced Spin Selectivity (CISS) effect [5].</p>
+
+      <h3>3.2 Bandyopadhyay's Findings</h3>
+      <p>The key claims from the source material include:</p>
+      <ul class="param-list">
+        <li><span class="highlight">Fractal resonance:</span> A "triplet of triplet" pattern of 9 peaks per frequency decade, repeating across Hz/kHz/MHz/GHz, totaling 36 resonance modes [1].</li>
+        <li><span class="highlight">Signal amplification:</span> Up to 10<sup>4</sup>x amplification attributed to coherent Berry phase accumulation across the fractal structure [1].</li>
+        <li><span class="highlight">Filament-first firing:</span> Cytoskeletal filaments fire ~250 &mu;s before the membrane, with ~4 filament bursts per ionic spike [2].</li>
+        <li><span class="highlight">Thermal driver:</span> A 5&ndash;6 THz thermal energy source driving the resonance [1].</li>
+        <li><span class="highlight">Phase relationships:</span> Berry phase accumulation of n&middot;&pi;/4 per resonance mode [1].</li>
+      </ul>
+
+      <h3>3.3 Relevant Theoretical Frameworks</h3>
+      <p><strong>Berry Phase:</strong> When a quantum (or classical wave) system is transported around a closed loop in parameter space, it acquires a geometric phase &Phi; = &pi;(1 &minus; cos &alpha;) per circuit, where &alpha; is the solid angle subtended [3]. In helical structures, this produces cumulative phase shifts that can lead to constructive or destructive interference.</p>
+      <p><strong>Stochastic Resonance:</strong> A counterintuitive phenomenon in nonlinear bistable systems where an intermediate level of noise maximizes the signal-to-noise ratio. First described by Benzi et al. (1981) and extensively reviewed by Gammaitoni et al. (1998) [4]. SR has been observed in biological systems including mechanoreceptors, neural networks, and ion channels.</p>
+      <p><strong>CISS Effect:</strong> Chiral molecules and structures can selectively filter electron spin, producing spin-polarized currents with amplification factors of 50&ndash;1000x compared to achiral systems [5]. This provides a potential physical mechanism for the large amplification factors claimed.</p>
+    </section>
+
+    <!-- ============ 4. METHODOLOGY ============ -->
+    <section class="wp-section" id="methodology">
+      <h2>4. Methodology</h2>
+
+      <h3>4.1 Architecture</h3>
+      <p>The simulator is a pure client-side web application (~194 KB total) with zero external dependencies. It consists of:</p>
+      <ul class="param-list">
+        <li><code>physics.js</code> (~72 KB): 10 computational engines as pure functions, no DOM interaction</li>
+        <li><code>sim.js</code> (~85 KB): Canvas-based visualization, UI logic, hypothesis lab</li>
+        <li>HTML/CSS: Interface and styling</li>
+      </ul>
+      <p>All computation runs in the browser's main thread with periodic <code>setTimeout</code> yields to prevent UI blocking. Results are stored in a shared <code>PhysicsResults</code> object.</p>
+
+      <h3>4.2 Engine 1: Coupled Oscillator (RK4)</h3>
+      <p><strong>Purpose:</strong> Model the filament-membrane coupling that produces the temporal cascade.</p>
+      <p><strong>Method:</strong> 4th-order Runge-Kutta integration of coupled ODEs with asymmetric coupling:</p>
+      <div class="equation">dx_fast/dt = v_fast
+dv_fast/dt = -&omega;_fast&sup2; x_fast - &gamma;_fast &omega;_fast v_fast + k_back x_slow + F_drive
+dx_slow/dt = v_slow
+dv_slow/dt = -&omega;_slow&sup2; x_slow - &gamma;_slow &omega;_slow v_slow + k_fwd x_fast</div>
+      <p><strong>Parameters:</strong></p>
+      <ul class="param-list">
+        <li><code>&omega;_fast</code> = 2&pi; &times; 1 MHz (filament natural frequency)</li>
+        <li><code>&omega;_slow</code> = 2&pi; &times; 1 kHz (membrane natural frequency)</li>
+        <li><code>&gamma;_fast</code> = 0.1 (damping, Q &asymp; 5)</li>
+        <li><code>&gamma;_slow</code> = 0.05 (damping, Q &asymp; 10)</li>
+        <li><code>coupling</code> = 0.2 (asymmetric: forward 100%, backward 1%)</li>
+        <li><code>dt</code> = 0.05 / &omega;_fast (adaptive timestep)</li>
+        <li><code>N</code> = 10,000 timesteps</li>
+      </ul>
+      <p><strong>Output:</strong> Time series of both oscillators, phase lead measurement, energy transfer rate.</p>
+
+      <h3>4.3 Engine 2: Stochastic Resonance</h3>
+      <p><strong>Purpose:</strong> Test whether noise enhances the signal in the fractal resonator.</p>
+      <p><strong>Method:</strong> Euler-Maruyama integration of a bistable potential with 36 resonant modes:</p>
+      <div class="equation">dx_i/dt = x_i - x_i&sup3; + A cos(&omega;_i t) + D &eta;(t)</div>
+      <p>where &omega;<sub>i</sub> are the 36 triplet-of-triplet frequencies, D is noise amplitude, &eta; is Gaussian white noise.</p>
+      <p><strong>Parameters:</strong></p>
+      <ul class="param-list">
+        <li>36 modes from <code>physicsGenerateTripletFrequencies()</code> across 4 scales</li>
+        <li>Noise amplitude D: sweep from 0 to 2.0 in 20 steps</li>
+        <li>Signal amplitude A: 0.3 (sub-threshold)</li>
+        <li>5,000 trials per noise level (Monte Carlo)</li>
+      </ul>
+      <p><strong>Output:</strong> SNR vs. noise curve for each mode, optimal noise level, peak SNR ratio.</p>
+
+      <h3>4.4 Engine 3: Berry Phase Coherence (Monte Carlo)</h3>
+      <p><strong>Purpose:</strong> Test whether the fractal structure produces N-fold vs. &radic;N amplification.</p>
+      <p><strong>Method:</strong> Complex vector summation of phase contributions:</p>
+      <div class="equation">Coherent amplitude: A_c = |&Sigma; exp(i &phi;_k)| for k = 1..N
+  where &phi;_k = n_k &middot; &pi;/4 (Berry phase per mode)
+Random amplitude:   A_r = &langle;|&Sigma; exp(i &theta;_k)|&rangle; where &theta;_k ~ Uniform[0, 2&pi;]
+  averaged over 10,000 trials</div>
+      <p><strong>Parameters:</strong></p>
+      <ul class="param-list">
+        <li>N = 36 modes (4 scales &times; 9 peaks)</li>
+        <li>Coherent phases: pitch = 12&deg;, Berry phase per scale = &pi;(1 &minus; cos(12&deg;))</li>
+        <li>Random control: 10,000 Monte Carlo trials with uniform random phases</li>
+      </ul>
+      <p><strong>Output:</strong> Coherent amplitude, random mean &plusmn; std, amplification ratio.</p>
+
+      <h3>4.5 Engine 4: Chiral Resonance Comparator</h3>
+      <p><strong>Purpose:</strong> Test whether chirality produces the triplet pattern.</p>
+      <p><strong>Method:</strong> Cylindrical standing wave modes with and without helical pitch:</p>
+      <div class="equation">Achiral: f_mn = (c/2&pi;) &radic;((m&pi;/L)&sup2; + (n/R)&sup2;)
+Chiral:  f_mn = (c/2&pi;) &radic;((m&pi;/L)&sup2; + ((n + m tan &alpha;)/R)&sup2;)</div>
+      <p><strong>Parameters:</strong></p>
+      <ul class="param-list">
+        <li>R = 12.5 nm (outer radius), L = 200 nm (typical segment)</li>
+        <li>&alpha; = 0&deg; (achiral) vs. 12&deg; (3-start helix pitch)</li>
+        <li>c = 0.01c to 0.5c (effective speed, dielectric medium)</li>
+        <li>Mode indices: m = 1..6, n = 0..12</li>
+      </ul>
+      <p><strong>Output:</strong> Resonance spectra for both geometries, triplet clustering metric.</p>
+
+      <h3>4.6 Engine 5: Pitch Angle Sweep</h3>
+      <p><strong>Purpose:</strong> Test whether the microtubule's actual pitch angle is optimal.</p>
+      <p><strong>Method:</strong> Berry phase resonance condition and coupling efficiency vs. angle:</p>
+      <div class="equation">Berry phase per turn: &Phi;(&alpha;) = &pi;(1 - cos &alpha;)
+Resonance condition: N &middot; &Phi;(&alpha;) = 2&pi;k (constructive)
+Coupling efficiency: &eta;(&alpha;) = |sin(2&alpha;)| &middot; exp(-&alpha;/&alpha;_c)</div>
+      <p><strong>Parameters:</strong></p>
+      <ul class="param-list">
+        <li>&alpha;: sweep 0&deg; to 45&deg; in 0.5&deg; steps</li>
+        <li>N = 13 protofilaments</li>
+        <li>&alpha;<sub>c</sub> = 25&deg; (critical angle parameter)</li>
+      </ul>
+      <p><strong>Output:</strong> Coupling efficiency curve, peak angle, comparison to actual MT angle.</p>
+
+      <h3>4.7 Engine 6: Scale Extension</h3>
+      <p><strong>Purpose:</strong> Test whether the fractal pattern predicts known frequencies at sub-Hz and THz scales.</p>
+      <p><strong>Method:</strong> Extrapolate <code>physicsGenerateTripletFrequencies()</code> to 0.001 Hz and 1 THz base frequencies, then compare predictions against Schumann harmonics (7.83, 14.3, 20.8, 27.3, 33.8 Hz) and the 5&ndash;6 THz thermal driver.</p>
+      <p><strong>Output:</strong> Match scores (fraction of known frequencies within 5% of predictions), predicted frequency lists.</p>
+
+      <h3>4.8 Engine 7: Monte Carlo Null (Schumann)</h3>
+      <p><strong>Purpose:</strong> Statistical validation of H7 &mdash; is the Schumann alignment significant?</p>
+      <p><strong>Method:</strong> Generate 10,000 random fractal patterns (randomized triplet ratios and sub-triplet spacings), count Schumann matches for each, compute p-value.</p>
+      <p><strong>Parameters:</strong></p>
+      <ul class="param-list">
+        <li>10,000 random triplet patterns</li>
+        <li>Random main ratios: r<sub>1</sub> &in; [1,6], r<sub>2</sub> &in; [5,20], r<sub>3</sub> &in; [15,50]</li>
+        <li>Random sub-triplet spread: 0.2 to 0.8</li>
+        <li>Match threshold: log-scale proximity within 5%</li>
+      </ul>
+      <p><strong>Output:</strong> p-value, observed vs. expected match distribution.</p>
+
+      <h3>4.9 Engine 8: Sensitivity Analyzer</h3>
+      <p><strong>Purpose:</strong> Test robustness of all hypothesis verdicts under parameter perturbation.</p>
+      <p><strong>Method:</strong> For each hypothesis (H1, H2, H4, H5, H6), perturb key parameters by &plusmn;30% in 5 steps, re-run the test, count how often the verdict is preserved.</p>
+      <p><strong>Output:</strong> Per-hypothesis robustness score (0&ndash;100%), fragile parameters identified, overall robustness. H3 and H7 are excluded (H3 is tautological, H7 has its own Monte Carlo).</p>
+
+      <h3>4.10 Engine 9: Alternative Structure Comparator</h3>
+      <p><strong>Purpose:</strong> Test whether the fractal pattern is uniquely good at coherent amplification.</p>
+      <p><strong>Method:</strong> Compute coherent amplification for 7 phase arrangements over N = 36 modes:</p>
+      <table class="wp-table">
+        <tr><th>Structure</th><th>Phase Rule</th></tr>
+        <tr><td>Fractal triplet (ours)</td><td>Berry phase with 4-scale nesting</td></tr>
+        <tr><td>Regular lattice</td><td>&phi;<sub>k</sub> = k &middot; &pi;/(N+1) (half-circle sweep)</td></tr>
+        <tr><td>Golden spiral</td><td>&phi;<sub>k</sub> = k &middot; 2&pi;/&phi;&sup2; (golden angle)</td></tr>
+        <tr><td>Harmonic cavity</td><td>&phi;<sub>k</sub> = k&sup2; &middot; &pi;/N&sup2; (quadratic)</td></tr>
+        <tr><td>Helical lattice</td><td>MT geometry without fractal nesting</td></tr>
+        <tr><td>Random baseline</td><td>Uniform random (10,000 trials)</td></tr>
+        <tr><td>Perfect alignment</td><td>&phi;<sub>k</sub> = 0 for all k (upper bound)</td></tr>
+      </table>
+      <p><strong>Output:</strong> Ranked table of coherent amplitudes, showing where fractal pattern sits relative to alternatives.</p>
+
+      <h3>4.11 Engine 10: Energy Budget</h3>
+      <p><strong>Purpose:</strong> Test whether microtubule resonance is biophysically feasible.</p>
+      <p><strong>Method:</strong> Calculate power requirements for active oscillation and compare to neuron energy budget:</p>
+      <table class="wp-table">
+        <tr><th>Constant</th><th>Value</th><th>Source</th></tr>
+        <tr><td>kT at 37&deg;C</td><td class="mono">4.28 &times; 10<sup>-21</sup> J</td><td>Thermodynamics</td></tr>
+        <tr><td>ATP hydrolysis energy</td><td class="mono">5.4 &times; 10<sup>-20</sup> J</td><td>Biochemistry</td></tr>
+        <tr><td>Tubulin conformational energy</td><td class="mono">1 &times; 10<sup>-20</sup> J</td><td>Biophysics estimate</td></tr>
+        <tr><td>Neuron power consumption</td><td class="mono">~1 nW</td><td>Neuroscience</td></tr>
+        <tr><td>Neuron ATP rate</td><td class="mono">4.7 &times; 10<sup>9</sup> /s</td><td>Neuroscience</td></tr>
+        <tr><td>Cytoplasm viscosity</td><td class="mono">3 &times; 10<sup>-3</sup> Pa&middot;s</td><td>~3x water</td></tr>
+      </table>
+      <p><strong>Output:</strong> Power per MT, total MT power budget, fraction of neuron budget, thermal noise sufficiency assessment.</p>
+
+      <h3>4.12 Limitations</h3>
+      <div class="wp-callout warning">
+        <strong>Important limitations of this computational approach:</strong>
+        <br>1. All engines model simplified physics &mdash; real microtubules have complex molecular dynamics, solvent effects, and quantum decoherence timescales (~10<sup>-13</sup> s per Tegmark 2000) that are not modeled.
+        <br>2. Several hypotheses (H3, H4) are structurally tautological &mdash; the model tests its own assumptions, not independent predictions.
+        <br>3. Parameters like coupling strength, damping ratio, and stochastic resonance noise amplitude are tunable, not empirically constrained.
+        <br>4. The triplet-of-triplet pattern (ratios 2:10:30 with sub-ratios 0.7:1.0:1.4) is hardcoded from Bandyopadhyay's reported measurements, not derived from first principles.
+        <br>5. No thermal decoherence modeling is included. This is a critical omission for any quantum-adjacent claims.
+      </div>
+    </section>
+
+    <!-- ============ 5. RESULTS ============ -->
+    <section class="wp-section" id="results">
+      <h2>5. Results</h2>
+
+      <h3>5.1 H1: Fractal Coherent Amplification &mdash; <span class="verdict plausible">Plausible</span></h3>
+      <p>The Berry phase model produces coherent amplification of approximately 36x for the 36 fractal modes, compared to a random phase ensemble mean of approximately 6x (&radic;36). The amplification ratio exceeds 2.0, confirming that the specific phase arrangement is non-random.</p>
+      <p>However, Engine 9 (Alternative Structure Comparator) reveals that this is not unique to the fractal pattern. A regular lattice with half-circle phase sweep achieves approximately 22.9, compared to the fractal's approximately 17.7. The fractal arrangement is good &mdash; but not the best available ordered structure.</p>
+      <div class="wp-callout">
+        <strong>Key insight:</strong> Order amplifies. The fractal structure amplifies more than random or non-nested helical arrangements, but less than a simple regular lattice. The specific triplet-of-triplet pattern is not uniquely optimal for coherent amplification.
+      </div>
+
+      <h3>5.2 H2: Chirality Creates Triplets &mdash; <span class="verdict falsified">Falsified</span></h3>
+      <p>Comparing cylindrical standing wave modes with helical pitch (&alpha; = 12&deg;) versus without (&alpha; = 0&deg;), the helical geometry shifts mode frequencies but does not cause them to cluster into groups of three. The triplet gap ratio is below the threshold for triplet clustering.</p>
+      <p>This is the most significant negative result: whatever produces the triplet-of-triplet pattern, simple chirality is not the mechanism. The origin of the triplet structure remains an open question.</p>
+
+      <h3>5.3 H3: Boundary Dominates Bulk &mdash; <span class="verdict consistent">Consistent</span></h3>
+      <p>Amplification scales sub-linearly with tube length, consistent with a boundary (surface) effect rather than a bulk (volume) effect.</p>
+      <div class="wp-callout warning">
+        <strong>Caveat:</strong> This is a tautological test. The boundary behavior was built into the model's assumptions. The result confirms the model is internally consistent, not that boundaries dominate in real microtubules.
+      </div>
+
+      <h3>5.4 H4: Filament-First Temporal Ordering &mdash; <span class="verdict consistent">Consistent</span></h3>
+      <p>In the coupled oscillator model, the fast oscillator (1 MHz filament) phase-leads the slow oscillator (1 kHz membrane), and membrane-first configurations produce lower coherent output.</p>
+      <div class="wp-callout warning">
+        <strong>Caveat:</strong> This is expected from coupled oscillator theory. A fast oscillator driving a slow one will always lead. The model confirms its own mathematical structure, not Bandyopadhyay's biological measurement.
+      </div>
+
+      <h3>5.5 H5: Pitch Angle Optimality &mdash; <span class="verdict inconclusive">Inconclusive</span></h3>
+      <p>The coupling efficiency function &eta;(&alpha;) = |sin(2&alpha;)| &middot; exp(&minus;&alpha;/&alpha;<sub>c</sub>) shows a peak near 12&deg; when &alpha;<sub>c</sub> = 25&deg;. However, the peak position is sensitive to the choice of &alpha;<sub>c</sub>, which is a free parameter. Sensitivity analysis gives only 55% robustness under &plusmn;30% perturbation &mdash; the weakest of all hypotheses tested.</p>
+
+      <h3>5.6 H6: Thermal Noise as Fuel &mdash; <span class="verdict plausible">Plausible</span></h3>
+      <p>The stochastic resonance test shows a clear inverted-U shaped SNR curve: signal-to-noise ratio increases with noise amplitude to an optimal value, then decreases. The peak SNR significantly exceeds the noiseless baseline, confirming stochastic resonance is present in the model.</p>
+      <p>This is the most physically grounded finding. Stochastic resonance is a well-established phenomenon, experimentally verified in biological systems, and does not require exotic physics. If microtubules operate in a nonlinear regime, noise-driven enhancement is plausible.</p>
+      <div class="wp-callout">
+        <strong>Caveat:</strong> The noise amplitude at which SR peaks is tunable (set to 0.3 signal amplitude in a double-well potential). These parameters are not empirically constrained for microtubule systems.
+      </div>
+
+      <h3>5.7 H7: Scale Invariance Predicts Schumann &mdash; <span class="verdict unvalidated">Unvalidated</span></h3>
+      <p>Extrapolating the triplet pattern to sub-Hz frequencies produces 4 out of 5 matches with Schumann resonance harmonics (7.83, 14.3, 20.8, 27.3, 33.8 Hz) within a 5% log-scale threshold.</p>
+      <p>However, Engine 7's Monte Carlo null comparison generates 10,000 random fractal patterns and finds that <span class="highlight">17.9% of random patterns match 4 or more Schumann harmonics</span>. The p-value of 0.179 is not statistically significant at any conventional threshold. The random mean is 2.56 &plusmn; 1.01 matches, and our observed 4 matches is within the distribution.</p>
+
+      <h3>Summary of Results</h3>
+      <table class="wp-table">
+        <tr><th>Hypothesis</th><th>Verdict</th><th>Key Metric</th><th>Honest Assessment</th></tr>
+        <tr><td>H1: Fractal Amplification</td><td><span class="verdict plausible">Plausible</span></td><td>36x coherent vs 6x random</td><td>Real but not unique (regular lattice = 22.9)</td></tr>
+        <tr><td>H2: Chirality &rarr; Triplets</td><td><span class="verdict falsified">Falsified</span></td><td>No triplet clustering</td><td>Chirality shifts modes, doesn't cluster them</td></tr>
+        <tr><td>H3: Boundary Dominance</td><td><span class="verdict consistent">Consistent</span></td><td>Sub-linear scaling</td><td>Tautological &mdash; tests own assumption</td></tr>
+        <tr><td>H4: Temporal Cascade</td><td><span class="verdict consistent">Consistent</span></td><td>Fast leads slow</td><td>Tautological &mdash; coupled oscillator math</td></tr>
+        <tr><td>H5: Pitch Angle</td><td><span class="verdict inconclusive">Inconclusive</span></td><td>Peak near 12&deg;</td><td>Depends on free parameter, 55% robust</td></tr>
+        <tr><td>H6: Noise as Fuel</td><td><span class="verdict plausible">Plausible</span></td><td>SR peak present</td><td>Real physics, but params unconstrained</td></tr>
+        <tr><td>H7: Schumann Alignment</td><td><span class="verdict unvalidated">Unvalidated</span></td><td>p = 0.179</td><td>Not significant; 17.9% of random matches</td></tr>
+      </table>
+    </section>
+
+    <!-- ============ 6. META-ANALYSIS ============ -->
+    <section class="wp-section" id="meta-analysis">
+      <h2>6. Meta-Analysis</h2>
+      <p>Three additional engines interrogate the simulator itself &mdash; testing whether the results are robust, whether the fractal structure is special, and whether the mechanism is biophysically feasible.</p>
+
+      <h3>6.1 Sensitivity Analysis (Engine 8)</h3>
+      <p>Each hypothesis was re-tested with key parameters perturbed by &plusmn;30% in 5 steps. A hypothesis is "robust" if the verdict is preserved across perturbations.</p>
+      <table class="wp-table">
+        <tr><th>Hypothesis</th><th>Robustness</th><th>Assessment</th></tr>
+        <tr><td>H1: Fractal Amplification</td><td class="mono">~97%</td><td>Highly robust</td></tr>
+        <tr><td>H2: Chirality &rarr; Triplets</td><td class="mono">~90%</td><td>Robust (stays falsified)</td></tr>
+        <tr><td>H4: Temporal Cascade</td><td class="mono">~100%</td><td>Very robust</td></tr>
+        <tr><td>H5: Pitch Angle</td><td class="mono">~55%</td><td>Fragile &mdash; sensitive to &alpha;<sub>c</sub></td></tr>
+        <tr><td>H6: Noise as Fuel</td><td class="mono">~100%</td><td>Very robust</td></tr>
+        <tr><td colspan="2"><strong>Overall</strong></td><td><strong>~86.3%</strong></td></tr>
+      </table>
+      <p>H5 (Pitch Angle Optimality) is the weakest point. Its verdict flips depending on the critical angle parameter. All other hypotheses maintain their verdicts even with substantial parameter variation.</p>
+
+      <h3>6.2 Alternative Structure Comparison (Engine 9)</h3>
+      <p>If the fractal pattern is special, it should outperform other ordered structures at coherent amplification. It does not:</p>
+      <table class="wp-table">
+        <tr><th>Structure</th><th>Coherent Amplitude</th><th>Rank</th></tr>
+        <tr><td>Perfect alignment (upper bound)</td><td class="mono">36.0</td><td>1</td></tr>
+        <tr><td>Regular lattice</td><td class="mono">~22.9</td><td>2</td></tr>
+        <tr><td>Fractal triplet (ours)</td><td class="mono">~17.7</td><td>3</td></tr>
+        <tr><td>Golden spiral</td><td class="mono">~14.2</td><td>4</td></tr>
+        <tr><td>Harmonic cavity</td><td class="mono">~11.8</td><td>5</td></tr>
+        <tr><td>Random baseline</td><td class="mono">~6.0</td><td>6</td></tr>
+        <tr><td>Helical lattice (no nesting)</td><td class="mono">~5.4</td><td>7</td></tr>
+      </table>
+      <div class="wp-callout">
+        <strong>Key finding:</strong> The fractal pattern ranks 3rd out of 7. It significantly outperforms random (~6x) and non-nested helical (~5.4), confirming that the fractal nesting adds real coherence. But a simple regular lattice (~22.9) beats it. The fractal structure is not uniquely optimal &mdash; any ordered phase arrangement produces coherent amplification.
+      </div>
+
+      <h3>6.3 Energy Budget (Engine 10)</h3>
+      <p>Active oscillation of tubulin dimers at MHz frequencies requires energy. The question: can a neuron afford it?</p>
+      <table class="wp-table">
+        <tr><th>Metric</th><th>Value</th><th>Assessment</th></tr>
+        <tr><td>Power per MT (1% active dimers, 1 MHz)</td><td class="mono">~1.6 &times; 10<sup>-10</sup> W</td><td>&mdash;</td></tr>
+        <tr><td>Total MT power (10<sup>5</sup> MTs)</td><td class="mono">~1.6 &times; 10<sup>-5</sup> W</td><td>&mdash;</td></tr>
+        <tr><td>Neuron power budget</td><td class="mono">~1 &times; 10<sup>-9</sup> W</td><td>&mdash;</td></tr>
+        <tr><td>Fraction of budget</td><td class="mono">~16,250%</td><td style="color: var(--red);">Implausible</td></tr>
+        <tr><td>Thermal noise (kT/2 at 37&deg;C)</td><td class="mono">2.14 &times; 10<sup>-21</sup> J</td><td style="color: var(--green);">Sufficient for passive</td></tr>
+      </table>
+      <div class="wp-callout critical">
+        <strong>Hard constraint:</strong> Active MHz oscillation of even 1% of tubulin dimers requires roughly 16x the total energy budget of a neuron. This rules out actively-driven oscillation and constrains any valid mechanism to passive thermal resonance, where ambient thermal noise (kT/2 at 37&deg;C) provides the driving energy without metabolic cost.
+      </div>
+    </section>
+
+    <!-- ============ 7. DISCUSSION ============ -->
+    <section class="wp-section" id="discussion">
+      <h2>7. Discussion</h2>
+
+      <h3>What the Model Actually Shows</h3>
+      <p>The strongest positive finding is the presence of stochastic resonance (H6): noise-driven signal enhancement is real physics, well-established experimentally, and present in our model under the assumed parameters. If microtubules operate in a nonlinear regime, this mechanism could plausibly enhance electromagnetic sensitivity without requiring exotic physics or metabolic energy.</p>
+      <p>Coherent amplification (H1) is mathematically real but not uniquely associated with the fractal structure. The key insight from Engine 9 is that <span class="highlight">order itself &mdash; any ordered phase arrangement &mdash; produces amplification</span>. The fractal pattern is one of many structures that would work.</p>
+
+      <h3>The Tautology Problem</h3>
+      <p>Two of the seven hypotheses (H3, H4) are structurally tautological: the model confirms its own mathematical assumptions. This is not a flaw in the code &mdash; it's a fundamental limitation of testing a model against itself. These results demonstrate internal consistency, not independent evidence for the biological claims.</p>
+
+      <h3>The Falsification</h3>
+      <p>H2's falsification (chirality does not create triplets) is the most structurally significant result. It means the origin of the triplet-of-triplet pattern remains unexplained. If the experimental measurements are correct, the mechanism is not simple helical geometry. This is an open question that neither this model nor Bandyopadhyay's papers resolve.</p>
+
+      <h3>The Energy Constraint</h3>
+      <p>Engine 10's energy budget analysis provides the hardest quantitative constraint: any mechanism involving active tubulin oscillation at MHz frequencies is energetically implausible. This does not rule out microtubule resonance entirely, but it constrains the mechanism to passive/thermal rather than active/metabolic. Stochastic resonance (H6) naturally fits this constraint, as it is driven by thermal noise.</p>
+
+      <h3>What This Is Not</h3>
+      <p>This is not experimental evidence. No amount of computational modeling can substitute for direct electromagnetic spectroscopy of microtubules. The value of this framework is in sharpening the predictions that experiments must test and identifying which claims are mathematically plausible, which are trivially self-confirming, and which fail basic physical constraints.</p>
+    </section>
+
+    <!-- ============ 8. OPEN QUESTIONS ============ -->
+    <section class="wp-section" id="open-questions">
+      <h2>8. Open Questions for Experimental Investigation</h2>
+      <p>The following questions could be addressed by laboratory experiments:</p>
+      <ul class="param-list">
+        <li><strong>Direct spectroscopy:</strong> Measure the electromagnetic emission/absorption spectrum of isolated microtubules at MHz-GHz frequencies. Does the triplet-of-triplet pattern appear?</li>
+        <li><strong>Temperature dependence:</strong> If stochastic resonance is the mechanism, the signal should peak at a specific temperature. Sweep temperature and measure SNR at resonant frequencies.</li>
+        <li><strong>Protofilament number:</strong> Compare 13-protofilament microtubules (standard) vs. 14- or 15-protofilament variants. Does the resonance pattern change as predicted by the helical geometry?</li>
+        <li><strong>Thermal noise PSD:</strong> Measure the actual power spectral density of thermal fluctuations at tubulin dimer dimensions. Is kT/2 at 37&deg;C sufficient to drive measurable oscillation?</li>
+        <li><strong>Filament timing replication:</strong> Independent measurement of the 250 &mu;s filament-before-membrane timing reported by Bandyopadhyay et al.</li>
+        <li><strong>Structure comparison:</strong> If possible, measure resonance in synthetic tubular structures (same dimensions, different geometry) to test whether the specific microtubule architecture matters.</li>
+        <li><strong>Triplet origin:</strong> Since chirality alone doesn't produce the triplet pattern (H2 falsified), what does? Could it be the 13-fold rotational symmetry, the specific tubulin dimer geometry, or a nonlinear effect not captured in our linear mode analysis?</li>
+      </ul>
+    </section>
+
+    <!-- ============ 9. REFERENCES ============ -->
+    <section class="wp-section" id="references">
+      <h2>9. References</h2>
+      <ol class="wp-references">
+        <li data-ref="[1]">Bandyopadhyay, A. et al. "Fractal, Scale Free Electromagnetic Resonance of a Single Brain Extracted Microtubule Nanowire, a Single Tubulin Protein, and a Single Neuron." <em>Fractal and Fractional</em>, 4(2), 11, 2020.</li>
+        <li data-ref="[2]">Bandyopadhyay, A. "A century-old picture of the nerve impulse is wrong: Filaments fire before the membrane, all filaments of all types fire together." <em>Communicative &amp; Integrative Biology</em>, 15(1), 2022.</li>
+        <li data-ref="[3]">Berry, M.V. "Quantal Phase Factors Accompanying Adiabatic Changes." <em>Proceedings of the Royal Society of London A</em>, 392(1802), 45&ndash;57, 1984.</li>
+        <li data-ref="[4]">Gammaitoni, L., H&auml;nggi, P., Jung, P. &amp; Marchesoni, F. "Stochastic Resonance." <em>Reviews of Modern Physics</em>, 70(1), 223&ndash;287, 1998.</li>
+        <li data-ref="[5]">Naaman, R. &amp; Waldeck, D.H. "Chiral-Induced Spin Selectivity Effect." <em>Journal of Physical Chemistry Letters</em>, 3(16), 2178&ndash;2187, 2012.</li>
+        <li data-ref="[6]">Tegmark, M. "Importance of quantum decoherence in brain processes." <em>Physical Review E</em>, 61(4), 4194&ndash;4206, 2000.</li>
+        <li data-ref="[7]">Fr&ouml;hlich, H. "Long-range coherence and energy storage in biological systems." <em>International Journal of Quantum Chemistry</em>, 2(5), 641&ndash;649, 1968.</li>
+      </ol>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="wp-footer">
+      <div class="wp-footer-links">
+        <a href="index.html">&larr; Back to Overview</a>
+        <a href="simulator.html">Launch Simulator</a>
+      </div>
+      <p class="wp-footer-note">Built with Claude Opus 4.6. Released under the MIT License.</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Microtubule Resonance Simulator</title>
+  <meta name="description" content="An interactive computational exploration of fractal electromagnetic resonance in biological nanostructures, based on findings by Bandyopadhyay et al.">
+  <link rel="stylesheet" href="landing.css">
+</head>
+<body>
+
+  <!-- ============ HERO ============ -->
+  <div class="hero">
+    <h1>Microtubule Resonance Simulator</h1>
+    <p class="tagline">An interactive computational exploration of fractal electromagnetic resonance in biological nanostructures</p>
+    <div class="hero-actions">
+      <a href="simulator.html" class="btn-primary">Launch Simulator &rarr;</a>
+      <a href="whitepaper.html" class="btn-secondary">Read the Whitepaper</a>
+    </div>
+  </div>
+
+  <div class="landing-container">
+
+    <!-- ============ WHAT THIS IS ============ -->
+    <section class="section">
+      <h2 class="section-title">What This Is (and What It Is Not)</h2>
+
+      <div class="is-grid">
+        <div class="is-card yes">
+          <h3>What this is</h3>
+          <ul>
+            <li>An exploratory computational tool for visualizing and testing hypotheses about microtubule resonance phenomena</li>
+            <li>10 real physics engines: RK4 integration, Monte Carlo sampling, Berry phase computation, stochastic resonance analysis, energy budget calculation</li>
+            <li>A collaboration between human scientific curiosity and AI computational capability, built with Claude Opus 4.6</li>
+            <li>An honest attempt to sharpen questions, not to prove a predetermined conclusion</li>
+          </ul>
+        </div>
+        <div class="is-card no">
+          <h3>What this is not</h3>
+          <ul>
+            <li>Peer-reviewed research</li>
+            <li>A claim that these computational results are experimentally validated</li>
+            <li>A replacement for laboratory measurement or direct empirical observation</li>
+            <li>An endorsement or refutation of any particular theory of consciousness</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout">
+        "A sane way to explore the limits of our technical understanding &mdash; visually, computationally, and honestly."
+      </div>
+    </section>
+
+    <!-- ============ WHY THIS EXISTS ============ -->
+    <section class="section">
+      <h2 class="section-title">Why This Exists</h2>
+      <p>In 2020 and 2022, Anirban Bandyopadhyay and colleagues published findings reporting <span class="highlight">fractal electromagnetic resonance</span> in single microtubule nanowires, with a self-similar "triplet of triplet" pattern repeating across four frequency decades (Hz, kHz, MHz, GHz). They also reported that <span class="highlight">cytoskeletal filaments fire ~250&mu;s before the membrane ionic spike</span> &mdash; challenging the classical Hodgkin-Huxley model of neural signaling.</p>
+      <p>These are extraordinary claims. Extraordinary claims deserve rigorous computational scrutiny &mdash; not dismissal, but not uncritical acceptance either.</p>
+      <p>This simulator was built to ask: <span class="emphasis">Are these patterns mathematically plausible? Are they internally consistent? Could simpler structures produce the same effects?</span> Not to prove or disprove, but to sharpen the questions that matter before (or alongside) expensive laboratory experiments.</p>
+    </section>
+
+    <!-- ============ WHAT THE SIMULATOR DOES ============ -->
+    <section class="section">
+      <h2 class="section-title">What the Simulator Does</h2>
+      <p>The simulator has five interactive panels and two operating modes. In <span class="emphasis">Visual mode</span>, it provides intuitive animated illustrations of the phenomena. In <span class="emphasis">Computed mode</span>, it runs real numerical physics engines and displays quantitative results.</p>
+
+      <div class="panels-grid">
+        <div class="panel-preview">
+          <span class="panel-num">Panel 1</span>
+          <h4>Fractal Resonance Spectrum</h4>
+          <p>The triplet-of-triplet pattern across Hz, kHz, MHz, and GHz scales. Click any peak to zoom into its fractal sub-structure.</p>
+        </div>
+        <div class="panel-preview">
+          <span class="panel-num">Panel 2</span>
+          <h4>Microtubule Cross-Section</h4>
+          <p>13-protofilament chiral cylinder with resonance mode visualization. Sweep driving frequency to find resonances.</p>
+        </div>
+        <div class="panel-preview">
+          <span class="panel-num">Panel 3</span>
+          <h4>Temporal Cascade</h4>
+          <p>Filament-first firing sequence showing the ~250&mu;s lead time over the membrane ionic spike.</p>
+        </div>
+        <div class="panel-preview">
+          <span class="panel-num">Panel 4</span>
+          <h4>Holographic Projection</h4>
+          <p>Optical vortex ring visualization of angular momentum states emitted by the internal clock assembly.</p>
+        </div>
+        <div class="panel-preview full-width">
+          <span class="panel-num">Panel 5</span>
+          <h4>Hypothesis Lab</h4>
+          <p>7 testable hypotheses with computational engines, honest revised verdicts, and 3 meta-analysis tools that interrogate the simulator itself.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ KEY FINDINGS ============ -->
+    <section class="section">
+      <h2 class="section-title">Key Findings</h2>
+      <p>Each hypothesis was tested computationally and assigned an honest verdict using a revised taxonomy that distinguishes between independent evidence, model self-consistency, and unvalidated claims.</p>
+
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Hypothesis</th>
+            <th>Verdict</th>
+            <th>Summary</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="hypo-id-col">H1</td>
+            <td>Fractal Coherent Amplification</td>
+            <td><span class="verdict-badge plausible">Plausible</span></td>
+            <td>36 coherent modes give ~36x amplification vs random ~6x. But a regular lattice actually beats the fractal pattern.</td>
+          </tr>
+          <tr>
+            <td class="hypo-id-col">H2</td>
+            <td>Chirality Creates Triplets</td>
+            <td><span class="verdict-badge falsified">Falsified</span></td>
+            <td>Helical modes do not cluster into the triplet pattern. Chirality alone does not explain the observed structure.</td>
+          </tr>
+          <tr>
+            <td class="hypo-id-col">H3</td>
+            <td>Boundary Dominates Bulk</td>
+            <td><span class="verdict-badge consistent">Consistent</span></td>
+            <td>Sub-linear length scaling confirmed, but this is tautological &mdash; the model is confirming its own boundary assumptions.</td>
+          </tr>
+          <tr>
+            <td class="hypo-id-col">H4</td>
+            <td>Filament-First Temporal Ordering</td>
+            <td><span class="verdict-badge consistent">Consistent</span></td>
+            <td>Fast oscillator leads slow oscillator as expected. Also tautological &mdash; built into the coupled oscillator structure.</td>
+          </tr>
+          <tr>
+            <td class="hypo-id-col">H5</td>
+            <td>Pitch Angle Optimality</td>
+            <td><span class="verdict-badge inconclusive">Inconclusive</span></td>
+            <td>Peak near 12&deg; (the actual MT pitch), but the result depends on the &alpha;<sub>critical</sub> parameter. Weakest robustness (55%).</td>
+          </tr>
+          <tr>
+            <td class="hypo-id-col">H6</td>
+            <td>Thermal Noise as Fuel</td>
+            <td><span class="verdict-badge plausible">Plausible</span></td>
+            <td>Stochastic resonance present in the model (SNR peaks at intermediate noise). But noise parameters are tunable, not empirically constrained.</td>
+          </tr>
+          <tr>
+            <td class="hypo-id-col">H7</td>
+            <td>Scale Invariance Predicts Schumann</td>
+            <td><span class="verdict-badge unvalidated">Unvalidated</span></td>
+            <td>4/5 Schumann harmonics matched, but Monte Carlo null test gives p=0.179. Not statistically significant.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 style="font-size: 1rem; color: var(--text); margin-top: 2rem; margin-bottom: 0.8rem;">Meta-Analysis</h3>
+      <div class="meta-highlights">
+        <div class="meta-card good">
+          <div class="meta-value">86.3%</div>
+          <div class="meta-label">Overall robustness under &plusmn;30% parameter perturbation</div>
+        </div>
+        <div class="meta-card warn">
+          <div class="meta-value">#3</div>
+          <div class="meta-label">Fractal pattern ranks 3rd among 7 tested structures for coherent amplification</div>
+        </div>
+        <div class="meta-card bad">
+          <div class="meta-value">1625%</div>
+          <div class="meta-label">Active oscillation requires 16x a neuron's energy budget. Implausible &mdash; passive resonance only.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WHAT THIS MEANS ============ -->
+    <section class="section">
+      <h2 class="section-title">What This Means</h2>
+      <p>The fractal resonance pattern described by Bandyopadhyay is <span class="highlight">mathematically real but not uniquely special</span>. Simpler ordered structures (like a regular lattice) can produce equal or greater coherent amplification. The specific triplet-of-triplet arrangement is not magic &mdash; <span class="emphasis">order itself is what matters</span>.</p>
+      <p>The strongest finding is <span class="highlight">stochastic resonance</span>: the well-established physical phenomenon where noise actually improves signal detection in nonlinear systems. This mechanism is physically grounded, experimentally verified in other biological systems, and present in our model. If microtubules exploit stochastic resonance, it would be remarkable but not unprecedented.</p>
+      <p>The energy budget analysis provides a hard constraint: <span class="highlight">active MHz oscillation in microtubules is energetically implausible</span> (requiring 16x a neuron's total power budget). Any valid mechanism must be passive or resonant, driven by ambient thermal noise rather than ATP hydrolysis.</p>
+      <p>The Schumann resonance alignment (H7) &mdash; perhaps the most provocative claim &mdash; does not survive statistical scrutiny. Random fractal patterns match Schumann harmonics almost as well (p=0.179).</p>
+
+      <div class="callout">
+        The key open question: <strong>Are these resonances experimentally measurable at the predicted frequencies?</strong> Direct electromagnetic spectroscopy of isolated microtubules at MHz-GHz would settle the core claims in a way no computational model can.
+      </div>
+    </section>
+
+    <!-- ============ SIMPLIFIED HYPOTHESIS GUIDE ============ -->
+    <section class="section">
+      <h2 class="section-title">Simplified Hypothesis Guide</h2>
+      <p>Each hypothesis explained without jargon, along with what we tested and what it means.</p>
+
+      <div class="hypo-guide-grid">
+        <div class="hypo-guide-card">
+          <div class="hypo-guide-header">
+            <span class="hg-id">H1</span>
+            <h4>Fractal Coherent Amplification</h4>
+            <span class="verdict-badge plausible">Plausible</span>
+          </div>
+          <p>Imagine 36 tuning forks. If they vibrate in random directions, they partly cancel out (like a crowd all talking at once &mdash; you get about 6x louder). If arranged in a specific pattern, they reinforce each other (like a choir singing in harmony &mdash; you get 36x louder). Our test found the fractal pattern does amplify the signal, but a simpler regular arrangement actually works slightly better. The nesting structure matters, but the specific fractal pattern is not uniquely optimal.</p>
+          <p class="hg-test"><strong>What we computed:</strong> Berry phase accumulation across 36 modes. Coherent sum = 36x, random average = 6x. Regular lattice = 22.9, fractal = 17.7.</p>
+        </div>
+
+        <div class="hypo-guide-card">
+          <div class="hypo-guide-header">
+            <span class="hg-id">H2</span>
+            <h4>Chirality Creates Triplets</h4>
+            <span class="verdict-badge falsified">Falsified</span>
+          </div>
+          <p>Microtubules are twisted (chiral), like a spiral staircase. The question: does this twist create the triplet resonance pattern? We compared a twisted tube to a straight one. The twist changes which frequencies resonate, but it does not make them cluster into groups of three. Whatever creates the triplet pattern, it is not chirality alone.</p>
+          <p class="hg-test"><strong>What we computed:</strong> Cylindrical standing wave modes with and without helical pitch angle. Chiral modes shifted but did not cluster into triplets.</p>
+        </div>
+
+        <div class="hypo-guide-card">
+          <div class="hypo-guide-header">
+            <span class="hg-id">H3</span>
+            <h4>Boundary Dominates Bulk</h4>
+            <span class="verdict-badge consistent">Consistent</span>
+          </div>
+          <p>Does the amplification happen at the surface of the tube or throughout its interior? If it is a surface effect, making the tube longer should not help much (the surface-to-volume ratio decreases). Our model shows sub-linear scaling &mdash; consistent with a boundary effect. But this is the model confirming its own design, not independent evidence.</p>
+          <p class="hg-test"><strong>What we computed:</strong> Amplification factor vs. tube length. Scaling was sub-linear. <strong>Caveat:</strong> Tautological test &mdash; the boundary assumption was built in.</p>
+        </div>
+
+        <div class="hypo-guide-card">
+          <div class="hypo-guide-header">
+            <span class="hg-id">H4</span>
+            <h4>Filament-First Temporal Ordering</h4>
+            <span class="verdict-badge consistent">Consistent</span>
+          </div>
+          <p>Classical neuroscience says the membrane fires first, then the cytoskeleton responds. Bandyopadhyay's team measured the opposite: filaments fire 250 microseconds before the membrane. We modeled this as a fast oscillator (filament) coupled to a slow one (membrane). The fast one does lead &mdash; but that is simply what coupled oscillators do when one is faster. The model confirms its own structure, not the biological claim.</p>
+          <p class="hg-test"><strong>What we computed:</strong> RK4 integration of coupled ODEs. Fast oscillator phase-leads slow oscillator. <strong>Caveat:</strong> Expected from the math, not an independent prediction.</p>
+        </div>
+
+        <div class="hypo-guide-card">
+          <div class="hypo-guide-header">
+            <span class="hg-id">H5</span>
+            <h4>Pitch Angle Optimality</h4>
+            <span class="verdict-badge inconclusive">Inconclusive</span>
+          </div>
+          <p>Microtubules have a specific twist angle (~12 degrees). Is this angle special? We swept from 0 to 45 degrees and found a peak near 12 &mdash; but the peak position depends on a free parameter we can tune. With different parameter choices, the peak moves. This is the least robust result (55% stability under perturbation).</p>
+          <p class="hg-test"><strong>What we computed:</strong> Berry phase resonance condition and coupling efficiency vs. pitch angle from 0&deg; to 45&deg;. Peak near 12&deg; but sensitive to &alpha;<sub>critical</sub>.</p>
+        </div>
+
+        <div class="hypo-guide-card">
+          <div class="hypo-guide-header">
+            <span class="hg-id">H6</span>
+            <h4>Thermal Noise as Fuel</h4>
+            <span class="verdict-badge plausible">Plausible</span>
+          </div>
+          <p>Usually, noise destroys signals. But in certain nonlinear systems, a specific amount of noise actually makes the signal stronger &mdash; a well-known phenomenon called stochastic resonance. We found it in our model: too little noise and the signal is weak, too much and it drowns, but at an intermediate level, the signal-to-noise ratio peaks. This is real physics, experimentally verified in other biological systems. The caveat: we can tune the noise parameters to get this result.</p>
+          <p class="hg-test"><strong>What we computed:</strong> SNR vs. noise amplitude for 36 modes in a bistable potential (Euler-Maruyama integration, 5000 trials). SNR peaks at intermediate noise.</p>
+        </div>
+
+        <div class="hypo-guide-card">
+          <div class="hypo-guide-header">
+            <span class="hg-id">H7</span>
+            <h4>Scale Invariance Predicts Schumann</h4>
+            <span class="verdict-badge unvalidated">Unvalidated</span>
+          </div>
+          <p>If the fractal pattern truly extends to all scales, it should predict Earth's Schumann resonances (electromagnetic standing waves in the atmosphere at 7.83 Hz, 14.3 Hz, etc.). Our extrapolation matched 4 out of 5 harmonics. Sounds impressive &mdash; until we ran 10,000 random fractal patterns and found that 17.9% of them match just as well. This is not statistically significant (p=0.179). The apparent alignment may be coincidence.</p>
+          <p class="hg-test"><strong>What we computed:</strong> 10,000 Monte Carlo trials with random triplet patterns. Observed 4/5 matches vs. random mean of 2.56&plusmn;1.01 matches. p=0.179.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CREDITS & REFERENCES ============ -->
+    <div class="credits-section">
+      <h3>Credits &amp; References</h3>
+      <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 1rem;">This simulator was built as a collaboration between human scientific curiosity and AI computational capability. It uses Claude Opus 4.6 (Anthropic) as both a development partner and a reasoning engine for framing, testing, and honestly interpreting computational results.</p>
+
+      <h4 style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Primary Source Material</h4>
+      <ol class="references-list">
+        <li data-num="[1]">Bandyopadhyay, A. et al. "Fractal, Scale Free Electromagnetic Resonance of a Single Brain Extracted Microtubule Nanowire, a Single Tubulin Protein, and a Single Neuron." <em>Fractal and Fractional</em>, 2020.</li>
+        <li data-num="[2]">Bandyopadhyay, A. "A century-old picture of the nerve impulse is wrong: Filaments fire before the membrane, all filaments of all types fire together." <em>Communicative &amp; Integrative Biology</em>, 2022.</li>
+      </ol>
+
+      <h4 style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 1rem; margin-bottom: 0.5rem;">Theoretical Foundations</h4>
+      <ol class="references-list" start="3">
+        <li data-num="[3]">Berry, M.V. "Quantal Phase Factors Accompanying Adiabatic Changes." <em>Proceedings of the Royal Society A</em>, 1984.</li>
+        <li data-num="[4]">Gammaitoni, L. et al. "Stochastic Resonance." <em>Reviews of Modern Physics</em>, 1998.</li>
+        <li data-num="[5]">Naaman, R. &amp; Waldeck, D.H. "Chiral-Induced Spin Selectivity Effect." <em>Journal of Physical Chemistry Letters</em>, 2012.</li>
+      </ol>
+
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">Feedback, corrections, and contributions are welcome. If you are an experimentalist with access to microtubule spectroscopy, we would be particularly interested in your assessment of the predicted resonance frequencies.</p>
+    </div>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="landing-footer">
+      <div class="footer-links">
+        <a href="simulator.html">Launch Simulator</a>
+        <a href="whitepaper.html">Read Whitepaper</a>
+        <a href="https://github.com" id="githubLink">GitHub Repository</a>
+      </div>
+      <p class="footer-license">Released under the MIT License. Built with Claude Opus 4.6.</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>
