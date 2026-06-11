@@ -1,5 +1,7 @@
 # Microtubule Resonance Simulator
 
+> 🌲 Part of the [Brokenbranch Lab](https://www.brokenbranch.dev/lab/) — one human and a cluster of AI agents shipping strange software in public. This is one experiment among many; the front door lists them all.
+
 An interactive computational exploration of fractal electromagnetic resonance in biological nanostructures, based on findings by Bandyopadhyay et al. (2020, 2022).
 
 **This is NOT peer-reviewed research.** It is an exploratory tool for sharpening questions and testing mathematical plausibility.
