@@ -1,0 +1,102 @@
+# Mirror the Microtubule Resonance Simulator to brokenbranch.dev.
+#
+# This repo is the single source of truth. Whenever the runtime files change on
+# main, copy them into the website repo so the hosted surface
+# (brokenbranch.dev/lab/microtubule) always matches what's developed here.
+#
+# HEAD PRESERVATION
+# -----------------
+# The website pages carry a prod SEO <head> (canonical, Open Graph, Twitter,
+# JSON-LD, favicon). As of 2026-06-18 that head was folded back INTO this repo's
+# HTML files, so the source IS now authoritative for the head too (same model as
+# windowsill-lab). The mirror is therefore a verbatim copy -- but as a guard
+# against a future edit accidentally stripping the head, a pre-flight check
+# refuses to mirror any HTML file that has lost its prod <head> markers.
+#
+# Setup (one time): add a repo secret named SITE_SYNC_TOKEN -- a fine-grained
+# Personal Access Token scoped to benskamps/brokenbranchdevwebsite with
+# "Contents: Read and write". Nothing else is needed.
+name: Mirror to brokenbranch.dev
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - simulator.html
+      - whitepaper.html
+      - landing.css
+      - style.css
+      - whitepaper.css
+      - sim.js
+      - physics.js
+      - .github/workflows/mirror-to-prod.yml
+  workflow_dispatch: {}   # manual "sync now" button
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mirror-to-prod
+  cancel-in-progress: true
+
+env:
+  # Files mirrored verbatim into lab/microtubule/. Keep in sync with `paths` above.
+  MIRROR_FILES: >-
+    index.html simulator.html whitepaper.html
+    landing.css style.css whitepaper.css
+    sim.js physics.js
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the sim (source of truth)
+        uses: actions/checkout@v4
+
+      - name: Guard -- every HTML page still carries its prod SEO <head>
+        run: |
+          fail=0
+          for f in index.html simulator.html whitepaper.html; do
+            if ! grep -q 'rel="canonical"' "$f"; then
+              echo "::error file=$f::missing <link rel=canonical> -- the prod SEO head looks stripped. Refusing to mirror."
+              fail=1
+            fi
+            if ! grep -q 'application/ld+json' "$f"; then
+              echo "::error file=$f::missing JSON-LD block -- the prod SEO head looks stripped. Refusing to mirror."
+              fail=1
+            fi
+          done
+          [ "$fail" -eq 0 ] || exit 1
+          echo "head guard passed: all pages carry canonical + JSON-LD."
+
+      - name: Check out the website (mirror target)
+        uses: actions/checkout@v4
+        with:
+          repository: benskamps/brokenbranchdevwebsite
+          token: ${{ secrets.SITE_SYNC_TOKEN }}
+          path: site
+
+      - name: Copy the runtime files across
+        run: |
+          mkdir -p site/lab/microtubule
+          for f in $MIRROR_FILES; do
+            if [ -f "$f" ]; then
+              cp "$f" "site/lab/microtubule/$f"
+            else
+              echo "::warning::$f listed in MIRROR_FILES but not present in source -- skipping"
+            fi
+          done
+
+      - name: Commit & push only if it actually changed
+        working-directory: site
+        run: |
+          git config user.name "microtubule-bot"
+          git config user.email "microtubule-bot@users.noreply.github.com"
+          if git diff --quiet -- lab/microtubule; then
+            echo "site already matches source -- nothing to mirror"
+            exit 0
+          fi
+          git add lab/microtubule
+          git commit -m "chore(microtubule): mirror sim files from microtubule-resonance-sim@${GITHUB_SHA::7}"
+          git push
