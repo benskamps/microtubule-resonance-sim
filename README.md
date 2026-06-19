@@ -6,6 +6,19 @@ An interactive computational exploration of fractal electromagnetic resonance in
 
 **This is NOT peer-reviewed research.** It is an exploratory tool for sharpening questions and testing mathematical plausibility.
 
+## Status: 🟡 Complete (exploratory tool — not formally validated)
+
+**This experiment is finished, not abandoned.** It shipped its full result set in one publication and reached its intended scope: 7 hypotheses tested honestly, the falsified ones (H2) reported as falsified, the unvalidated ones (H7, Schumann alignment, p=0.179) reported as not significant. There is no open backlog and no further work planned. If you find it sitting still, that stillness is *done*, not neglect.
+
+It remains 🟡 (an exploratory **toy**, not a validated result) by design. It has **not** formally passed the Brokenbranch Lab validation gate (the "Four Tests" — reproduced, externally checked, pre-registered, and survives adversarial review). Promoting it to 🟢 would require, at minimum:
+
+- an independent reproduction of the simulator's key results from the published parameters,
+- external review of the physics engines (especially the H5 pitch-angle robustness and H6 stochastic-resonance parameterization),
+- a pre-registered hypothesis set rather than the post-hoc meta-analysis presented here, and
+- adversarial review of the model-tests-model concerns flagged in H3 (scale invariance is tautological as built).
+
+None of those have been done, so the honest label stays 🟡. The value here is the *honesty of the negative results*, not a validated claim.
+
 ## Quick Start
 
 1. Clone the repository

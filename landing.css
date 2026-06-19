@@ -516,6 +516,14 @@ body {
   color: var(--cyan);
 }
 
+.footer-status {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  max-width: 640px;
+  margin: 0 auto 0.5rem;
+  line-height: 1.5;
+}
+
 .footer-license {
   font-size: 0.75rem;
   color: var(--text-muted);
