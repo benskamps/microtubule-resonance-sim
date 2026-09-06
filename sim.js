@@ -16,9 +16,14 @@ function formatFreq(hz) {
   return hz.toFixed(1) + ' Hz';
 }
 
-// Store original dimensions and last setup sizes
+// ---- Canvas sizing ----
+// Each canvas keeps its markup aspect ratio and fills its .canvas-wrap. Sizing
+// happens on init, when a ResizeObserver reports the container changed, and
+// when devicePixelRatio changes (zoom / monitor move) — never per frame, so the
+// animation loop does no layout reads. canvasLastSize holds CSS-pixel w/h.
 const canvasOriginals = {};
 const canvasLastSize = {};
+const sizedCanvases = new Set();
 
 function setupCanvas(canvas) {
   // Save original dimensions on first call
@@ -30,35 +35,127 @@ function setupCanvas(canvas) {
   const dpr = window.devicePixelRatio || 1;
   const container = canvas.parentElement;
   const containerW = container ? container.clientWidth - 2 : 0;
-  const w = containerW > 100 ? containerW : orig.w; // fallback if hidden
+  // A panel that is display:none measures 0 wide; keep the markup width until
+  // the ResizeObserver reports a real size (it fires when the panel is shown).
+  const w = containerW > 100 ? containerW : orig.w;
   const h = Math.round(w * aspect);
-  canvas.width = w * dpr;
-  canvas.height = h * dpr;
+  const last = canvasLastSize[canvas.id];
+  if (last && last.w === w && last.h === h && last.dpr === dpr) {
+    return { ctx: canvas.getContext('2d'), w, h };
+  }
+  canvas.width = Math.round(w * dpr);
+  canvas.height = Math.round(h * dpr);
   canvas.style.width = w + 'px';
   canvas.style.height = h + 'px';
   const ctx = canvas.getContext('2d');
-  ctx.scale(dpr, dpr);
-  canvasLastSize[canvas.id] = { w, h };
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  canvasLastSize[canvas.id] = { w, h, dpr };
   return { ctx, w, h };
 }
 
+// Frame-time accessor: cached size + a DPR transform reset. No DOM reads.
 function sizeCanvas(canvas) {
-  // Lightweight re-size check per frame; only re-setup if container changed
-  const orig = canvasOriginals[canvas.id];
-  if (!orig) return setupCanvas(canvas);
-  const dpr = window.devicePixelRatio || 1;
-  const container = canvas.parentElement;
-  const containerW = container ? container.clientWidth - 2 : 0;
-  if (containerW < 100) return null; // panel hidden, skip render
   const last = canvasLastSize[canvas.id];
-  if (last && Math.abs(last.w - containerW) < 2) {
-    // Same size, just get ctx
-    const ctx = canvas.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return { ctx, w: last.w, h: last.h };
-  }
-  return setupCanvas(canvas);
+  if (!last) return setupCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(last.dpr, 0, 0, last.dpr, 0, 0);
+  return { ctx, w: last.w, h: last.h };
 }
+
+const canvasResizeObserver = typeof ResizeObserver === 'function'
+  ? new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const canvas = entry.target.querySelector('canvas');
+        if (canvas) setupCanvas(canvas);
+      }
+    })
+  : null;
+
+function watchCanvasSize(canvas) {
+  if (sizedCanvases.has(canvas)) return;
+  sizedCanvases.add(canvas);
+  setupCanvas(canvas);
+  if (canvasResizeObserver && canvas.parentElement) {
+    canvasResizeObserver.observe(canvas.parentElement);
+  }
+}
+
+// devicePixelRatio has no event of its own; a resolution media query that
+// stops matching is the standard signal. Re-arm after each change because the
+// query is bound to the old ratio. Fallback to `resize` where matchMedia or
+// ResizeObserver is missing.
+(function watchDevicePixelRatio() {
+  function resizeAll() { for (const c of sizedCanvases) setupCanvas(c); }
+  if (typeof window.matchMedia === 'function' && canvasResizeObserver) {
+    const arm = () => {
+      const mq = window.matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`);
+      const onChange = () => { mq.removeEventListener('change', onChange); resizeAll(); arm(); };
+      mq.addEventListener('change', onChange);
+    };
+    arm();
+  } else {
+    window.addEventListener('resize', resizeAll);
+  }
+})();
+
+// ---- Animation loop ----
+// One requestAnimationFrame drives every panel. Each panel registers a tick
+// that receives real elapsed seconds (from the rAF timestamp, clamped to 50 ms
+// so a stalled tab or a debugger pause cannot produce a catch-up jump). Only
+// the panel whose <section> is .active is ticked or drawn. The loop stops
+// entirely while the document is hidden and restarts, clock reset, on return.
+const AnimLoop = (() => {
+  const MAX_DT = 0.05; // seconds
+  const loops = [];
+  let rafId = 0;
+  let lastTs = null;
+  let frames = 0;
+
+  function frame(ts) {
+    rafId = 0;
+    if (document.hidden) { lastTs = null; return; }
+    let dt = lastTs === null ? 0 : (ts - lastTs) / 1000;
+    lastTs = ts;
+    if (dt > MAX_DT) dt = MAX_DT;
+    for (const loop of loops) {
+      if (!loop.panel.classList.contains('active')) continue;
+      const size = sizeCanvas(loop.canvas);
+      loop.tick(dt, size.ctx, size.w, size.h);
+    }
+    frames++;
+    rafId = requestAnimationFrame(frame);
+  }
+
+  function start() {
+    if (rafId || document.hidden || loops.length === 0) return;
+    lastTs = null;
+    rafId = requestAnimationFrame(frame);
+  }
+
+  function stop() {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = 0;
+    lastTs = null;
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stop(); else start();
+  });
+
+  return {
+    /** Register a panel: tick(dtSeconds, ctx, w, h) runs while panel is .active. */
+    register(canvas, tick) {
+      const panel = canvas.closest('.panel') || document.body;
+      watchCanvasSize(canvas);
+      loops.push({ canvas, panel, tick });
+      start();
+    },
+    /** Read-only frame counter and running flag (used by tests). */
+    get frames() { return frames; },
+    get running() { return rafId !== 0; },
+  };
+})();
+window.AnimLoop = AnimLoop;
 
 // ---- Color Palette ----
 const COLORS = {
@@ -125,7 +222,6 @@ const spectrumState = {
 
 function initSpectrum() {
   const canvas = document.getElementById('spectrumCanvas');
-  const { ctx, w, h } = setupCanvas(canvas);
 
   const slider = document.getElementById('driveFreqSlider');
   const freqLabel = document.getElementById('driveFreqValue');
@@ -159,20 +255,21 @@ function initSpectrum() {
   });
 
   // Click-to-zoom
+  // Hit-testing uses the canvas's own CSS-pixel box, which is the coordinate
+  // space drawSpectrum draws in (setupCanvas sets style.width/height from the
+  // same numbers). No fallback constant needed: the canvas is sized on init.
   canvas.addEventListener('click', (e) => {
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left;
     const my = e.clientY - rect.top;
-    const cs = canvasLastSize[canvas.id] || { w: 1100, h: 400 };
-    handleSpectrumClick(mx, my, cs.w, cs.h);
+    handleSpectrumClick(mx, my, rect.width, rect.height);
   });
 
   canvas.addEventListener('mousemove', (e) => {
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left;
     const my = e.clientY - rect.top;
-    const cs = canvasLastSize[canvas.id] || { w: 1100, h: 400 };
-    handleSpectrumHover(mx, my, cs.w, cs.h, canvas);
+    handleSpectrumHover(mx, my, rect.width, rect.height, canvas);
   });
 
   canvas.addEventListener('mouseleave', () => {
@@ -180,13 +277,10 @@ function initSpectrum() {
     canvas.style.cursor = 'default';
   });
 
-  function tick() {
-    spectrumState.time += 0.016;
-    const size = sizeCanvas(canvas);
-    if (size) drawSpectrum(size.ctx, size.w, size.h);
-    requestAnimationFrame(tick);
-  }
-  tick();
+  AnimLoop.register(canvas, (dt, ctx, w, h) => {
+    spectrumState.time += dt;
+    drawSpectrum(ctx, w, h);
+  });
 }
 
 function getVisiblePeaks() {
@@ -465,12 +559,12 @@ function updateBreadcrumbs() {
 
   if (st.zoomLevel >= 0) {
     const isCurrent = st.zoomLevel === 0;
-    html += `<span class="breadcrumb ${isCurrent ? 'current' : ''}" data-level="0" onclick="spectrumState.zoomLevel=0;spectrumState.zoomScale=-1;spectrumState.zoomPeak=-1;updateBreadcrumbs()">All Scales</span>`;
+    html += `<span class="breadcrumb ${isCurrent ? 'current' : ''}" data-level="0" role="button" tabindex="0">All Scales</span>`;
   }
   if (st.zoomLevel >= 1) {
     html += `<span class="breadcrumb-sep">&rsaquo;</span>`;
     const isCurrent = st.zoomLevel === 1;
-    html += `<span class="breadcrumb ${isCurrent ? 'current' : ''}" data-level="1" onclick="spectrumState.zoomLevel=1;spectrumState.zoomPeak=-1;updateBreadcrumbs()">${SCALE_NAMES[st.zoomScale]} Band</span>`;
+    html += `<span class="breadcrumb ${isCurrent ? 'current' : ''}" data-level="1" role="button" tabindex="0">${SCALE_NAMES[st.zoomScale]} Band</span>`;
   }
   if (st.zoomLevel >= 2) {
     html += `<span class="breadcrumb-sep">&rsaquo;</span>`;
@@ -480,7 +574,32 @@ function updateBreadcrumbs() {
   el.innerHTML = html;
 }
 
-// Make these accessible globally for inline onclick
+// Breadcrumb zoom-out is delegated: the page ships under an enforced CSP
+// (script-src 'self'), which blocks inline onclick= attributes — including the
+// ones innerHTML would inject. One listener on the container, keyed by data-level.
+function zoomBreadcrumb(level) {
+  if (level === 0) {
+    spectrumState.zoomLevel = 0; spectrumState.zoomScale = -1; spectrumState.zoomPeak = -1;
+  } else if (level === 1) {
+    spectrumState.zoomLevel = 1; spectrumState.zoomPeak = -1;
+  } else {
+    return;
+  }
+  updateBreadcrumbs();
+}
+(function wireBreadcrumbs() {
+  const el = document.getElementById('spectrumBreadcrumbs');
+  if (!el) return;
+  el.addEventListener('click', (e) => {
+    const crumb = e.target.closest('.breadcrumb[data-level]');
+    if (crumb) zoomBreadcrumb(Number(crumb.dataset.level));
+  });
+  el.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const crumb = e.target.closest('.breadcrumb[data-level]');
+    if (crumb) { e.preventDefault(); zoomBreadcrumb(Number(crumb.dataset.level)); }
+  });
+})();
 window.spectrumState = spectrumState;
 window.updateBreadcrumbs = updateBreadcrumbs;
 
@@ -499,7 +618,6 @@ const mtState = {
 
 function initMicrotubule() {
   const canvas = document.getElementById('mtCanvas');
-  const { ctx, w, h } = setupCanvas(canvas);
 
   const slider = document.getElementById('mtFreqSlider');
   const freqLabel = document.getElementById('mtFreqValue');
@@ -537,8 +655,8 @@ function initMicrotubule() {
     helixBtn.textContent = mtState.showHelix ? 'Hide 3-Start' : 'Show 3-Start';
   });
 
-  function tick() {
-    mtState.time += 0.016;
+  AnimLoop.register(canvas, (dt, ctx, w, h) => {
+    mtState.time += dt;
 
     // Compute resonance intensity
     let maxRes = 0;
@@ -551,14 +669,14 @@ function initMicrotubule() {
         }
       }
     }
-    mtState.resonanceIntensity = lerp(mtState.resonanceIntensity, maxRes, 0.05);
-    mtState.wavePhase += 0.03 * (1 + mtState.resonanceIntensity * 3);
+    // Rates below were tuned per 16 ms frame (0.05 lerp, 0.03 rad); expressed
+    // per second so the look is the same at any refresh rate.
+    const smoothing = 1 - Math.pow(0.95, dt * 60);
+    mtState.resonanceIntensity = lerp(mtState.resonanceIntensity, maxRes, smoothing);
+    mtState.wavePhase += 1.875 * dt * (1 + mtState.resonanceIntensity * 3);
 
-    const size = sizeCanvas(canvas);
-    if (size) drawMicrotubule(size.ctx, size.w, size.h);
-    requestAnimationFrame(tick);
-  }
-  tick();
+    drawMicrotubule(ctx, w, h);
+  });
 }
 
 function drawMicrotubule(ctx, w, h) {
@@ -917,7 +1035,6 @@ const cascadeState = {
 
 function initCascade() {
   const canvas = document.getElementById('cascadeCanvas');
-  const { ctx, w, h } = setupCanvas(canvas);
 
   const playBtn = document.getElementById('cascadePlayBtn');
   const resetBtn = document.getElementById('cascadeResetBtn');
@@ -961,15 +1078,12 @@ function initCascade() {
     cascadeState.time = 0;
   });
 
-  function tick() {
+  AnimLoop.register(canvas, (dt, ctx, w, h) => {
     if (cascadeState.playing) {
-      cascadeState.time += 0.016 * cascadeState.speed;
+      cascadeState.time += dt * cascadeState.speed;
     }
-    const size = sizeCanvas(canvas);
-    if (size) drawCascade(size.ctx, size.w, size.h);
-    requestAnimationFrame(tick);
-  }
-  tick();
+    drawCascade(ctx, w, h);
+  });
 }
 
 function drawCascade(ctx, w, h) {
@@ -1289,7 +1403,6 @@ const holoState = {
 
 function initHolographic() {
   const canvas = document.getElementById('holoCanvas');
-  const { ctx, w, h } = setupCanvas(canvas);
 
   const stimSlider = document.getElementById('holoStimSlider');
   const stimLabel = document.getElementById('holoStimValue');
@@ -1312,7 +1425,8 @@ function initHolographic() {
     });
   }
 
-  // Initialize particles
+  // Initialize particles. Math.random() is deliberate here: this is visual
+  // jitter that never feeds a reported number (physics.js uses PhysicsRNG).
   for (let i = 0; i < 200; i++) {
     holoState.particles.push({
       angle: Math.random() * TAU,
@@ -1324,13 +1438,10 @@ function initHolographic() {
     });
   }
 
-  function tick() {
-    holoState.time += 0.016;
-    const size = sizeCanvas(canvas);
-    if (size) drawHolographic(size.ctx, size.w, size.h);
-    requestAnimationFrame(tick);
-  }
-  tick();
+  AnimLoop.register(canvas, (dt, ctx, w, h) => {
+    holoState.time += dt;
+    drawHolographic(ctx, w, h);
+  });
 }
 
 function drawHolographic(ctx, w, h) {
@@ -1569,12 +1680,12 @@ function initHypothesisLab() {
         <div class="hypo-test"><strong>Test:</strong> ${hypo.test}</div>
         <div class="hypo-falsification"><strong>Falsification:</strong> ${hypo.falsification}</div>
         <div class="hypo-actions">
-          <button class="btn" onclick="goToPanel('${hypo.panel}')">Go to Panel</button>
-          <button class="btn" onclick="cycleStatus('${hypo.id}')">Cycle Status</button>
-          <button class="btn physics-action-btn" onclick="runHypothesisTest('${hypo.id}', this)">Run Computation</button>
+          <button class="btn" aria-label="${hypo.id}: go to ${hypo.panel} panel" data-action="panel" data-hypo="${hypo.id}" data-panel="${hypo.panel}">Go to Panel</button>
+          <button class="btn" aria-label="${hypo.id}: cycle hypothesis status" data-action="cycle" data-hypo="${hypo.id}">Cycle Status</button>
+          <button class="btn physics-action-btn" aria-label="${hypo.id}: run computation" data-action="run" data-hypo="${hypo.id}">Run Computation</button>
         </div>
-        <textarea class="hypo-notes" placeholder="Add notes/observations..."
-          onchange="saveHypoNote('${hypo.id}', this.value)">${hypo.notes}</textarea>
+        <textarea class="hypo-notes" aria-label="${hypo.id}: notes and observations" placeholder="Add notes/observations..."
+          data-action="note" data-hypo="${hypo.id}">${hypo.notes}</textarea>
       </div>
     `;
 
@@ -1585,6 +1696,24 @@ function initHypothesisLab() {
     });
 
     grid.appendChild(card);
+  }
+
+  // Delegated once per grid: the enforced CSP blocks inline handlers, so the
+  // card buttons carry data-action/data-hypo and the grid routes the click.
+  if (!grid.dataset.wired) {
+    grid.dataset.wired = 'true';
+    grid.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn || !grid.contains(btn)) return;
+      const id = btn.dataset.hypo;
+      if (btn.dataset.action === 'panel') goToPanel(btn.dataset.panel);
+      else if (btn.dataset.action === 'cycle') cycleStatus(id);
+      else if (btn.dataset.action === 'run') runHypothesisTest(id, btn);
+    });
+    grid.addEventListener('change', (e) => {
+      const ta = e.target.closest('textarea[data-action="note"]');
+      if (ta) saveHypoNote(ta.dataset.hypo, ta.value);
+    });
   }
 }
 
@@ -1694,7 +1823,7 @@ function initMetaAnalysis() {
   if (sensBtn) {
     sensBtn.addEventListener('click', async () => {
       sensBtn.disabled = true;
-      sensBtn.textContent = 'Computing (~30s)...';
+      sensBtn.textContent = 'Computing (several minutes)...';
       await new Promise(r => setTimeout(r, 50));
 
       try {
