@@ -29,12 +29,39 @@ const PhysicsMode = {
   showExtendedScale: false,
 };
 
+// ---- Seeded PRNG ----
+// Every Monte Carlo in this file draws from PhysicsRNG, never Math.random(),
+// so a run is reproducible: same seed, same figures, on any machine.
+// mulberry32 (Tommy Ettinger, public domain): 32-bit state, period 2^32,
+// passes gjrand; more than enough for 10,000-trial null distributions.
+// Each engine entry point that samples calls PhysicsRNG.reseed() first, so
+// the result never depends on what ran before it.
+const DEFAULT_SEED = 20260906;
+
+const PhysicsRNG = (() => {
+  let state = DEFAULT_SEED >>> 0;
+  return {
+    DEFAULT_SEED,
+    /** Set the generator state to an explicit 32-bit seed. */
+    seed(n) { state = n >>> 0; },
+    /** Reset to DEFAULT_SEED. Called at the start of every Monte Carlo. */
+    reseed() { state = DEFAULT_SEED >>> 0; },
+    /** Uniform float in [0, 1), same contract as Math.random(). */
+    random() {
+      state = (state + 0x6D2B79F5) | 0;
+      let t = Math.imul(state ^ (state >>> 15), state | 1);
+      t = (t + Math.imul(t ^ (t >>> 7), t | 61)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    },
+  };
+})();
+
 // ---- Math Utilities ----
 function gaussRandom() {
   // Box-Muller transform
   let u = 0, v = 0;
-  while (u === 0) u = Math.random();
-  while (v === 0) v = Math.random();
+  while (u === 0) u = PhysicsRNG.random();
+  while (v === 0) v = PhysicsRNG.random();
   return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
 }
 
@@ -280,6 +307,7 @@ const Engine2 = {
    * @returns {Object} - SNR curves per mode, optimal noise
    */
   run(opts = {}) {
+    PhysicsRNG.reseed();
     const noiseLevels = opts.noiseLevels || 16;
     const nTrials = opts.nTrials || 500;  // reduced from 5000 for browser perf
     const signalAmp = opts.signalAmplitude || 0.3;
@@ -317,7 +345,7 @@ const Engine2 = {
         let totalSNR = 0;
 
         for (let trial = 0; trial < nTrials; trial++) {
-          let x = 0.01 * (Math.random() - 0.5); // near zero
+          let x = 0.01 * (PhysicsRNG.random() - 0.5); // near zero
           let signalPower = 0;
           let noisePower = 0;
           const sqrtDt = Math.sqrt(dt);
@@ -407,6 +435,7 @@ const Engine3 = {
    * @returns {Object} - amplification curves, histogram
    */
   run(opts = {}) {
+    PhysicsRNG.reseed();
     const maxModes = opts.maxModes || 36;
     const nTrials = opts.nTrials || 10000;
 
@@ -471,7 +500,7 @@ const Engine3 = {
       for (let trial = 0; trial < nTrials; trial++) {
         let reRand = 0, imRand = 0;
         for (let i = 0; i < N; i++) {
-          const phi = Math.random() * 2 * Math.PI;
+          const phi = PhysicsRNG.random() * 2 * Math.PI;
           reRand += Math.cos(phi);
           imRand += Math.sin(phi);
         }
@@ -822,13 +851,13 @@ const Engine7 = {
   generateRandomTriplets(baseHz) {
     // Randomize the main ratios (normally [2, 10, 30])
     // Keep them roughly in the same decade range but random
-    const r1 = 1 + Math.random() * 5;       // 1-6
-    const r2 = 5 + Math.random() * 15;      // 5-20
-    const r3 = 15 + Math.random() * 35;     // 15-50
+    const r1 = 1 + PhysicsRNG.random() * 5;       // 1-6
+    const r2 = 5 + PhysicsRNG.random() * 15;      // 5-20
+    const r3 = 15 + PhysicsRNG.random() * 35;     // 15-50
     const mainRatios = [r1, r2, r3];
 
     // Randomize sub-peak ratios (normally [0.7, 1.0, 1.4])
-    const spread = 0.2 + Math.random() * 0.6; // 0.2-0.8 spread
+    const spread = 0.2 + PhysicsRNG.random() * 0.6; // 0.2-0.8 spread
     const subRatios = [1 - spread, 1.0, 1 + spread];
 
     const peaks = [];
@@ -863,6 +892,7 @@ const Engine7 = {
    * @returns {Object} - p-value, distribution, observed count
    */
   run(opts = {}) {
+    PhysicsRNG.reseed();
     const nTrials = opts.nTrials || 10000;
     const threshold = opts.matchThreshold || 0.05;
 
@@ -878,10 +908,10 @@ const Engine7 = {
       // Random base frequency in the sub-Hz to Hz range
       // We use the same scale bases that our real model uses
       const randomBases = [
-        0.001 * (0.5 + Math.random()),   // mHz-ish
-        0.01 * (0.5 + Math.random()),    // 10 mHz-ish
-        0.1 * (0.5 + Math.random()),     // 100 mHz-ish
-        1 * (0.5 + Math.random()),       // Hz-ish
+        0.001 * (0.5 + PhysicsRNG.random()),   // mHz-ish
+        0.01 * (0.5 + PhysicsRNG.random()),    // 10 mHz-ish
+        0.1 * (0.5 + PhysicsRNG.random()),     // 100 mHz-ish
+        1 * (0.5 + PhysicsRNG.random()),       // Hz-ish
       ];
 
       // Generate random fractal peaks at each scale
@@ -931,6 +961,7 @@ const HypothesisRunner = {
    * @returns {Object} - result, verdict, metrics
    */
   async runTest(hypoId) {
+    PhysicsRNG.reseed();
     switch (hypoId) {
       case 'H1': return this.testH1();
       case 'H2': return this.testH2();
@@ -1271,6 +1302,7 @@ const Engine8 = {
    * @returns {Object} - per-hypothesis robustness scores and breakdown
    */
   run(opts = {}) {
+    PhysicsRNG.reseed();
     const range = opts.perturbRange || 0.3; // ±30% default
     const nSamples = opts.nSamples || 5;    // samples per direction per param
 
@@ -1324,6 +1356,7 @@ const Engine8 = {
    * count how often the verdict matches baseline
    */
   _sweep(baselineVerdict, paramDefs, testFn, range, nSamples) {
+    PhysicsRNG.reseed();
     let totalRuns = 0;
     let matchingRuns = 0;
     const fragileParams = [];
@@ -1435,7 +1468,7 @@ const Engine8 = {
       for (let t = 0; t < quickTrials; t++) {
         let rre = 0, rim = 0;
         for (let i = 0; i < maxModes; i++) {
-          const phi = Math.random() * 2 * Math.PI;
+          const phi = PhysicsRNG.random() * 2 * Math.PI;
           rre += Math.cos(phi);
           rim += Math.sin(phi);
         }
@@ -1573,6 +1606,7 @@ const Engine9 = {
    * All use N=36 modes, same as our fractal model
    */
   run(opts = {}) {
+    PhysicsRNG.reseed();
     const N = opts.nModes || 36;
     const nRandomTrials = opts.nRandomTrials || 10000;
 
@@ -1734,7 +1768,7 @@ const Engine9 = {
     for (let t = 0; t < nTrials; t++) {
       let re = 0, im = 0;
       for (let i = 0; i < N; i++) {
-        const phi = Math.random() * 2 * Math.PI;
+        const phi = PhysicsRNG.random() * 2 * Math.PI;
         re += Math.cos(phi);
         im += Math.sin(phi);
       }
@@ -1768,7 +1802,7 @@ const Engine10 = {
     neuron_power: 1e-9,        // Typical neuron power consumption (W) ~1 nW
     neuron_ATP_rate: 4.7e9,    // ATP molecules consumed per neuron per second
     MT_per_neuron: 1e5,        // ~100,000 microtubules per neuron
-    dimers_per_MT: 1625,       // ~1625 tubulin dimers per 10μm microtubule (13 protofilaments × 125 rings)
+    dimers_per_MT: 1625,       // ~1625 tubulin dimers per 1 μm of microtubule (13 protofilaments × 125 rings at 8 nm)
     cytoplasm_viscosity: 3e-3, // ~3x water viscosity (Pa·s)
     tubulin_diameter: 8e-9,    // Tubulin dimer diameter (m)
   },
@@ -1977,3 +2011,5 @@ window.Engine7 = Engine7;
 window.Engine8 = Engine8;
 window.Engine9 = Engine9;
 window.Engine10 = Engine10;
+window.PhysicsRNG = PhysicsRNG;
+window.DEFAULT_SEED = DEFAULT_SEED;

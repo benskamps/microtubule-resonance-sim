@@ -64,6 +64,23 @@ body {
   position: relative;
 }
 
+/* Back link. Lives here rather than in a style="" + onmouseover pair so the
+   page can ship under an enforced CSP (script-src 'self' forbids inline event
+   handlers); :hover is also keyboard/touch-honest in a way onmouseover is not. */
+.app-header .back-link {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.8rem;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  transition: color 0.2s;
+}
+
+.app-header .back-link:hover,
+.app-header .back-link:focus-visible {
+  color: var(--cyan);
+}
+
 .app-header h1 {
   font-size: 1.8rem;
   font-weight: 700;
@@ -147,6 +164,13 @@ body {
   font-size: 0.85rem;
   color: var(--text-dim);
   margin-bottom: 1.2rem;
+}
+
+.panel-desc.seed-note {
+  font-family: var(--font-mono, 'JetBrains Mono', 'Consolas', monospace);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
 }
 
 /* ---- Canvas Wrapper ---- */
@@ -252,7 +276,7 @@ button.btn.active {
   line-height: 1.5;
 }
 
-.info-box h4 {
+.info-box h3 {
   color: var(--cyan);
   font-size: 0.8rem;
   text-transform: uppercase;
@@ -590,7 +614,7 @@ button.btn.active {
   margin-top: 1rem;
 }
 
-.results-overlay h4 {
+.results-overlay h3 {
   color: var(--purple);
   font-size: 0.8rem;
   text-transform: uppercase;

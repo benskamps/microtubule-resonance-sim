@@ -1,6 +1,6 @@
 # Microtubule Resonance Simulator
 
-> 🌲 Part of the [Brokenbranch Lab](https://www.brokenbranch.dev/lab/) — one human and a cluster of AI agents shipping strange software in public. This is one experiment among many; the front door lists them all.
+> 🌲 Part of the [Brokenbranch Lab](https://www.brokenbranch.dev/labs/) — one human and a cluster of AI agents shipping strange software in public. This is one experiment among many; the front door lists them all.
 
 An interactive computational exploration of fractal electromagnetic resonance in biological nanostructures, based on findings by Bandyopadhyay et al. (2020, 2022).
 
@@ -8,7 +8,7 @@ An interactive computational exploration of fractal electromagnetic resonance in
 
 ## Status: 🟡 Complete (exploratory tool — not formally validated)
 
-**This experiment is finished, not abandoned.** It shipped its full result set in one publication and reached its intended scope: 7 hypotheses tested honestly, the falsified ones (H2) reported as falsified, the unvalidated ones (H7, Schumann alignment, p=0.179) reported as not significant. There is no open backlog and no further work planned. If you find it sitting still, that stillness is *done*, not neglect.
+**This experiment is finished, not abandoned.** It shipped its full result set in one publication and reached its intended scope: 7 hypotheses tested honestly, the falsified ones (H2) reported as falsified, the unvalidated ones (H7, Schumann alignment, p=0.183) reported as not significant. There is no open backlog and no further work planned. If you find it sitting still, that stillness is *done*, not neglect.
 
 It remains 🟡 (an exploratory **toy**, not a validated result) by design. It has **not** formally passed the Brokenbranch Lab validation gate (the "Four Tests" — reproduced, externally checked, pre-registered, and survives adversarial review). Promoting it to 🟢 would require, at minimum:
 
@@ -18,6 +18,10 @@ It remains 🟡 (an exploratory **toy**, not a validated result) by design. It h
 - adversarial review of the model-tests-model concerns flagged in H3 (scale invariance is tautological as built).
 
 None of those have been done, so the honest label stays 🟡. The value here is the *honesty of the negative results*, not a validated claim.
+
+## Reproducibility
+
+Monte Carlo runs use a fixed seed (`20260906`, mulberry32, `DEFAULT_SEED` in `physics.js`); `node scripts/recompute-figures.mjs` reprints every figure the pages quote, and `docs/figures-20260906.txt` is the committed receipt.
 
 ## Quick Start
 
@@ -37,6 +41,10 @@ None of those have been done, so the honest label stays 🟡. The value here is 
 | `style.css` | Simulator design system |
 | `landing.css` | Landing page styles |
 | `whitepaper.css` | Whitepaper reading styles |
+| `assets/og.png` | Open Graph / Twitter card image (1200×630) |
+| `scripts/recompute-figures.mjs` | Node harness: recomputes every quoted figure from the fixed seed |
+| `docs/figures-20260906.txt` | Receipt: the harness output the pages' numbers come from |
+| `docs/SYNC-DESIGN.md` | How brokenbranch.dev mirrors this repo (daily pull, verbatim) |
 
 ## Tech Stack
 
@@ -54,7 +62,7 @@ None of those have been done, so the honest label stays 🟡. The value here is 
 | H4: Temporal Cascade | Consistent | Expected from oscillator structure |
 | H5: Pitch Angle Optimality | Inconclusive | Parameter-dependent (55% robust) |
 | H6: Noise-Fueled Resonance | Plausible | SR present but parameters unconstrained |
-| H7: Schumann Alignment | Unvalidated | p=0.179, not significant |
+| H7: Schumann Alignment | Unvalidated | p=0.183, not significant |
 
 **Meta-analysis:** 86.3% overall robustness. Regular lattice beats fractal for amplification. Active oscillation energetically implausible (16x neuron budget).
 
@@ -68,7 +76,7 @@ None of those have been done, so the honest label stays 🟡. The value here is 
 
 ## Built With
 
-Built as a collaboration between human scientific curiosity and [Claude Opus 4.6](https://www.anthropic.com/claude) (Anthropic).
+Built with [Claude](https://www.anthropic.com/claude) agents (Anthropic), as a collaboration between human scientific curiosity and AI computational capability. This repo is the source of truth; <https://www.brokenbranch.dev/labs/microtubule/> pull-mirrors it daily (see `docs/SYNC-DESIGN.md`).
 
 ## License
 
