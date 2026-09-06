@@ -46,6 +46,14 @@ param(
   [string]$ProdRoot = "$PSScriptRoot\..\..\..\..\brokenbranchdevwebsite\lab\microtubule"
 )
 
+
+# ---------------------------------------------------------------------------
+# DISABLED 2026-09-06 — the site's labs/microtubule copy is ahead of this repo
+# and this script targets the retired lab/microtubule path. Phase 3 of
+# brokenbranchdevwebsite/docs/level-up-plan-2026-09.md replaces it. Refuse.
+Write-Error "sync-to-prod is disabled: it would overwrite the site with older content. See brokenbranchdevwebsite/docs/level-up-plan-2026-09.md, Phase 3."
+exit 1
+# ---------------------------------------------------------------------------
 $ErrorActionPreference = 'Stop'
 $SrcRoot = (Resolve-Path "$PSScriptRoot\..").Path
 

@@ -18,20 +18,19 @@
 # "Contents: Read and write". Nothing else is needed.
 name: Mirror to brokenbranch.dev
 
+# DISABLED 2026-09-06. This workflow has been writing to site/lab/microtubule
+# since the site moved its labs to /labs/ — a path vercel.json now 301s, so the
+# mirrored files were unreachable and the real page never updated, while the
+# run reported success. Worse, the site's labs/microtubule copy is now AHEAD of
+# this repo (rebuilt hero, plain-language explainer, <main> landmarks, labelled
+# sliders, /labs/ canonicals, the fixed GitHub footer link, no inline event
+# handlers under the site's enforced CSP); a working mirror would overwrite all
+# of that with this repo's older content. Phase 3 of the site's
+# docs/level-up-plan-2026-09.md back-ports the site's version here and replaces
+# this push-mirror with a pull-mirror in the site repo. Until then: no push
+# trigger, and the one remaining manual trigger refuses in its first step.
 on:
-  push:
-    branches: [main]
-    paths:
-      - index.html
-      - simulator.html
-      - whitepaper.html
-      - landing.css
-      - style.css
-      - whitepaper.css
-      - sim.js
-      - physics.js
-      - .github/workflows/mirror-to-prod.yml
-  workflow_dispatch: {}   # manual "sync now" button
+  workflow_dispatch: {}
 
 permissions:
   contents: read
@@ -51,6 +50,11 @@ jobs:
   mirror:
     runs-on: ubuntu-latest
     steps:
+      - name: Disabled — would overwrite the site with older content
+        run: |
+          echo "::error::mirror-to-prod is disabled. The site's labs/microtubule copy is ahead of this repo and this workflow targets the retired lab/ path. See brokenbranchdevwebsite/docs/level-up-plan-2026-09.md, Phase 3."
+          exit 1
+
       - name: Check out the sim (source of truth)
         uses: actions/checkout@v4
 

@@ -30,6 +30,17 @@
 #   scripts/sync-to-prod.sh --prod <path>      # override destination
 set -euo pipefail
 
+# ---------------------------------------------------------------------------
+# DISABLED 2026-09-06 — the site's labs/microtubule copy is ahead of this repo
+# (rebuilt hero, explainer, labelled sliders, /labs/ canonicals, no inline
+# handlers under the site's enforced CSP) and this script targets the retired
+# lab/microtubule path. Phase 3 of brokenbranchdevwebsite/docs/level-up-plan-2026-09.md
+# back-ports the site's version and replaces this with a pull-mirror. Refuse.
+echo "sync-to-prod is disabled: it would overwrite the site with older content." >&2
+echo "See brokenbranchdevwebsite/docs/level-up-plan-2026-09.md, Phase 3." >&2
+exit 1
+# ---------------------------------------------------------------------------
+
 SRC_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROD_ROOT="$(cd "$SRC_ROOT/../../../brokenbranchdevwebsite/lab/microtubule" 2>/dev/null && pwd || true)"
 APPLY=0; REINJECT=0
