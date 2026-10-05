@@ -568,8 +568,11 @@ const Engine4 = {
 
     const modes = [];
 
+    // n runs over all integers -maxN..maxN: on a closed cylinder +n and -n are the two
+    // senses of rotation. Achirally they are degenerate pairs; the helical shift
+    // n -> n + m tan(alpha) is what splits them, so H2 needs both.
     for (let m = 1; m <= maxM; m++) {
-      for (let n = 0; n <= maxN; n++) {
+      for (let n = -maxN; n <= maxN; n++) {
         const axial = (m * Math.PI / L);
         let azimuthal;
 
