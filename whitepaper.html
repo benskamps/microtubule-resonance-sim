@@ -71,7 +71,7 @@
     <section class="wp-section" id="abstract">
       <h2>1. Abstract</h2>
       <p>We present a client-side computational framework of 10 physics engines that test hypotheses about electromagnetic resonance in microtubule structures, based on findings reported by Bandyopadhyay et al. (2020, 2022). The framework uses 4th-order Runge-Kutta integration for coupled oscillator dynamics, Monte Carlo sampling for statistical validation, Berry phase accumulation for coherent amplification analysis, Euler-Maruyama stochastic differential equations for noise-driven resonance, and energy budget calculations for biophysical feasibility.</p>
-      <p>Of seven hypotheses tested, two are <span class="emphasis">plausible</span> (fractal coherent amplification, stochastic resonance), two are <span class="emphasis">consistent</span> but tautological (boundary dominance, temporal cascade), one is <span class="emphasis">inconclusive</span> (pitch angle optimality), one is <span class="emphasis">unvalidated</span> (Schumann alignment, p=0.183), and one is <span class="emphasis">falsified</span> (chirality creating triplets). Meta-analysis reveals that simpler ordered structures match or exceed the fractal pattern's coherent amplification, and that active MHz oscillation exceeds a neuron's energy budget by 16x, constraining any valid mechanism to passive thermal resonance.</p>
+      <p>Of seven hypotheses tested, two are <span class="emphasis">plausible</span> (fractal coherent amplification, stochastic resonance), two are <span class="emphasis">consistent</span> but tautological (boundary dominance, temporal cascade), one is <span class="emphasis">inconclusive</span> (pitch angle optimality), one is <span class="emphasis">unvalidated</span> (Schumann alignment, p=0.183), and one is <span class="emphasis">falsified</span> (chirality creating triplets). Meta-analysis reveals that simpler ordered structures match or exceed the fractal pattern's coherent amplification, and that active MHz oscillation exceeds a neuron's energy budget by ~40x, constraining any valid mechanism to passive thermal resonance.</p>
       <p>This is an exploratory computational tool, not peer-reviewed research. Its value lies in sharpening the questions that laboratory experiments must answer.</p>
     </section>
 
@@ -251,9 +251,9 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
       <table class="wp-table">
         <tr><th>Constant</th><th>Value</th><th>Source</th></tr>
         <tr><td>kT at 37&deg;C</td><td class="mono">4.28 &times; 10<sup>-21</sup> J</td><td>Thermodynamics</td></tr>
-        <tr><td>ATP hydrolysis energy</td><td class="mono">5.4 &times; 10<sup>-20</sup> J</td><td>Biochemistry</td></tr>
+        <tr><td>ATP hydrolysis energy</td><td class="mono">8.65 &times; 10<sup>-20</sup> J (0.54 eV)</td><td>Biochemistry (cellular conditions)</td></tr>
         <tr><td>Tubulin conformational energy</td><td class="mono">1 &times; 10<sup>-20</sup> J</td><td>Biophysics estimate</td></tr>
-        <tr><td>Neuron power consumption</td><td class="mono">~1 nW</td><td>Neuroscience</td></tr>
+        <tr><td>Neuron power consumption</td><td class="mono">~0.41 nW</td><td>Derived: ATP rate &times; ATP energy</td></tr>
         <tr><td>Neuron ATP rate</td><td class="mono">4.7 &times; 10<sup>9</sup> /s</td><td>Neuroscience</td></tr>
         <tr><td>Cytoplasm viscosity</td><td class="mono">3 &times; 10<sup>-3</sup> Pa&middot;s</td><td>~3x water</td></tr>
       </table>
@@ -364,12 +364,12 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
         <tr><th>Metric</th><th>Value</th><th>Assessment</th></tr>
         <tr><td>Power per MT (1% active dimers, 1 MHz)</td><td class="mono">~1.6 &times; 10<sup>-13</sup> W</td><td>&mdash;</td></tr>
         <tr><td>Total MT power (10<sup>5</sup> MTs)</td><td class="mono">~1.6 &times; 10<sup>-8</sup> W</td><td>&mdash;</td></tr>
-        <tr><td>Neuron power budget</td><td class="mono">~1 &times; 10<sup>-9</sup> W</td><td>&mdash;</td></tr>
-        <tr><td>Fraction of budget</td><td class="mono">~1,625%</td><td style="color: var(--red);">Implausible</td></tr>
+        <tr><td>Neuron power budget</td><td class="mono">~4.1 &times; 10<sup>-10</sup> W</td><td>&mdash;</td></tr>
+        <tr><td>Fraction of budget</td><td class="mono">~4,000%</td><td style="color: var(--red);">Implausible</td></tr>
         <tr><td>Thermal noise (kT/2 at 37&deg;C)</td><td class="mono">2.14 &times; 10<sup>-21</sup> J</td><td style="color: var(--green);">Sufficient for passive</td></tr>
       </table>
       <div class="wp-callout critical">
-        <strong>Hard constraint:</strong> Active MHz oscillation of even 1% of tubulin dimers requires roughly 16x the total energy budget of a neuron. This rules out actively-driven oscillation and constrains any valid mechanism to passive thermal resonance, where ambient thermal noise (kT/2 at 37&deg;C) provides the driving energy without metabolic cost.
+        <strong>Hard constraint:</strong> Active MHz oscillation of even 1% of tubulin dimers requires roughly 40x the total energy budget of a neuron. This rules out actively-driven oscillation and constrains any valid mechanism to passive thermal resonance, where ambient thermal noise (kT/2 at 37&deg;C) provides the driving energy without metabolic cost.
       </div>
     </section>
 
