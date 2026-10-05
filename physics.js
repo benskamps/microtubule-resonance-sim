@@ -1809,12 +1809,12 @@ const Engine10 = {
     // A neuron's power is its ATP turnover times the energy per ATP, so it is derived,
     // not set separately: 4.7e9/s x 8.65e-20 J = 0.41 nW. Cross-check: 20 W brain /
     // 86e9 neurons = 0.23 nW. (The old 1 nW disagreed with the two constants above by 4x.)
-    neuron_power: 4.7e9 * 0.54 * 1.602176634e-19,
+    get neuron_power() { return this.neuron_ATP_rate * this.ATP_energy; },
     MT_per_neuron: 1e5,        // ~100,000 microtubules per neuron
     MT_length: 1e-6,           // modelled microtubule length (m): 1 μm
     // Dimers per microtubule follow from the geometry: 13 protofilaments x (length / 8 nm
     // per ring). For 1 μm that is 13 x 125 = 1625. Change MT_length, not this line.
-    dimers_per_MT: 13 * Math.round(1e-6 / 8e-9),
+    get dimers_per_MT() { return 13 * Math.round(this.MT_length / 8e-9); },
     cytoplasm_viscosity: 3e-3, // ~3x water viscosity (Pa·s)
     tubulin_diameter: 8e-9,    // Tubulin dimer diameter (m)
   },
