@@ -211,7 +211,10 @@ const Engine1 = {
     const duration = opts.duration || 2000; // microseconds (= 2 ms)
     const dt = 0.05;                         // 0.05 us timestep
     const nSteps = Math.floor(duration / dt);
-    const downsample = Math.max(1, Math.floor(nSteps / 2000)); // keep ~2000 points
+    // Keep at most one sample per 0.2 us: 5 samples per 1 us period of the fast oscillator,
+    // inside Nyquist (spacing < 0.5 us). The old "~2000 points" rule stored one sample per
+    // 1-1.5 us, which aliased the 1 MHz oscillation to a constant or alternating phases.
+    const downsample = Math.max(1, Math.min(Math.floor(nSteps / 2000), Math.round(0.2 / dt)));
 
     let state = [0, 0.01, 0, 0]; // slight perturbation on fast oscillator
     let t = 0;
@@ -1797,12 +1800,21 @@ const Engine10 = {
   // Biophysical constants
   CONSTANTS: {
     kT_37C: 4.28e-21,         // Thermal energy at 37°C (J)
-    ATP_energy: 5.4e-20,       // Free energy per ATP hydrolysis (J) (~54 zJ, ~0.54 eV)
+    // Free energy per ATP hydrolysis under cellular conditions: ~0.54 eV (~52 kJ/mol).
+    // 0.54 eV x 1.602e-19 J/eV = 8.65e-20 J. (The old 5.4e-20 J was 0.34 eV, near the
+    // standard-state value, and disagreed with its own 0.54 eV label.)
+    ATP_energy: 0.54 * 1.602176634e-19,
     tubulin_conformational: 1e-20, // Energy per tubulin conformational change (J)
-    neuron_power: 1e-9,        // Typical neuron power consumption (W) ~1 nW
     neuron_ATP_rate: 4.7e9,    // ATP molecules consumed per neuron per second
+    // A neuron's power is its ATP turnover times the energy per ATP, so it is derived,
+    // not set separately: 4.7e9/s x 8.65e-20 J = 0.41 nW. Cross-check: 20 W brain /
+    // 86e9 neurons = 0.23 nW. (The old 1 nW disagreed with the two constants above by 4x.)
+    neuron_power: 4.7e9 * 0.54 * 1.602176634e-19,
     MT_per_neuron: 1e5,        // ~100,000 microtubules per neuron
-    dimers_per_MT: 1625,       // ~1625 tubulin dimers per 1 μm of microtubule (13 protofilaments × 125 rings at 8 nm)
+    MT_length: 1e-6,           // modelled microtubule length (m): 1 μm
+    // Dimers per microtubule follow from the geometry: 13 protofilaments x (length / 8 nm
+    // per ring). For 1 μm that is 13 x 125 = 1625. Change MT_length, not this line.
+    dimers_per_MT: 13 * Math.round(1e-6 / 8e-9),
     cytoplasm_viscosity: 3e-3, // ~3x water viscosity (Pa·s)
     tubulin_diameter: 8e-9,    // Tubulin dimer diameter (m)
   },
@@ -1840,11 +1852,13 @@ const Engine10 = {
 
     // === Scenario 3: Viscous dissipation ===
     // Stokes drag on a tubulin dimer oscillating at MHz
-    // P_drag = 6πηr × v² where v = amplitude × 2πf
+    // Instantaneous P_drag = 6πηr × v². For x = A sin(2πft), v_max = 2πfA and the
+    // power drawn over a cycle is the average, 6πηr × <v²> = 6πηr × v_max² / 2.
+    // A sustained budget compares against that average, not the peak.
     const amplitude = 1e-10; // 1 Angstrom oscillation amplitude (conservative)
-    const velocity = amplitude * 2 * Math.PI * freq;
+    const velocity = amplitude * 2 * Math.PI * freq; // peak velocity
     const stokesCoeff = 6 * Math.PI * C.cytoplasm_viscosity * (C.tubulin_diameter / 2);
-    const dragPowerPerDimer = stokesCoeff * velocity * velocity;
+    const dragPowerPerDimer = 0.5 * stokesCoeff * velocity * velocity;
     const totalDragPower = dragPowerPerDimer * activeDimers * C.MT_per_neuron;
     const dragBudgetFraction = totalDragPower / C.neuron_power;
 

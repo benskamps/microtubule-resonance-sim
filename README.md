@@ -64,7 +64,7 @@ Monte Carlo runs use a fixed seed (`20260906`, mulberry32, `DEFAULT_SEED` in `ph
 | H6: Noise-Fueled Resonance | Plausible | SR present but parameters unconstrained |
 | H7: Schumann Alignment | Unvalidated | p=0.183, not significant |
 
-**Meta-analysis:** 86.3% overall robustness. Regular lattice beats fractal for amplification. Active oscillation energetically implausible (16x neuron budget).
+**Meta-analysis:** 86.3% overall robustness. Regular lattice beats fractal for amplification. Active oscillation energetically implausible (~40x neuron budget, 2026-10-05 recalculation).
 
 ## References
 
