@@ -8,7 +8,7 @@ An interactive computational exploration of fractal electromagnetic resonance in
 
 ## Status: 🟡 Complete (exploratory tool — not formally validated)
 
-**This experiment is finished, not abandoned.** It shipped its full result set in one publication and reached its intended scope: 7 hypotheses tested honestly, the falsified ones (H2) reported as falsified, the unvalidated ones (H7, Schumann alignment, p=0.183) reported as not significant. There is no open backlog and no further work planned. If you find it sitting still, that stillness is *done*, not neglect.
+**This experiment is finished, not abandoned.** It shipped its full result set in one publication and reached its intended scope: 7 hypotheses tested honestly, with negative and undecided results reported as such. A 2026-10-05 math audit corrected several engines: H2 (chirality) moved from falsified to inconclusive, and H6 (stochastic resonance) from plausible to falsified in the tested range. H7 (Schumann alignment, p=0.183) stays not significant. There is no open backlog. If you find it sitting still, that stillness is *done*, not neglect.
 
 It remains 🟡 (an exploratory **toy**, not a validated result) by design. It has **not** formally passed the Brokenbranch Lab validation gate (the "Four Tests" — reproduced, externally checked, pre-registered, and survives adversarial review). Promoting it to 🟢 would require, at minimum:
 
@@ -57,14 +57,16 @@ Monte Carlo runs use a fixed seed (`20260906`, mulberry32, `DEFAULT_SEED` in `ph
 | Hypothesis | Verdict | Notes |
 |---|---|---|
 | H1: Fractal Coherent Amplification | Plausible | Regular lattice beats fractal |
-| H2: Chirality Creates Triplets | Falsified | Helical modes don't cluster |
+| H2: Chirality Creates Triplets | Inconclusive | With all modes counted, the helix's triplet count sits inside a matched random-splitting null (was "Falsified" before the 2026-10-05 audit) |
 | H3: Scale Invariance | Consistent | Tautological (model tests model) |
 | H4: Temporal Cascade | Consistent | Expected from oscillator structure |
 | H5: Pitch Angle Optimality | Inconclusive | Parameter-dependent (55% robust) |
-| H6: Noise-Fueled Resonance | Plausible | SR present but parameters unconstrained |
+| H6: Noise-Fueled Resonance | Falsified (this parameter range) | SNR only falls as noise rises; no resonance peak. The old "Plausible" came from an SNR estimate that counted the well offset as noise |
 | H7: Schumann Alignment | Unvalidated | p=0.183, not significant |
 
-**Meta-analysis:** 86.3% overall robustness. Regular lattice beats fractal for amplification. Active oscillation energetically implausible (~40x neuron budget, 2026-10-05 recalculation).
+**Meta-analysis:** 75.7% overall robustness (recomputed after the audit). Regular lattice beats fractal for amplification. Active oscillation energetically implausible (~40x neuron budget).
+
+**2026-10-05 math audit:** the Flywheel math gate found errors in several engines and hypothesis tests; two verdicts changed (H2, H6). Every fix and its check are listed in [AUDIT-2026-10-05.md](AUDIT-2026-10-05.md).
 
 ## References
 

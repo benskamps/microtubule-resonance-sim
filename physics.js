@@ -313,18 +313,15 @@ const Engine2 = {
     PhysicsRNG.reseed();
     const noiseLevels = opts.noiseLevels || 16;
     const nTrials = opts.nTrials || 500;  // reduced from 5000 for browser perf
-    const signalAmp = opts.signalAmplitude || 0.3;
+    const signalAmp = opts.signalAmplitude ?? 0.3;
     const duration = opts.duration || 100; // normalized time units
     const dt = 0.01;
     const nSteps = Math.floor(duration / dt);
 
-    // Use representative modes (one per scale, 4 total, to keep computation feasible)
-    const representativeModes = [0, 9, 18, 27]; // one from each scale band
-    const modeFreqs = representativeModes.map(i => {
-      // Normalize frequencies to sim-friendly range
-      const peak = PHYSICS_ALL_PEAKS[i];
-      return peak.subIdx === 1 ? 1.0 : (peak.subIdx === 0 ? 0.7 : 1.4); // relative within triplet
-    });
+    // Every scale band normalises to the same three relative frequencies within a triplet
+    // (0.7, 1.0, 1.4), so those three are the distinct drives. (The old list [0, 9, 18, 27]
+    // picked sub-peak 0 of each scale, i.e. the same 0.7 four times.)
+    const modeFreqs = [0.7, 1.0, 1.4];
 
     const noiseRange = [];
     for (let i = 0; i < noiseLevels; i++) {
@@ -349,8 +346,7 @@ const Engine2 = {
 
         for (let trial = 0; trial < nTrials; trial++) {
           let x = 0.01 * (PhysicsRNG.random() - 0.5); // near zero
-          let signalPower = 0;
-          let noisePower = 0;
+          const sums = this.newFitSums();
           const sqrtDt = Math.sqrt(dt);
 
           for (let step = 0; step < nSteps; step++) {
@@ -360,17 +356,11 @@ const Engine2 = {
             const diffusion = D * gaussRandom() * sqrtDt;
             x += drift * dt + diffusion;
 
-            // Measure at signal frequency (correlate with cos)
-            if (step > nSteps * 0.3) { // skip transient
-              signalPower += x * Math.cos(omega * t);
-              noisePower += x * x;
-            }
+            // Measure at the signal frequency (in-phase and quadrature), skipping the transient
+            if (step > nSteps * 0.3) this.addFitSample(sums, x, omega * (t + dt));
           }
 
-          const measSteps = nSteps * 0.7;
-          signalPower = (signalPower / measSteps) * (signalPower / measSteps);
-          noisePower = noisePower / measSteps;
-          totalSNR += signalPower / (noisePower - signalPower + 1e-20);
+          totalSNR += this.coherentSNR(sums);
         }
 
         snrCurve.push(Math.max(0, totalSNR / nTrials));
@@ -400,6 +390,46 @@ const Engine2 = {
     results.peakSNR = maxSNR;
 
     return results;
+  },
+
+  /** Running sums for a least-squares fit of x(t) = b0 + b1 cos(wt) + b2 sin(wt). */
+  newFitSums() {
+    return { n: 0, c: 0, s: 0, cc: 0, ss: 0, cs: 0, x: 0, xc: 0, xs: 0, xx: 0 };
+  },
+
+  addFitSample(S, x, phase) {
+    const c = Math.cos(phase), s = Math.sin(phase);
+    S.n++; S.c += c; S.s += s; S.cc += c * c; S.ss += s * s; S.cs += c * s;
+    S.x += x; S.xc += x * c; S.xs += x * s; S.xx += x * x;
+  },
+
+  /**
+   * SNR of the component of x(t) at the drive frequency, from a least-squares fit of an offset,
+   * a cosine and a sine on the actual samples. Signal = mean power of the fitted sinusoid;
+   * noise = mean squared residual. Exact on any window (whole periods or not), never negative,
+   * and it counts the quadrature (sine) part too. (The old estimate used <x cos wt>^2: half the
+   * in-phase power on whole periods, wrong on partial ones, and blind to the sine component.)
+   */
+  coherentSNR(S) {
+    const n = S.n;
+    if (n < 3) return 0;
+    // Centre everything on the window means (this is the offset term of the fit), which keeps
+    // the arithmetic stable and makes signal + residual = variance of x exactly.
+    const mx = S.x / n, mc = S.c / n, ms = S.s / n;
+    const vx = S.xx / n - mx * mx;
+    const vcc = S.cc / n - mc * mc, vss = S.ss / n - ms * ms, vcs = S.cs / n - mc * ms;
+    const cxc = S.xc / n - mx * mc, cxs = S.xs / n - mx * ms;
+    const scale = S.xx / n;
+    if (!(vx > 1e-12 * scale) || vx <= 0) return 0; // x is constant on this window: no signal
+    const det = vcc * vss - vcs * vcs;
+    if (!(det > 1e-12 * Math.max(vcc * vss, 1e-300))) return 0; // window too short to resolve w
+    const b1 = (cxc * vss - cxs * vcs) / det;
+    const b2 = (cxs * vcc - cxc * vcs) / det;
+    const signal = Math.max(0, b1 * cxc + b2 * cxs); // variance explained by the fitted sinusoid
+    const residual = vx - signal;
+    if (signal <= 1e-12 * vx) return 0;
+    if (residual <= 1e-12 * vx) return Infinity; // x is a pure sinusoid at w: no noise at all
+    return signal / residual;
   },
 
   /**
@@ -568,12 +598,18 @@ const Engine4 = {
 
     const modes = [];
 
+    // n runs over all integers -maxN..maxN: on a closed cylinder +n and -n are the two
+    // senses of rotation. Achirally they are degenerate pairs; the helical shift
+    // n -> n + m tan(alpha) is what splits them, so H2 needs both.
     for (let m = 1; m <= maxM; m++) {
-      for (let n = 0; n <= maxN; n++) {
+      for (let n = -maxN; n <= maxN; n++) {
         const axial = (m * Math.PI / L);
         let azimuthal;
 
-        if (pitchAngle === 0) {
+        if (opts.shifts) {
+          // Null control: an azimuthal shift per m with no helical structure (see Engine4.run)
+          azimuthal = (n + opts.shifts[m - 1]) / R;
+        } else if (pitchAngle === 0) {
           // Achiral: standard cylinder
           azimuthal = n / R;
         } else {
@@ -595,8 +631,17 @@ const Engine4 = {
   /**
    * Analyze clustering: do modes form triplets?
    */
-  analyzeClustering(modes) {
-    if (modes.length < 3) return { clusterScore: 0, clusters: [] };
+  analyzeClustering(allModes) {
+    // Degeneracy-aware: modes at the same frequency (the achiral +n/-n pairs) are one resonance,
+    // not two. Counting them twice would let the gap heuristic merge a pair plus a neighbour into
+    // a "triplet" for any geometry that splits pairs, chiral or not.
+    const modes = [];
+    for (const md of allModes) {
+      const prev = modes[modes.length - 1];
+      if (prev && Math.abs(md.logFreq - prev.logFreq) < 1e-12) prev.degeneracy = (prev.degeneracy || 1) + 1;
+      else modes.push({ ...md });
+    }
+    if (modes.length < 3) return { clusterScore: 0, tripletCount: 0, totalClusters: 0, sizeDistribution: {}, clusters: [] };
 
     // Compute nearest-neighbor distances in log-frequency space
     const logFreqs = modes.map(m => m.logFreq);
@@ -647,7 +692,10 @@ const Engine4 = {
    * Full comparison: chiral vs achiral
    */
   run(opts = {}) {
-    const pitchAngle = opts.pitchAngle || 12; // 3-start helix
+    PhysicsRNG.reseed();
+    const pitchAngle = opts.pitchAngle ?? 12; // 3-start helix
+    const nullDraws = opts.nullDraws ?? 100;
+    const maxM = opts.maxM || 6;
 
     const achiralModes = this.computeModes(0, opts);
     const chiralModes = this.computeModes(pitchAngle, opts);
@@ -655,7 +703,21 @@ const Engine4 = {
     const achiralClustering = this.analyzeClustering(achiralModes);
     const chiralClustering = this.analyzeClustering(chiralModes);
 
+    // Matched null: split the +n/-n pairs by the same range of shifts as the helix
+    // (0 .. maxM tan(alpha)), but drawn at random per m instead of growing as m tan(alpha).
+    // If the helix's triplet count is no higher than this, the triplets come from splitting
+    // degeneracies in general, not from chirality.
+    const maxShift = maxM * Math.tan(pitchAngle * Math.PI / 180);
+    const nullTriplets = [];
+    for (let d = 0; d < nullDraws; d++) {
+      const shifts = Array.from({ length: maxM }, () => PhysicsRNG.random() * maxShift);
+      nullTriplets.push(this.analyzeClustering(this.computeModes(pitchAngle, { ...opts, shifts })).tripletCount);
+    }
+    nullTriplets.sort((a, b) => a - b);
+    const nullP95 = nullDraws > 0 ? nullTriplets[Math.min(nullDraws - 1, Math.floor(0.95 * nullDraws))] : null;
+
     return {
+      null: nullDraws > 0 ? { draws: nullDraws, p95: nullP95, median: nullTriplets[Math.floor(nullDraws / 2)] } : null,
       achiral: {
         modes: achiralModes,
         clustering: achiralClustering,
@@ -765,7 +827,9 @@ const Engine6 = {
    * @returns {Object} - predictions, matches, confidence
    */
   run(opts = {}) {
-    const matchThreshold = opts.matchThreshold || 0.05; // 5% in log space
+    // Threshold on |log10(predicted / observed)|. 0.05 in log10 is a factor of 10^0.05 = 1.122,
+    // i.e. within about 12% in frequency, not 5%.
+    const matchThreshold = opts.matchThreshold ?? 0.05;
 
     // Extend to sub-Hz (mHz band)
     const subHzPeaks = physicsGenerateTripletFrequencies(0.001); // mHz
@@ -800,7 +864,7 @@ const Engine6 = {
         nearestPredicted: bestMatch ? bestMatch.freq : null,
         logDistance: bestDist,
         isMatch: bestDist < matchThreshold,
-        matchPercent: bestDist < 1 ? (1 - bestDist) * 100 : 0,
+        freqErrorPercent: bestMatch ? Math.abs(bestMatch.freq / schumann - 1) * 100 : null,
       });
     }
 
@@ -835,6 +899,7 @@ const Engine6 = {
       thermalMatchFound: thermalMatchCount > 0,
       allExtendedPeaks: [...subHzPeaks, ...subHz2Peaks, ...subHz3Peaks, ...thzPeaks],
       matchThreshold,
+      matchThresholdPercent: (Math.pow(10, matchThreshold) - 1) * 100,
     };
   },
 };
@@ -897,7 +962,7 @@ const Engine7 = {
   run(opts = {}) {
     PhysicsRNG.reseed();
     const nTrials = opts.nTrials || 10000;
-    const threshold = opts.matchThreshold || 0.05;
+    const threshold = opts.matchThreshold ?? 0.05;
 
     // Step 1: Get the ACTUAL match count from our specific fractal pattern
     const actualResult = Engine6.run({ matchThreshold: threshold });
@@ -1017,6 +1082,52 @@ const HypothesisRunner = {
     };
   },
 
+  // ---- Verdict rules, shared with Engine8's sensitivity sweeps so the two never drift ----
+
+  /**
+   * H2 rule on one Engine4 run. "supported" needs the helix to beat both the untwisted tube and the
+   * matched null (random splits of the same size; 95th percentile), so a triplet count that any
+   * degeneracy splitting would produce cannot count as evidence for chirality.
+   */
+  verdictH2(result) {
+    const advantage = result.tripletAdvantage;
+    const chiralTriplets = result.chiral.clustering.tripletCount;
+    const achiralTriplets = result.achiral.clustering.tripletCount;
+    // No null, no support: without the matched control a triplet excess cannot be credited to chirality.
+    const beatsNull = !!result.null && result.null.draws > 0 && chiralTriplets > result.null.p95;
+    if (beatsNull && (advantage > 0.05 || (chiralTriplets > achiralTriplets && chiralTriplets >= 2))) return 'supported';
+    if (advantage < -0.05 || (achiralTriplets > chiralTriplets * 1.5)) return 'falsified';
+    return 'inconclusive';
+  },
+
+  /**
+   * H3 rule. The metric is the triplet cluster score at 50 nm and 1000 nm. If either end is 0 the
+   * ratio is 0 or unbounded and says nothing about boundary vs bulk, so the test cannot decide.
+   */
+  verdictH3(first, last, lengthRatio) {
+    if (!(first > 0) || !(last > 0)) return 'inconclusive';
+    const ratio = last / first;
+    if (ratio < Math.sqrt(lengthRatio)) return 'consistent';
+    if (ratio > lengthRatio * 0.5) return 'falsified';
+    return 'inconclusive';
+  },
+
+  /**
+   * H6 rule. Stochastic resonance means SNR rises with noise to an interior maximum and falls
+   * after it. A curve still rising at the largest noise tested has no resonance peak in range.
+   * @param {number[]} snr - mean SNR per noise level, in increasing noise order
+   */
+  verdictH6(snr) {
+    let peakIdx = 0;
+    for (let i = 1; i < snr.length; i++) if (snr[i] > snr[peakIdx]) peakIdx = i;
+    const peak = snr[peakIdx], first = snr[0], last = snr[snr.length - 1];
+    const interior = peakIdx > 0 && peakIdx < snr.length - 1;
+    const hasPeak = interior && peak > first * 1.2 && peak > last * 1.1;
+    if (hasPeak && peak / (first + 1e-10) > 2.0) return 'plausible';
+    if (peak <= first * 0.9 || peakIdx === 0) return 'falsified';
+    return 'inconclusive';
+  },
+
   testH2() {
     // Chirality is necessary for resonance
     const result = Engine4.run({ pitchAngle: 12 });
@@ -1027,23 +1138,30 @@ const HypothesisRunner = {
     const advantage = result.tripletAdvantage;
     const chiralScore = result.chiral.clustering.clusterScore;
     const achiralScore = result.achiral.clustering.clusterScore;
-
-    // Also analyze cluster size distributions
     const chiralSizes = result.chiral.clustering.sizeDistribution;
     const achiralSizes = result.achiral.clustering.sizeDistribution;
-    const chiralHasTriplets = (chiralSizes[3] || 0) > 0;
-    const achiralHasTriplets = (achiralSizes[3] || 0) > 0;
 
-    let verdict = 'inconclusive';
-    if (advantage > 0.05 || (chiralTriplets > achiralTriplets && chiralTriplets >= 2)) {
-      verdict = 'supported';
-    } else if (advantage < -0.05 || (achiralTriplets > chiralTriplets * 1.5)) {
-      verdict = 'falsified';
+    // The triplet count comes from a gap heuristic and jumps around with pitch and mode cutoffs.
+    // A verdict counts only if it holds across nearby pitches and cutoffs; otherwise H2 is
+    // inconclusive. (Achiral modes come in exact +n/-n pairs, which the heuristic can never merge
+    // into triplets, so the raw chiral-vs-achiral count is not a fair test on its own.)
+    const baseVerdict = this.verdictH2(result);
+    let agree = 0, total = 0;
+    for (const pitch of [10, 12, 14]) {
+      for (const [maxM, maxN] of [[4, 8], [6, 12], [8, 16]]) {
+        total++;
+        if (this.verdictH2(Engine4.run({ pitchAngle: pitch, maxM, maxN })) === baseVerdict) agree++;
+      }
     }
+    const sweepAgreement = agree / total;
+    const verdict = sweepAgreement >= 0.8 ? baseVerdict : 'inconclusive';
 
     return {
       verdict,
+      sweepAgreement,
       metrics: {
+        'Verdict at 12°, M6, N12': baseVerdict,
+        'Same verdict across pitch 10-14° and 3 mode cutoffs': agree + '/' + total + (sweepAgreement >= 0.8 ? ' (robust)' : ' (not robust → inconclusive)'),
         'Chiral triplet clusters': chiralTriplets,
         'Achiral triplet clusters': achiralTriplets,
         'Chiral cluster score': chiralScore.toFixed(3),
@@ -1073,15 +1191,13 @@ const HypothesisRunner = {
     const ratio = last / (first + 1e-10);
     const lengthRatio = lengths[lengths.length - 1] / lengths[0]; // 20x
 
-    let verdict = 'inconclusive';
-    // If scaling is much less than linear (ratio << lengthRatio), it's boundary-dominated
     // NOTE: "consistent" — this tests internal model behavior, not biological reality.
     // Sub-linear scaling confirms the model's structure, not Bandyopadhyay's claims.
-    if (ratio < Math.sqrt(lengthRatio)) {
-      verdict = 'consistent'; // Model is self-consistent (boundary behavior)
-    } else if (ratio > lengthRatio * 0.5) {
-      verdict = 'falsified';
-    }
+    const verdict = this.verdictH3(first, last, lengthRatio);
+    const defined = first > 0 && last > 0;
+    const basis = !defined
+      ? 'Score is 0 at one end, so the ratio is undefined'
+      : ratio < Math.sqrt(lengthRatio) ? 'Sub-linear = boundary' : 'Near-linear = bulk';
 
     return {
       verdict,
@@ -1089,10 +1205,12 @@ const HypothesisRunner = {
         'Length range': '50nm to 1000nm (20x)',
         'Score at 50nm': amplifications[0].toFixed(3),
         'Score at 1000nm': amplifications[amplifications.length - 1].toFixed(3),
-        'Scaling ratio': ratio.toFixed(2) + 'x (linear would be 20x)',
-        'Verdict basis': ratio < Math.sqrt(lengthRatio) ? 'Sub-linear = boundary' : 'Near-linear = bulk',
+        'Scaling ratio': defined ? ratio.toFixed(2) + 'x (linear would be 20x)' : 'undefined',
+        'Verdict basis': basis,
       },
-      detail: `Cluster score scales ${ratio.toFixed(1)}x over 20x length increase. ${ratio < 5 ? 'Sub-linear → boundary dominates.' : 'Near-linear → bulk transport.'}`,
+      detail: defined
+        ? `Cluster score scales ${ratio.toFixed(1)}x over 20x length increase. ${ratio < Math.sqrt(lengthRatio) ? 'Sub-linear → boundary dominates.' : 'Near-linear → bulk transport.'}`
+        : 'The triplet cluster score is 0 at one end of the length range, so this test cannot tell boundary from bulk.',
     };
   },
 
@@ -1195,43 +1313,31 @@ const HypothesisRunner = {
 
     const optNoise = result.optimalNoise;
     const peakSNR = result.peakSNR;
-
-    // Check if SNR curve shows stochastic resonance
-    // Key signature: SNR increases with noise amplitude (noise helps, not hurts)
     const snr = result.meanSNR;
     const firstSNR = snr[0];
     const lastSNR = snr[snr.length - 1];
-    const peakRatio = peakSNR / (firstSNR + 1e-10);
+    const peakIdx = snr.indexOf(peakSNR);
+    const interior = peakIdx > 0 && peakIdx < snr.length - 1;
 
-    // A clear peak means: peak is higher than both endpoints
-    const hasPeak = peakSNR > firstSNR * 1.2 && peakSNR > lastSNR * 1.1;
-    // The peak shouldn't be at the first or last noise level (would indicate monotonic)
-    const peakNotAtEdge = optNoise > result.noiseLevels[1] && optNoise < result.noiseLevels[result.noiseLevels.length - 2];
-
-    let verdict = 'inconclusive';
-    // "plausible" — SR is a real and well-established phenomenon, and the model
-    // exhibits it. But we used tunable noise parameters, not experimentally measured
-    // values (thermal noise PSD at 310K, cytoplasmic viscosity, tubulin damping).
-    // The question isn't "does SR exist" but "is the biological regime in the SR sweet spot?"
-    // Evolution is parameter optimization, so "tuned" ≠ "fake" — but the burden of proof
-    // requires showing the optimal regime is physically accessible, not just findable.
-    if (peakRatio > 2.0 && (hasPeak || peakSNR > firstSNR * 3.0)) {
-      verdict = 'plausible'; // SR present in model, but params not empirically constrained
-    } else if (peakSNR <= firstSNR * 0.9) {
-      verdict = 'falsified'; // SNR only degrades with noise
-    }
+    // "plausible" needs a real resonance: SNR must rise to an interior maximum and fall after it.
+    // A curve still rising at the largest noise tested shows no resonance peak in range.
+    // (The old rule also accepted "peak > 3x the first point", so a monotonic rise passed.)
+    // Even when it passes, the noise parameters are not empirically constrained.
+    const verdict = this.verdictH6(snr);
 
     return {
       verdict,
       metrics: {
-        'Optimal noise level': optNoise.toFixed(3),
+        'Optimal noise level': optNoise.toFixed(3) + (interior ? '' : ' (edge of range)'),
         'Peak SNR': peakSNR.toFixed(4),
-        'SNR at zero noise': firstSNR.toFixed(4),
+        ['SNR at lowest noise (D=' + result.noiseLevels[0] + ')']: firstSNR.toFixed(4),
         'SNR at max noise': lastSNR.toFixed(4),
         'Peak/baseline ratio': (peakSNR / (firstSNR + 1e-10)).toFixed(2) + 'x',
-        'Has clear peak': hasPeak ? 'Yes' : 'No',
+        'Interior peak': interior ? 'Yes' : 'No',
       },
-      detail: `SNR peaks at noise=${optNoise.toFixed(2)} with ${(peakSNR / (firstSNR + 1e-10)).toFixed(1)}x improvement over baseline. ${hasPeak ? 'Clear stochastic resonance signature.' : 'No clear peak — monotonic response.'}`,
+      detail: interior
+        ? `SNR peaks at noise=${optNoise.toFixed(2)}, ${(peakSNR / (firstSNR + 1e-10)).toFixed(1)}x the lowest-noise SNR.`
+        : `SNR is still ${peakIdx === snr.length - 1 ? 'rising' : 'falling'} at the edge of the noise range (max at noise=${optNoise.toFixed(2)}): no stochastic resonance peak in range.`,
     };
   },
 
@@ -1274,20 +1380,20 @@ const HypothesisRunner = {
     }
 
     const matchDetails = result.schumannMatches.map(m =>
-      `${m.schumannFreq} Hz → ${m.nearestPredicted?.toFixed(2) || '?'} Hz (${m.isMatch ? 'MATCH' : m.matchPercent.toFixed(0) + '%'})`
+      `${m.schumannFreq} Hz → ${m.nearestPredicted?.toFixed(2) || '?'} Hz (${m.freqErrorPercent.toFixed(1)}% off${m.isMatch ? ', MATCH' : ''})`
     );
 
     return {
       verdict,
       metrics: {
-        'Schumann matches': nSchumannMatches + '/5 at 5% threshold',
+        'Schumann matches': nSchumannMatches + '/5 within a factor of ' + Math.pow(10, result.matchThreshold).toFixed(3) + ' (' + (100 / Math.pow(10, result.matchThreshold) - 100).toFixed(1) + '% / +' + result.matchThresholdPercent.toFixed(1) + '%)',
         'Thermal (5-6 THz) match': thermalMatch ? 'Yes' : 'No',
         'Monte Carlo p-value': nullResult.pValue.toFixed(4) + (nullResult.isSignificant ? ' ✓ significant' : ' ✗ not significant'),
         'Random mean matches': nullResult.meanRandomMatches.toFixed(2) + ' ± ' + nullResult.stdRandomMatches.toFixed(2),
         'Percentile': nullResult.percentile.toFixed(1) + '%',
         'Match details': matchDetails.join('; '),
       },
-      detail: `${nSchumannMatches}/5 Schumann harmonics match (5% threshold). Monte Carlo null: ${nullResult.pValue < 0.05 ? 'SIGNIFICANT' : 'NOT SIGNIFICANT'} (p=${nullResult.pValue.toFixed(4)}, random patterns average ${nullResult.meanRandomMatches.toFixed(1)} matches). ${nullResult.pValue < 0.05 ? 'Result survives null comparison.' : 'Cannot exclude coincidence — insufficient evidence.'}`,
+      detail: `${nSchumannMatches}/5 Schumann harmonics match within a factor of ${Math.pow(10, result.matchThreshold).toFixed(3)} in frequency (up to ${result.matchThresholdPercent.toFixed(1)}% off). Monte Carlo null: ${nullResult.pValue < 0.05 ? 'SIGNIFICANT' : 'NOT SIGNIFICANT'} (p=${nullResult.pValue.toFixed(4)}, random patterns average ${nullResult.meanRandomMatches.toFixed(1)} matches). ${nullResult.pValue < 0.05 ? 'Result survives null comparison.' : 'Cannot exclude coincidence — insufficient evidence.'}`,
     };
   },
 };
@@ -1306,7 +1412,7 @@ const Engine8 = {
    */
   run(opts = {}) {
     PhysicsRNG.reseed();
-    const range = opts.perturbRange || 0.3; // ±30% default
+    const range = opts.perturbRange ?? 0.3; // ±30% default
     const nSamples = opts.nSamples || 5;    // samples per direction per param
 
     const results = {};
@@ -1489,31 +1595,20 @@ const Engine8 = {
   },
 
   analyzeH2(range, nSamples) {
-    const baseline = HypothesisRunner.testH2();
+    // Single-run rule at the baseline parameters, so baseline and perturbed runs are judged alike.
+    const baselineVerdict = HypothesisRunner.verdictH2(Engine4.run({ pitchAngle: 12 }));
     const paramDefs = [
       { name: 'pitchAngle', value: 12, clamp: [1, 45] },
       { name: 'maxM', value: 6, clamp: [3, 12] },
       { name: 'maxN', value: 12, clamp: [6, 24] },
     ];
 
-    return this._sweep(baseline.verdict, paramDefs, (paramName, val) => {
+    return this._sweep(baselineVerdict, paramDefs, (paramName, val) => {
       const opts = {};
       if (paramName === 'pitchAngle') opts.pitchAngle = val;
       else if (paramName === 'maxM') opts.maxM = Math.round(val);
       else if (paramName === 'maxN') opts.maxN = Math.round(val);
-
-      const result = Engine4.run(opts);
-      const advantage = result.tripletAdvantage;
-      const chiralTriplets = result.chiral.clustering.tripletCount;
-      const achiralTriplets = result.achiral.clustering.tripletCount;
-
-      let verdict = 'inconclusive';
-      if (advantage > 0.05 || (chiralTriplets > achiralTriplets && chiralTriplets >= 2)) {
-        verdict = 'supported';
-      } else if (advantage < -0.05 || (achiralTriplets > chiralTriplets * 1.5)) {
-        verdict = 'falsified';
-      }
-      return { verdict };
+      return { verdict: HypothesisRunner.verdictH2(Engine4.run(opts)) };
     }, range, nSamples);
   },
 
@@ -1573,26 +1668,19 @@ const Engine8 = {
   },
 
   analyzeH6(range, nSamples) {
-    const baseline = HypothesisRunner.testH6();
+    // Baseline and perturbed runs use the same noise grid (12 levels, for speed) and the same rule.
+    // (The old baseline came from testH6 at 16 levels, so a grid change alone could look like fragility.)
+    const baselineVerdict = HypothesisRunner.verdictH6(Engine2.run({ noiseLevels: 12 }).meanSNR);
     const paramDefs = [
       { name: 'signalAmplitude', value: 0.3, clamp: [0.05, 1.0] },
       { name: 'nTrials', value: 500, clamp: [100, 1000] },
     ];
 
-    return this._sweep(baseline.verdict, paramDefs, (paramName, val) => {
-      const opts = { noiseLevels: 12 }; // fewer levels for speed
+    return this._sweep(baselineVerdict, paramDefs, (paramName, val) => {
+      const opts = { noiseLevels: 12 };
       if (paramName === 'signalAmplitude') opts.signalAmplitude = val;
       else opts.nTrials = Math.round(val);
-
-      const r = Engine2.run(opts);
-      const firstSNR = r.meanSNR[0];
-      const peakRatio = r.peakSNR / (firstSNR + 1e-10);
-      const hasPeak = r.peakSNR > firstSNR * 1.2 && r.peakSNR > r.meanSNR[r.meanSNR.length - 1] * 1.1;
-
-      let verdict = 'inconclusive';
-      if (peakRatio > 2.0 && (hasPeak || r.peakSNR > firstSNR * 3.0)) verdict = 'plausible';
-      else if (r.peakSNR <= firstSNR * 0.9) verdict = 'falsified';
-      return { verdict };
+      return { verdict: HypothesisRunner.verdictH6(Engine2.run(opts).meanSNR) };
     }, range, nSamples);
   },
 };
@@ -1823,9 +1911,9 @@ const Engine10 = {
     const C = this.CONSTANTS;
 
     // === Scenario 1: MHz conformational oscillations ===
-    const freqMHz = opts.freqMHz || 1; // MHz
+    const freqMHz = opts.freqMHz ?? 1; // MHz
     const freq = freqMHz * 1e6;
-    const activeFraction = opts.activeFraction || 0.01; // 1% of dimers oscillating at any time
+    const activeFraction = opts.activeFraction ?? 0.01; // 1% of dimers oscillating at any time
 
     // Energy per oscillation cycle (conformational switch)
     const energyPerCycle = C.tubulin_conformational;
@@ -1845,10 +1933,16 @@ const Engine10 = {
     const ATPbudgetFraction = ATPperSecond / C.neuron_ATP_rate;
 
     // === Scenario 2: Can thermal noise supply the energy? ===
-    // At MHz, thermal energy per mode = kT/2 (equipartition)
+    // Equipartition gives kT/2 per quadratic degree of freedom on average. E_conf is 2.3 kT, and
+    // exp(-E/kT) is the Boltzmann weight of a state that high. Whether thermal kicks switch dimers
+    // fast enough (f x active fraction per second) is a rate question: it needs an attempt
+    // frequency and an activation barrier, which this model does not specify. So sufficiency is
+    // reported as undetermined, not yes or no. (The old test compared kT/2 x f for one mode
+    // against E x f x fraction and always passed.) Thermal kicks have random phases either way,
+    // so they cannot by themselves keep a coherent MHz oscillation going.
     const thermalEnergyPerMode = C.kT_37C / 2;
-    const thermalPowerPerMode = thermalEnergyPerMode * freq; // rough: energy × frequency
-    const thermalSufficient = thermalPowerPerMode > energyPerCycle * freq * activeFraction;
+    const boltzmannFactor = Math.exp(-energyPerCycle / C.kT_37C);
+    const thermalSufficient = null;
 
     // === Scenario 3: Viscous dissipation ===
     // Stokes drag on a tubulin dimer oscillating at MHz
@@ -1893,10 +1987,9 @@ const Engine10 = {
       },
       thermal: {
         thermalEnergyPerMode_J: thermalEnergyPerMode.toExponential(2),
+        boltzmannFactor,
         thermalSufficient,
-        thermalNote: thermalSufficient
-          ? 'Thermal fluctuations could sustain oscillations'
-          : 'Active energy input (ATP) required',
+        thermalNote: `E_conf is ${(energyPerCycle / C.kT_37C).toFixed(1)} kT (Boltzmann weight ${(boltzmannFactor * 100).toFixed(1)}%), but whether thermal kicks reach ${freqMHz} MHz x ${(activeFraction * 100).toFixed(1)}% switching needs an attempt rate and barrier the model does not have. Thermal kicks are incoherent either way.`,
       },
       dissipation: {
         dragPerDimer_watts: dragPowerPerDimer,

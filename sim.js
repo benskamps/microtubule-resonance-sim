@@ -2007,7 +2007,7 @@ function renderEnergyResults(result, container) {
         <tr><td>Drag budget fraction</td><td class="${vcls}">${result.dissipation.dragBudgetFraction}</td></tr>
         <tr><td colspan="2" style="color:var(--text-dim);padding-top:0.6rem;font-style:italic">Thermal noise</td></tr>
         <tr><td>kT/2 at 37°C</td><td>${result.thermal.thermalEnergyPerMode_J} J</td></tr>
-        <tr><td>Thermal sufficient?</td><td>${result.thermal.thermalSufficient ? 'Yes' : 'No'} — ${result.thermal.thermalNote}</td></tr>
+        <tr><td>Thermal sufficient?</td><td>${result.thermal.thermalSufficient === null ? 'Undetermined' : result.thermal.thermalSufficient ? 'Yes' : 'No'} — ${result.thermal.thermalNote}</td></tr>
       </tbody>
     </table>
   `;
@@ -2217,7 +2217,7 @@ function showSpectrumResults(result) {
       <span class="metric-value good">${result.peakSNR.toFixed(4)}</span>
     </div>
     <div class="metric-row">
-      <span class="metric-label">SNR at zero noise</span>
+      <span class="metric-label">SNR at lowest noise (D=${result.noiseLevels[0]})</span>
       <span class="metric-value">${result.meanSNR[0].toFixed(4)}</span>
     </div>
     <div class="metric-row">
@@ -2225,8 +2225,13 @@ function showSpectrumResults(result) {
       <span class="metric-value ${result.peakSNR > result.meanSNR[0] * 2 ? 'good' : 'warn'}">${(result.peakSNR / (result.meanSNR[0] + 1e-10)).toFixed(2)}x</span>
     </div>
     <div class="metric-row">
-      <span class="metric-label">Stochastic resonance</span>
-      <span class="metric-value ${result.peakSNR > result.meanSNR[0] * 1.5 ? 'good' : 'warn'}">${result.peakSNR > result.meanSNR[0] * 1.5 ? 'CONFIRMED' : 'WEAK'}</span>
+      <span class="metric-label">Stochastic resonance (interior SNR peak)</span>
+      ${(() => {
+        // Same rule as HypothesisRunner.verdictH6: a resonance needs an interior peak, not just a rise.
+        const v = HypothesisRunner.verdictH6(result.meanSNR);
+        const label = v === 'plausible' ? 'PEAK FOUND' : v === 'falsified' ? 'NONE (noise only hurts)' : 'NO PEAK IN RANGE';
+        return `<span class="metric-value ${v === 'plausible' ? 'good' : 'warn'}">${label}</span>`;
+      })()}
     </div>
   `;
 }
