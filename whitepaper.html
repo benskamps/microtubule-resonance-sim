@@ -71,7 +71,7 @@
     <section class="wp-section" id="abstract">
       <h2>1. Abstract</h2>
       <p>We present a client-side computational framework of 10 physics engines that test hypotheses about electromagnetic resonance in microtubule structures, based on findings reported by Bandyopadhyay et al. (2020, 2022). The framework uses 4th-order Runge-Kutta integration for coupled oscillator dynamics, Monte Carlo sampling for statistical validation, Berry phase accumulation for coherent amplification analysis, Euler-Maruyama stochastic differential equations for noise-driven resonance, and energy budget calculations for biophysical feasibility.</p>
-      <p>Of seven hypotheses tested, two are <span class="emphasis">plausible</span> (fractal coherent amplification, stochastic resonance), two are <span class="emphasis">consistent</span> but tautological (boundary dominance, temporal cascade), one is <span class="emphasis">inconclusive</span> (pitch angle optimality), one is <span class="emphasis">unvalidated</span> (Schumann alignment, p=0.183), and one is <span class="emphasis">falsified</span> (chirality creating triplets). Meta-analysis reveals that simpler ordered structures match or exceed the fractal pattern's coherent amplification, and that active MHz oscillation exceeds a neuron's energy budget by ~40x, constraining any valid mechanism to passive thermal resonance.</p>
+      <p>Of seven hypotheses tested, one is <span class="emphasis">plausible</span> (fractal coherent amplification), two are <span class="emphasis">consistent</span> but tautological (boundary dominance, temporal cascade), two are <span class="emphasis">inconclusive</span> (chirality creating triplets, pitch angle optimality), one is <span class="emphasis">falsified</span> in the tested range (stochastic resonance), and one is <span class="emphasis">unvalidated</span> (Schumann alignment, p=0.183). A 2026-10-05 math audit moved H2 from falsified to inconclusive and H6 from plausible to falsified. Meta-analysis reveals that simpler ordered structures match or exceed the fractal pattern's coherent amplification, and that active MHz oscillation exceeds a neuron's energy budget by ~40x, constraining any valid mechanism to a passive one.</p>
       <p>This is an exploratory computational tool, not peer-reviewed research. Its value lies in sharpening the questions that laboratory experiments must answer.</p>
     </section>
 
@@ -152,12 +152,12 @@ dv_slow/dt = -&omega;_slow&sup2; x_slow - &gamma;_slow &omega;_slow v_slow + k_f
 
       <h3>4.3 Engine 2: Stochastic Resonance</h3>
       <p><strong>Purpose:</strong> Test whether noise enhances the signal in the fractal resonator.</p>
-      <p><strong>Method:</strong> Euler-Maruyama integration of a bistable potential, one representative mode per scale band (4 of the 36):</p>
+      <p><strong>Method:</strong> Euler-Maruyama integration of a bistable potential, one run per distinct relative drive frequency:</p>
       <div class="equation">dx_i/dt = x_i - x_i&sup3; + A cos(&omega;_i t) + D &eta;(t)</div>
       <p>where &omega;<sub>i</sub> is the mode's frequency relative to its triplet centre (0.7, 1.0 or 1.4), D is noise amplitude, &eta; is Gaussian white noise.</p>
       <p><strong>Parameters:</strong></p>
       <ul class="param-list">
-        <li>4 representative modes (indices 0, 9, 18, 27 of the 36 <code>physicsGenerateTripletFrequencies()</code> peaks, one per scale)</li>
+        <li>3 drive frequencies, 0.7, 1.0 and 1.4 relative to the triplet centre (every scale normalises to these; the earlier 4 &ldquo;one per scale&rdquo; modes were all 0.7)</li>
         <li>Noise amplitude D: sweep from 0.01 to 4.01 in 16 steps</li>
         <li>Signal amplitude A: 0.3 (sub-threshold)</li>
         <li>500 trials per noise level (Monte Carlo), 10,000 steps of dt = 0.01 each</li>
@@ -211,7 +211,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
       <h3>4.7 Engine 6: Scale Extension</h3>
       <p><strong>Purpose:</strong> Test whether the fractal pattern predicts known frequencies at sub-Hz and THz scales.</p>
       <p><strong>Method:</strong> Extrapolate <code>physicsGenerateTripletFrequencies()</code> to 0.001 Hz and 1 THz base frequencies, then compare predictions against Schumann harmonics (7.83, 14.3, 20.8, 27.3, 33.8 Hz) and the 5&ndash;6 THz thermal driver.</p>
-      <p><strong>Output:</strong> Match scores (fraction of known frequencies within 5% of predictions), predicted frequency lists.</p>
+      <p><strong>Output:</strong> Match scores (fraction of known frequencies within a factor of 1.122, about 12%, of predictions), predicted frequency lists.</p>
 
       <h3>4.8 Engine 7: Monte Carlo Null (Schumann)</h3>
       <p><strong>Purpose:</strong> Statistical validation of H7 &mdash; is the Schumann alignment significant?</p>
@@ -221,7 +221,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
         <li>10,000 random triplet patterns</li>
         <li>Random main ratios: r<sub>1</sub> &in; [1,6], r<sub>2</sub> &in; [5,20], r<sub>3</sub> &in; [15,50]</li>
         <li>Random sub-triplet spread: 0.2 to 0.8</li>
-        <li>Match threshold: log-scale proximity within 5%</li>
+        <li>Match threshold: |log<sub>10</sub>(f<sub>pred</sub>/f<sub>obs</sub>)| &lt; 0.05, a factor of 1.122 (&minus;10.9% to +12.2% in frequency)</li>
       </ul>
       <p><strong>Output:</strong> p-value, observed vs. expected match distribution.</p>
 
@@ -281,9 +281,9 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
         <strong>Key insight:</strong> The fractal structure amplifies more than random or non-nested helical arrangements, but less than a simple regular lattice. The specific triplet-of-triplet pattern is not uniquely optimal for coherent amplification.
       </div>
 
-      <h3>5.2 H2: Chirality Creates Triplets &mdash; <span class="verdict falsified">Falsified</span></h3>
-      <p>Comparing cylindrical standing wave modes with helical pitch (&alpha; = 12&deg;) versus without (&alpha; = 0&deg;), the helical geometry shifts mode frequencies but does not cause them to cluster into groups of three. The triplet gap ratio is below the threshold for triplet clustering.</p>
-      <p>This is the negative result that matters most: whatever produces the triplet-of-triplet pattern, simple chirality is not the mechanism. The origin of the triplet structure remains an open question.</p>
+      <h3>5.2 H2: Chirality Creates Triplets &mdash; <span class="verdict inconclusive">Inconclusive</span></h3>
+      <p>Comparing cylindrical standing wave modes with helical pitch (&alpha; = 12&deg;) versus without (&alpha; = 0&deg;), with the azimuthal index n running over &minus;12&hellip;12 and exactly degenerate modes counted once. The helix splits the &plusmn;n pairs and the gap heuristic then finds 16 triplet clusters (vs 1 untwisted). But 100 random splittings of the same size give a 95th percentile of 15, and across pitch 10&ndash;14&deg; and three mode cutoffs the single-run verdict holds in only 2 of 9 cases. The triplets come from splitting degeneracies in general, not from the helix specifically, so the test cannot decide.</p>
+      <p>Before the 2026-10-05 audit this read as falsified, because the engine dropped all n &lt; 0 modes, the very pairs the helix splits. The origin of the triplet-of-triplet pattern remains an open question; this model cannot settle it with a gap-counting heuristic.</p>
 
       <h3>5.3 H3: Boundary Dominates Bulk &mdash; <span class="verdict consistent">Consistent</span></h3>
       <p>Amplification scales sub-linearly with tube length, consistent with a boundary (surface) effect rather than a bulk (volume) effect.</p>
@@ -300,26 +300,26 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
       <h3>5.5 H5: Pitch Angle Optimality &mdash; <span class="verdict inconclusive">Inconclusive</span></h3>
       <p>The coupling efficiency function &eta;(&alpha;) = |sin(2&alpha;)| &middot; exp(&minus;&alpha;&sup2;/2&alpha;<sub>c</sub><sup>2</sup>), multiplied by the Berry-phase resonance condition, peaks at 4.0&deg; with &alpha;<sub>c</sub> = 15&deg; &mdash; 8&deg; from the actual 12&deg; pitch. However, the peak position is sensitive to the choice of &alpha;<sub>c</sub>, which is a free parameter. Sensitivity analysis gives only 55% robustness under &plusmn;30% perturbation &mdash; the weakest of all hypotheses tested.</p>
 
-      <h3>5.6 H6: Thermal Noise as Fuel &mdash; <span class="verdict plausible">Plausible</span></h3>
-      <p>The stochastic resonance test shows noise helping the signal: the peak SNR across the sweep exceeds the noiseless baseline by roughly 9&times;, which is stochastic resonance in the model. At the published seed the curve does not turn over inside the swept range (D = 0.01&ndash;4.01): SNR is still rising at the top of the sweep, so the textbook inverted-U is not demonstrated here, and the optimal noise level is a bound, not a peak.</p>
-      <p>This is the most physically grounded finding. Stochastic resonance is a well-established phenomenon, experimentally verified in biological systems, and does not require exotic physics. If microtubules operate in a nonlinear regime, noise-driven enhancement is plausible.</p>
+      <h3>5.6 H6: Thermal Noise as Fuel &mdash; <span class="verdict falsified">Falsified (this parameter range)</span></h3>
+      <p>Stochastic resonance needs SNR to rise with noise to a maximum inside the range and fall after it. Here SNR falls steadily as noise rises, from 48 at the lowest noise (D = 0.01) to 0.005 at the highest (D = 4.01), with no rise at all. In this model the drive (relative frequency 0.7&ndash;1.4) is faster than the double well's hopping rate can reach at any noise level tested, so there is no time-scale match to resonate on, and noise only blurs the in-well response. The earlier &ldquo;9&times; improvement&rdquo; was an artifact of the old SNR estimate, which counted the particle's offset in one well as noise (so quiet runs scored near zero), used half the coherent power, and was judged by a rule that accepted any curve whose maximum was 3&times; its start, peak or not. All three are fixed.</p>
+      <p>Stochastic resonance itself is real, well-established physics. The model as parameterised does not exhibit it; a slower drive or a lower barrier would be needed to test the idea fairly.</p>
       <div class="wp-callout">
-        <strong>Caveat:</strong> The noise amplitude at which SR peaks is tunable (set to 0.3 signal amplitude in a double-well potential). These parameters are not empirically constrained for microtubule systems.
+        <strong>Caveat:</strong> Signal amplitude (0.3), barrier height and drive frequency are not empirically constrained for microtubules, so the absence of a peak here is a statement about this parameterisation only.
       </div>
 
       <h3>5.7 H7: Scale Invariance Predicts Schumann &mdash; <span class="verdict unvalidated">Unvalidated</span></h3>
-      <p>Extrapolating the triplet pattern to sub-Hz frequencies produces 4 out of 5 matches with Schumann resonance harmonics (7.83, 14.3, 20.8, 27.3, 33.8 Hz) within a 5% log-scale threshold.</p>
+      <p>Extrapolating the triplet pattern to sub-Hz frequencies produces 4 out of 5 matches with Schumann resonance harmonics (7.83, 14.3, 20.8, 27.3, 33.8 Hz) within a factor of 1.122 in frequency (|log<sub>10</sub> ratio| &lt; 0.05, up to about 12% off; an earlier version called this 5%). Two of the four matches are about 10% off (7.83&rarr;7.00 Hz, 27.3&rarr;30.0 Hz).</p>
       <p>However, Engine 7's Monte Carlo null comparison generates 10,000 random fractal patterns and finds that <span class="highlight">18.3% of random patterns match 4 or more Schumann harmonics</span>. The p-value of 0.183 is not statistically significant at any conventional threshold. The random mean is 2.58 &plusmn; 1.02 matches, and our observed 4 matches is within the distribution.</p>
 
       <h3>Summary of Results</h3>
       <table class="wp-table">
         <tr><th>Hypothesis</th><th>Verdict</th><th>Key Metric</th><th>Assessment</th></tr>
         <tr><td>H1: Fractal Amplification</td><td><span class="verdict plausible">Plausible</span></td><td>17.7x coherent vs 5.3x random</td><td>Real but not unique (regular lattice = 22.9)</td></tr>
-        <tr><td>H2: Chirality &rarr; Triplets</td><td><span class="verdict falsified">Falsified</span></td><td>No triplet clustering</td><td>Chirality shifts modes, doesn't cluster them</td></tr>
+        <tr><td>H2: Chirality &rarr; Triplets</td><td><span class="verdict inconclusive">Inconclusive</span></td><td>16 chiral triplets vs null 95th pct 15; 2/9 grid agree</td><td>Inside the random-splitting null; not robust</td></tr>
         <tr><td>H3: Boundary Dominance</td><td><span class="verdict consistent">Consistent</span></td><td>Sub-linear scaling</td><td>Tautological &mdash; tests own assumption</td></tr>
         <tr><td>H4: Temporal Cascade</td><td><span class="verdict consistent">Consistent</span></td><td>Fast leads slow</td><td>Tautological &mdash; coupled oscillator math</td></tr>
         <tr><td>H5: Pitch Angle</td><td><span class="verdict inconclusive">Inconclusive</span></td><td>Peak at 4&deg; (actual 12&deg;)</td><td>Depends on free parameter, 55% robust</td></tr>
-        <tr><td>H6: Noise as Fuel</td><td><span class="verdict plausible">Plausible</span></td><td>SR peak present</td><td>Real physics, but params unconstrained</td></tr>
+        <tr><td>H6: Noise as Fuel</td><td><span class="verdict falsified">Falsified</span></td><td>SNR 48 &rarr; 0.005 as noise rises</td><td>No resonance peak at these settings</td></tr>
         <tr><td>H7: Schumann Alignment</td><td><span class="verdict unvalidated">Unvalidated</span></td><td>p = 0.183</td><td>Not significant; 18.3% of random matches</td></tr>
       </table>
     </section>
@@ -334,13 +334,13 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
       <table class="wp-table">
         <tr><th scope="col">Hypothesis</th><th scope="col">Robustness</th><th scope="col">Assessment</th></tr>
         <tr><td>H1: Fractal Amplification</td><td class="mono">~97%</td><td>Highly robust</td></tr>
-        <tr><td>H2: Chirality &rarr; Triplets</td><td class="mono">~80%</td><td>Robust (stays falsified)</td></tr>
+        <tr><td>H2: Chirality &rarr; Triplets</td><td class="mono">~27%</td><td>Fragile &mdash; the single-run verdict flips with pitch and mode cutoffs</td></tr>
         <tr><td>H4: Temporal Cascade</td><td class="mono">~100%</td><td>Very robust</td></tr>
         <tr><td>H5: Pitch Angle</td><td class="mono">~55%</td><td>Fragile &mdash; sensitive to &alpha;<sub>c</sub></td></tr>
-        <tr><td>H6: Noise as Fuel</td><td class="mono">~100%</td><td>Very robust</td></tr>
-        <tr><td colspan="2"><strong>Overall</strong></td><td><strong>~86.3%</strong></td></tr>
+        <tr><td>H6: Noise as Fuel</td><td class="mono">~100%</td><td>No resonance peak under perturbation</td></tr>
+        <tr><td colspan="2"><strong>Overall</strong></td><td><strong>~75.7%</strong></td></tr>
       </table>
-      <p>H5 (Pitch Angle Optimality) is the weakest point. Its verdict flips depending on the critical angle parameter. All other hypotheses maintain their verdicts even with substantial parameter variation.</p>
+      <p>H2 (chirality) and H5 (pitch angle) are the weak points: H2's single-run verdict flips with pitch and mode cutoffs, and H5's with the critical angle parameter. Both are reported as inconclusive. H1 and H4 hold their verdicts under substantial parameter variation.</p>
 
       <h3>6.2 Alternative Structure Comparison (Engine 9)</h3>
       <p>If the fractal pattern is special, it should outperform other ordered structures at coherent amplification. It does not:</p>
@@ -366,10 +366,10 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
         <tr><td>Total MT power (10<sup>5</sup> MTs)</td><td class="mono">~1.6 &times; 10<sup>-8</sup> W</td><td>&mdash;</td></tr>
         <tr><td>Neuron power budget</td><td class="mono">~4.1 &times; 10<sup>-10</sup> W</td><td>&mdash;</td></tr>
         <tr><td>Fraction of budget</td><td class="mono">~4,000%</td><td style="color: var(--red);">Implausible</td></tr>
-        <tr><td>Thermal noise (kT/2 at 37&deg;C)</td><td class="mono">2.14 &times; 10<sup>-21</sup> J</td><td style="color: var(--green);">Sufficient for passive</td></tr>
+        <tr><td>Thermal noise (kT/2 at 37&deg;C)</td><td class="mono">2.14 &times; 10<sup>-21</sup> J; E<sub>conf</sub> = 2.3 kT</td><td>Undetermined &mdash; needs an attempt rate and barrier</td></tr>
       </table>
       <div class="wp-callout critical">
-        <strong>Hard constraint:</strong> Active MHz oscillation of even 1% of tubulin dimers requires roughly 40x the total energy budget of a neuron. This rules out actively-driven oscillation and constrains any valid mechanism to passive thermal resonance, where ambient thermal noise (kT/2 at 37&deg;C) provides the driving energy without metabolic cost.
+        <strong>Hard constraint:</strong> Active MHz oscillation of even 1% of tubulin dimers requires roughly 40x the total energy budget of a neuron. This rules out actively-driven oscillation and constrains any valid mechanism to a passive one. Whether thermal noise (kT/2 at 37&deg;C, with E<sub>conf</sub> = 2.3 kT) could drive switching at the needed rate requires an attempt frequency and barrier the model does not specify, and thermal kicks are incoherent in any case.
       </div>
     </section>
 
@@ -378,14 +378,14 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
       <h2>7. Discussion</h2>
 
       <h3>What the Model Actually Shows</h3>
-      <p>The strongest positive finding is the presence of stochastic resonance (H6): noise-driven signal enhancement is real physics, well-established experimentally, and present in our model under the assumed parameters. If microtubules operate in a nonlinear regime, this mechanism could plausibly enhance electromagnetic sensitivity without requiring exotic physics or metabolic energy.</p>
+      <p>The only positive finding that survives the audit is coherent amplification (H1), and it is not specific to the fractal pattern. Stochastic resonance (H6) does not appear at the model's settings, and the chirality test (H2) cannot decide.</p>
       <p>Coherent amplification (H1) is mathematically real but not uniquely associated with the fractal structure. The key insight from Engine 9 is that <span class="highlight">order itself &mdash; any ordered phase arrangement &mdash; produces amplification</span>. The fractal pattern is one of many structures that would work.</p>
 
       <h3>The Tautology Problem</h3>
       <p>Two of the seven hypotheses (H3, H4) are structurally tautological: the model confirms its own mathematical assumptions. This is not a flaw in the code &mdash; it's a fundamental limitation of testing a model against itself. These results show internal consistency, not independent evidence for the biological claims.</p>
 
-      <h3>The Falsification</h3>
-      <p>H2's falsification (chirality does not create triplets) is the most structurally important result. It means the origin of the triplet-of-triplet pattern remains unexplained. If the experimental measurements are correct, the mechanism is not simple helical geometry. This is an open question that neither this model nor Bandyopadhyay's papers resolve.</p>
+      <h3>The Chirality Question</h3>
+      <p>H2 was the headline falsification until the audit showed the test had dropped half the modes. With them restored and a matched null added, the result is inconclusive: the helix produces triplets, but no more than random degeneracy splitting does. The origin of the triplet-of-triplet pattern remains unexplained, and settling it needs a better clustering measure than gap counting.</p>
 
       <h3>The Energy Constraint</h3>
       <p>Engine 10's energy budget analysis provides the hardest quantitative constraint: any mechanism involving active tubulin oscillation at MHz frequencies is energetically implausible. This does not rule out microtubule resonance entirely, but it constrains the mechanism to passive/thermal rather than active/metabolic. Stochastic resonance (H6) naturally fits this constraint, as it is driven by thermal noise.</p>
@@ -400,12 +400,12 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
       <p>The following questions could be addressed by laboratory experiments:</p>
       <ul class="param-list">
         <li><strong>Direct spectroscopy:</strong> Measure the electromagnetic emission/absorption spectrum of isolated microtubules at MHz-GHz frequencies. Does the triplet-of-triplet pattern appear?</li>
-        <li><strong>Temperature dependence:</strong> If stochastic resonance is the mechanism, the signal should peak at a specific temperature. Sweep temperature and measure SNR at resonant frequencies.</li>
+        <li><strong>Temperature dependence:</strong> Stochastic resonance did not appear at this model's settings, but real microtubules may sit in a different regime. If it is the mechanism, the signal should peak at a specific temperature. Sweep temperature and measure SNR at resonant frequencies.</li>
         <li><strong>Protofilament number:</strong> Compare 13-protofilament microtubules (standard) vs. 14- or 15-protofilament variants. Does the resonance pattern change as predicted by the helical geometry?</li>
         <li><strong>Thermal noise PSD:</strong> Measure the actual power spectral density of thermal fluctuations at tubulin dimer dimensions. Is kT/2 at 37&deg;C sufficient to drive measurable oscillation?</li>
         <li><strong>Filament timing replication:</strong> Independent measurement of the 250 &mu;s filament-before-membrane timing reported by Bandyopadhyay et al.</li>
         <li><strong>Structure comparison:</strong> If possible, measure resonance in synthetic tubular structures (same dimensions, different geometry) to test whether the specific microtubule architecture matters.</li>
-        <li><strong>Triplet origin:</strong> Since chirality alone doesn't produce the triplet pattern (H2 falsified), what does? Could it be the 13-fold rotational symmetry, the specific tubulin dimer geometry, or a nonlinear effect not captured in our linear mode analysis?</li>
+        <li><strong>Triplet origin:</strong> Gap counting cannot tell whether chirality produces the triplet pattern (H2 inconclusive). What does? Could it be the 13-fold rotational symmetry, the specific tubulin dimer geometry, or a nonlinear effect not captured in our linear mode analysis?</li>
       </ul>
     </section>
 
