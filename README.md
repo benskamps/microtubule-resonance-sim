@@ -61,10 +61,10 @@ Monte Carlo runs use a fixed seed (`20260906`, mulberry32, `DEFAULT_SEED` in `ph
 | H3: Scale Invariance | Consistent | Tautological (model tests model) |
 | H4: Temporal Cascade | Consistent | Expected from oscillator structure |
 | H5: Pitch Angle Optimality | Inconclusive | Parameter-dependent (55% robust) |
-| H6: Noise-Fueled Resonance | Falsified (this parameter range) | SNR only falls as noise rises; no resonance peak. The old "Plausible" came from an SNR estimate that counted the well offset as noise |
+| H6: Noise-Fueled Resonance | Falsified (at the model's drive) | Fair test with a positive control: SR appears at a slow drive exactly where Kramers theory predicts, but the model's drive is too fast for any noise level to match. 95% robust |
 | H7: Schumann Alignment | Unvalidated | p=0.183, not significant |
 
-**Meta-analysis:** 75.7% overall robustness (recomputed after the audit). Regular lattice beats fractal for amplification. Active oscillation energetically implausible (~40x neuron budget).
+**Meta-analysis:** 74.7% overall robustness (recomputed after the audit and the fair H6 test). Regular lattice beats fractal for amplification. Active oscillation energetically implausible (~40x neuron budget).
 
 **2026-10-05 math audit:** the Flywheel math gate found errors in several engines and hypothesis tests; two verdicts changed (H2, H6). Every fix and its check are listed in [AUDIT-2026-10-05.md](AUDIT-2026-10-05.md).
 
