@@ -61,7 +61,7 @@ Monte Carlo runs use a fixed seed (`20260906`, mulberry32, `DEFAULT_SEED` in `ph
 | H3: Scale Invariance | Consistent | Tautological (model tests model) |
 | H4: Temporal Cascade | Consistent | Expected from oscillator structure |
 | H5: Pitch Angle Optimality | Inconclusive | Parameter-dependent (55% robust) |
-| H6: Noise-Fueled Resonance | Inconclusive (not demonstrated at the model's drive) | Fair test: driven slowly (f = 0.01), the same double well peaks at noise D = 0.40, close to the D* = 0.45 where the Kramers escape rate matches the drive; but at the model's own drive (0.7 to 1.4), across noise D = 0.2 to 7.5, no frequency responds more than 2.2x above a run with no signal at all, so stochastic resonance is not demonstrated there. |
+| H6: Noise-Fueled Resonance | Inconclusive (not demonstrated at the model's drive) | Fair test: driven slowly (f = 0.01), the same double well peaks at noise D = 0.40, close to the D* = 0.45 where the Kramers escape rate matches the drive; but at the model's own drive (0.7 to 1.4), across noise D = 0.2 to 7.5, no frequency met the criterion (an interior peak at least 3x a run with no signal; each peak came in at about 1x), so stochastic resonance is not demonstrated there. |
 | H7: Schumann Alignment | Unvalidated | p=0.183, not significant |
 
 **Meta-analysis:** 75.7% overall robustness (recomputed after the audit and the fair H6 test). Regular lattice beats fractal for amplification. Active oscillation energetically implausible (~40x neuron budget).
