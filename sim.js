@@ -1626,7 +1626,7 @@ const hypotheses = [
     status: 'untested',
     claim: 'The fractal resonance structure extracts energy from broadband thermal noise (5-6 THz) — noise drives the system rather than degrading it.',
     test: 'Drive the double well and measure the two-state (well-to-well) SNR at the drive frequency across noise levels. Positive control: a slow drive (f = 0.01) must show the SR peak near the Kramers time-scale-matching noise D*. Predict: an interior SNR peak at the native drive too.',
-    falsification: 'If the control finds SR but the native-drive SNR has no interior peak, noise does not drive the system at its own frequencies.',
+    falsification: 'If the control finds SR but no native frequency shows an interior peak clearly above a no-signal run, SR is not demonstrated at the model\'s drive.',
     panel: 'spectrum',
     notes: '',
   },

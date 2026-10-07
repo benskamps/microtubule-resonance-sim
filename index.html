@@ -47,7 +47,7 @@
         <p class="hero-eyebrow">10 engines · 7 hypotheses · nulls</p>
         <h1>Some answers<br>are <em>no.</em></h1>
         <p class="tagline">A working physics bench for testing whether biological nanostructures might resonate—and for keeping the failed hypotheses visible.</p>
-        <p class="finding-line"><strong>No stochastic resonance</strong><span>H2 undecided</span><span>H7 p=0.183</span><span>active ring costs 40× a neuron's budget</span></p>
+        <p class="finding-line"><strong>H2, H6 undecided</strong><span>H7 p=0.183</span><span>active ring costs 40× a neuron's budget</span></p>
         <div class="hero-actions">
           <a href="simulator.html" class="btn-primary">Launch Simulator &rarr;</a>
           <a href="whitepaper.html" class="btn-secondary">Read the Whitepaper</a>
@@ -194,8 +194,8 @@
           <tr>
             <td class="hypo-id-col">H6</td>
             <td>Thermal Noise as Fuel</td>
-            <td><span class="verdict-badge falsified">Falsified</span></td>
-            <td>A fair test with a positive control: driven slowly, the model shows stochastic resonance right where Kramers theory predicts (D = 0.40 vs 0.45). At its own drive it cannot: matching needs an escape rate the double well never reaches.</td>
+            <td><span class="verdict-badge inconclusive">Inconclusive</span></td>
+            <td>A fair test with controls: driven slowly, the model shows stochastic resonance right where Kramers theory predicts (D = 0.40 vs 0.45). At its own drive, no noise level gives a response clearly above a run with no signal. Not demonstrated.</td>
           </tr>
           <tr>
             <td class="hypo-id-col">H7</td>
@@ -209,7 +209,7 @@
       <h3 style="font-size: 1rem; color: var(--text); margin-top: 2rem; margin-bottom: 0.8rem;">Meta-Analysis</h3>
       <div class="meta-highlights">
         <div class="meta-card good">
-          <div class="meta-value">74.7%</div>
+          <div class="meta-value">75.7%</div>
           <div class="meta-label">Robustness under &plusmn;30% parameter perturbation, across the five hypotheses it covers (H3 and H7 excluded)</div>
         </div>
         <div class="meta-card warn">
@@ -227,7 +227,7 @@
     <section class="section">
       <h2 class="section-title">What This Means</h2>
       <p>The fractal resonance pattern described by Bandyopadhyay is <span class="highlight">mathematically real but not uniquely special</span>. Simpler ordered structures (like a regular lattice) can produce equal or greater coherent amplification. The specific triplet-of-triplet arrangement is not required: a plain regular lattice scores 22.9 against the fractal's 17.7.</p>
-      <p>Stochastic resonance (H6), the effect where a specific amount of noise makes a weak signal easier to detect, <span class="highlight">does not happen at this model's drive frequency</span>. We checked the test can see it: drive the same double well a hundred times more slowly and the textbook peak appears exactly where Kramers' escape-rate theory puts it. At the model's own drive, no amount of noise makes the wells hop fast enough to keep time.</p>
+      <p>Stochastic resonance (H6), the effect where a specific amount of noise makes a weak signal easier to detect, <span class="highlight">is not demonstrated at this model's drive frequency</span>. We checked the test can see it: drive the same double well a hundred times more slowly and the textbook peak appears where Kramers' escape-rate theory puts it. At the model's own drive, from very little noise to a great deal, the response never rises clearly above a run with no signal at all.</p>
       <p>The energy budget analysis provides a hard constraint: <span class="highlight">active MHz oscillation in microtubules is energetically implausible</span> (requiring ~40x a neuron's total power budget). Any valid mechanism must be passive. Whether thermal noise could drive it is a rate question (attempt frequency and barrier) the model does not answer.</p>
       <p>The Schumann resonance alignment (H7) &mdash; perhaps the most provocative claim &mdash; does not survive statistical scrutiny. Random fractal patterns match Schumann harmonics almost as well (p=0.183).</p>
 
@@ -296,10 +296,10 @@
           <div class="hypo-guide-header">
             <span class="hg-id">H6</span>
             <h3>Thermal Noise as Fuel</h3>
-            <span class="verdict-badge falsified">Falsified</span>
+            <span class="verdict-badge inconclusive">Inconclusive</span>
           </div>
-          <p>Usually, noise destroys signals. But in certain nonlinear systems, a specific amount of noise makes the signal stronger &mdash; stochastic resonance. It happens when random hops between two states line up with the signal's rhythm. To test fairly, we first drove the model slowly and confirmed the effect appears, at the noise level physics predicts. Then we asked at the model's own rhythm: the hops can never be that fast, so there is no resonance. The earlier &ldquo;nine-fold improvement&rdquo; was a measurement artifact.</p>
-          <p class="hg-test"><strong>What we computed:</strong> Two-state (well-to-well) SNR vs. noise at a slow control drive (f = 0.01, 20 periods) and at the three native drives (0.7, 1.0, 1.4), 40 trials &times; 12 noise levels each, SNR from a least-squares sine/cosine fit; peak compared with the Kramers time-scale-matching prediction.</p>
+          <p>Usually, noise destroys signals. But in certain nonlinear systems, a specific amount of noise makes the signal stronger &mdash; stochastic resonance. It happens when random hops between two states line up with the signal's rhythm. To test fairly, we first drove the model slowly and confirmed the effect appears, at the noise level physics predicts. Then we tried the model's own rhythm across a wide range of noise, next to a run with no signal at all: the two look the same, so the effect isn't demonstrated there. The earlier &ldquo;nine-fold improvement&rdquo; was a measurement artifact.</p>
+          <p class="hg-test"><strong>What we computed:</strong> Two-state (well-to-well) coherent power ratio vs. noise for a slow control drive (f = 0.01) and each native drive (0.7, 1.0, 1.4) over D = 0.2&ndash;7.5, plus a no-signal run as the baseline; 40 trials per point; control peak compared with the Kramers matching prediction.</p>
         </div>
 
         <div class="hypo-guide-card">
@@ -342,7 +342,7 @@
         <a href="whitepaper.html">Read Whitepaper</a>
         <a href="https://github.com/benskamps/microtubule-resonance-sim" id="githubLink" target="_blank" rel="noopener">GitHub Repository</a>
       </div>
-      <p class="footer-status">Status: finished; math audited 2026-10-05. H6 falsified in range, H2 inconclusive; Schumann alignment p=0.183. Not formally validated, not peer-reviewed.</p>
+      <p class="footer-status">Status: finished; math audited 2026-10-05. H2 and H6 inconclusive; Schumann alignment p=0.183. Not formally validated, not peer-reviewed.</p>
       <p class="footer-license">Released under the MIT License.</p>
     </footer>
 

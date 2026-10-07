@@ -7,11 +7,11 @@
 | # | Earlier claim | What is true | Source of the error |
 |---|---|---|---|
 | 1 | Header: "INTEGRITY CERTIFIED"; "193/193 checks pass" via `python test_lab.py` | `test_lab.py` never loads this simulator. Nothing was certified. | The verification step named a test suite for other sims |
-| 2 | H1: coherent 36.0×, random 6.0× ± 1.4×, ratio 6.0× | The model's phases sum to **17.67** (49% of 36). Random **mean** is **5.32 ± 2.76** (Rayleigh, √(πN)/2), ratio **3.3×**. | 36 holds only if all phases are equal, which this model's are not. 6.0 is the RMS √N, not the mean. |
+| 2 | H1: coherent 36.0×, random 6.0× ± 1.4×, ratio 6.0× | The model's phases sum to **17.67** (49% of 36). Random **mean** is **5.32 ± 2.76** (Rayleigh, √(πN)/2, a large-N approximation), ratio **3.3×**. | 36 holds only if all phases are equal, which this model's are not. 6.0 is the RMS √N, not the mean. |
 | 3 | H2 "genuinely falsified", 90% robust, 0 triplets for both geometries | **Inconclusive.** The engine dropped every n < 0 mode. With all modes counted and degenerate pairs merged, the helix gives 16 triplets vs a matched null's 95th percentile of 15. The single-run verdict holds in 2 of 9 nearby settings (27% in Engine 8). | Missing ±n pairs, and no null |
 | 4 | H3: score scales 3.2× over 20× length | 0.088 → 0.048 (0.54×). Still "consistent", and still tautological. | Stale number |
 | 5 | H5: peak at 12.0°, matching the MT pitch, α_c = 25° | The peak is at **4.0°** with α_c = 15° (the engine's value). Still inconclusive, 55% robust. | Stale parameter and number |
-| 6 | H6: inverted-U SNR, 2.3× gain, "plausible" | **Falsified at the model's drive, by a fair test.** See [H6 below](#h6-a-fair-stochastic-resonance-test). | The old SNR estimate counted the well offset as noise. The old rule needed no peak. |
+| 6 | H6: inverted-U SNR, 2.3× gain, "plausible" | **Inconclusive: not demonstrated at the model's drive**, by a test with positive and negative controls. See [H6 below](#h6-a-fair-stochastic-resonance-test). | The old SNR estimate counted the well offset as noise, and the old rule needed no peak |
 | 7 | H7: 4/5 matches at a "5%" threshold, p = 0.179 | The threshold is \|log₁₀(f_pred/f_obs)\| < 0.05, a factor of 1.122 (−10.9%/+12.2%). Two of the four matches are ~10% off. p = **0.183** (seeded, 10,000 trials); still not significant. | log-distance mislabelled as percent |
 | 8 | Energy: 16,250 dimers per MT, 162.5 nW, "16,250% of 1 nW" | The model uses **1 µm** microtubules: 13 × 125 = **1,625** dimers. Total = **16.25 nW**. The neuron budget is derived from ATP turnover: 4.7e9/s × 0.54 eV = **0.41 nW**. So it is **~40×** the budget. | The draft assumed 10 µm MTs and a 1 nW budget that contradicts the model's own ATP constants |
 | 9 | Drag: 1.45e-10 W = 14.5% of budget (10 µm case); 1450% at 1 nm amplitude | For the draft's own 10 µm case, active dimers are 1.625e**7**, not 1.625e6, so peak drag is 145%. The model (1 µm, cycle-averaged ½·6πηr·v_max², 0.41 nW) gives **17.8%**. | Counting error (×10), and peak vs average (×2) |
@@ -31,13 +31,13 @@
 
 ## H6: a fair stochastic-resonance test
 
-Stochastic resonance (SR) is a peak in signal-to-noise ratio at an intermediate noise level. A fair test needs three things:
+Stochastic resonance (SR) is a peak in signal-to-noise at an intermediate noise level. The test:
 
-1. **The right observable.** The SNR of the two-state output sign(x) at the drive frequency. This counts well-to-well hops, which is where SR lives. It ignores the in-well wobble, which only shrinks as noise grows.
-2. **A positive control.** The same double well driven slowly (f = 0.01). For dx = (x − x³ + A cos ωt)dt + D dW the barrier is ΔV = ¼ and the noise intensity is D²/2, so Kramers' escape rate is r_K = (√2/2π) e^{−1/(2D²)}. SR peaks near time-scale matching, r_K(D*) = ω/π (McNamara & Wiesenfeld 1989; Gammaitoni et al. 1998), which gives **D\* = 0.454** for f = 0.01. The test finds an interior SNR peak at **D = 0.40**, within 12% of that, so it can see SR when SR is there.
-3. **The question asked at the model's own drive** (relative frequencies 0.7, 1.0, 1.4). Matching there would need an escape rate of ω/π ≥ 1.4, but r_K can never exceed √2/2π ≈ **0.225**, whatever the noise. The measured two-state SNR stays below 0.003 (1/500 of the control's peak) with no interior peak.
+1. **Observable.** The coherent fundamental-to-residual power ratio of the two-state output sign(x), which counts well-to-well hops. This is not the spectral SNR against the local noise floor (switching noise is coloured, so the two can differ).
+2. **Positive control.** The same double well driven slowly (f = 0.01). For dx = (x − x³ + A cos ωt)dt + D dW the barrier is ΔV = ¼ and the noise intensity is D²/2, so the weak-noise Kramers rate is r_K = (√2/2π) e^{−1/(2D²)}. The time-scale-matching heuristic r_K(D*) = ω/π (McNamara & Wiesenfeld 1989; Gammaitoni et al. 1998) gives **D\* = 0.454**. The control peaks at **D = 0.40**, so the method detects SR when it is there.
+3. **Native drives** (0.7, 1.0, 1.4), each judged alone over D = 0.2–7.5, next to a **negative control** with no signal (A = 0). A frequency counts only with an interior peak at least 3× that baseline. None exceeds **2.2×**. Within the Kramers approximation, matching has no solution at these drives: it would need r_K ≥ 1.4, and the approximation tops out at 0.225. That approximation is not a bound on the true hopping rate at large noise, though.
 
-**Verdict: falsified at the model's drive.** The model can show stochastic resonance, but only for drives about 100× slower than the ones it assigns to its modes. Whether real microtubules sit in such a regime is outside what this simulator can say.
+**Verdict: inconclusive, not demonstrated at the model's drive.** It is not "falsified". The control shows the method works at a slow drive, but it does not prove that a native response is absent.
 
 ## Verification
 

@@ -71,7 +71,7 @@
     <section class="wp-section" id="abstract">
       <h2>1. Abstract</h2>
       <p>We present a client-side computational framework of 10 physics engines that test hypotheses about electromagnetic resonance in microtubule structures, based on findings reported by Bandyopadhyay et al. (2020, 2022). The framework uses 4th-order Runge-Kutta integration for coupled oscillator dynamics, Monte Carlo sampling for statistical validation, Berry phase accumulation for coherent amplification analysis, Euler-Maruyama stochastic differential equations for noise-driven resonance, and energy budget calculations for biophysical feasibility.</p>
-      <p>Of seven hypotheses tested, one is <span class="emphasis">plausible</span> (fractal coherent amplification), two are <span class="emphasis">consistent</span> but tautological (boundary dominance, temporal cascade), two are <span class="emphasis">inconclusive</span> (chirality creating triplets, pitch angle optimality), one is <span class="emphasis">falsified</span> in the tested range (stochastic resonance), and one is <span class="emphasis">unvalidated</span> (Schumann alignment, p=0.183). A 2026-10-05 math audit moved H2 from falsified to inconclusive and H6 from plausible to falsified. Meta-analysis reveals that simpler ordered structures match or exceed the fractal pattern's coherent amplification, and that active MHz oscillation exceeds a neuron's energy budget by ~40x, constraining any valid mechanism to a passive one.</p>
+      <p>Of seven hypotheses tested, one is <span class="emphasis">plausible</span> (fractal coherent amplification), two are <span class="emphasis">consistent</span> but tautological (boundary dominance, temporal cascade), three are <span class="emphasis">inconclusive</span> (chirality creating triplets, pitch angle optimality, stochastic resonance at the model's drive), and one is <span class="emphasis">unvalidated</span> (Schumann alignment, p=0.183). A 2026-10-05 math audit moved H2 from falsified and H6 from plausible to inconclusive. Meta-analysis reveals that simpler ordered structures match or exceed the fractal pattern's coherent amplification, and that active MHz oscillation exceeds a neuron's energy budget by ~40x, constraining any valid mechanism to a passive one.</p>
       <p>This is an exploratory computational tool, not peer-reviewed research. Its value lies in sharpening the questions that laboratory experiments must answer.</p>
     </section>
 
@@ -300,9 +300,9 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
       <h3>5.5 H5: Pitch Angle Optimality &mdash; <span class="verdict inconclusive">Inconclusive</span></h3>
       <p>The coupling efficiency function &eta;(&alpha;) = |sin(2&alpha;)| &middot; exp(&minus;&alpha;&sup2;/2&alpha;<sub>c</sub><sup>2</sup>), multiplied by the Berry-phase resonance condition, peaks at 4.0&deg; with &alpha;<sub>c</sub> = 15&deg; &mdash; 8&deg; from the actual 12&deg; pitch. However, the peak position is sensitive to the choice of &alpha;<sub>c</sub>, which is a free parameter. Sensitivity analysis gives only 55% robustness under &plusmn;30% perturbation &mdash; the weakest of all hypotheses tested.</p>
 
-      <h3>5.6 H6: Thermal Noise as Fuel &mdash; <span class="verdict falsified">Falsified (this parameter range)</span></h3>
-      <p>Stochastic resonance needs SNR to rise with noise to a maximum inside the range and fall after it, near time-scale matching r<sub>K</sub>(D*) = &omega;/&pi; (McNamara &amp; Wiesenfeld 1989). <strong>Positive control:</strong> at f = 0.01 the two-state SNR peaks at D = 0.40 (SNR 1.19), against the predicted D* = 0.454, so the test detects SR when it is present. <strong>Native drive:</strong> matching would need r<sub>K</sub> = &omega;/&pi; &ge; 1.4, but r<sub>K</sub> never exceeds &radic;2/2&pi; &asymp; 0.225 at any noise, and the measured SNR stays below 0.003 (about 1/500 of the control's peak) with no interior peak. Before the 2026-10-05 audit this read as a 9&times; SR gain; that was an estimator artifact (the well offset counted as noise) judged by a rule that needed no peak.</p>
-      <p>So the model can exhibit stochastic resonance, but only for drives about a hundred times slower than the ones it assigns to its modes. Whether real microtubules operate in such a regime is outside what this simulator can say.</p>
+      <h3>5.6 H6: Thermal Noise as Fuel &mdash; <span class="verdict inconclusive">Inconclusive (not demonstrated at the model's drive)</span></h3>
+      <p>Stochastic resonance needs the response to rise with noise to a maximum inside the range and fall after it. The observable is the coherent fundamental-to-residual power ratio of the two-state output sign(x) (not the spectral SNR against the local noise floor; switching noise is coloured, so the two can differ). <strong>Positive control:</strong> at f = 0.01 it peaks at D = 0.40 (ratio 1.19), near the D* = 0.454 where the Kramers rate r<sub>K</sub> = (&radic;2/2&pi;)e<sup>&minus;1/(2D&sup2;)</sup> matches the drive (r<sub>K</sub> = &omega;/&pi;, McNamara &amp; Wiesenfeld 1989), so the method detects SR when it is there. <strong>Native drives</strong> (0.7, 1.0, 1.4), each judged alone over D = 0.2&ndash;7.5 next to a no-signal (A = 0) run: no frequency shows an interior peak with a response more than 2.2&times; that baseline (the rule asks for 3&times;). Within the Kramers approximation the matching condition has no solution at these drives (it would need r<sub>K</sub> &ge; 1.4, and the approximation tops out at 0.225), though that approximation is not a bound on the true hopping rate at large noise.</p>
+      <p>So the model shows stochastic resonance for slow drives, and this test does not demonstrate it at the drives the model assigns to its modes. A control at another frequency shows the method works; it does not prove the native response is absent, which is why the verdict is inconclusive rather than falsified. Before the 2026-10-05 audit this read as a 9&times; SR gain, an estimator artifact judged by a rule that needed no peak.</p>
       <div class="wp-callout">
         <strong>Caveat:</strong> Signal amplitude (0.3), barrier height and drive frequency are not empirically constrained for microtubules, so the absence of a peak here is a statement about this parameterisation only.
       </div>
@@ -319,7 +319,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
         <tr><td>H3: Boundary Dominance</td><td><span class="verdict consistent">Consistent</span></td><td>Sub-linear scaling</td><td>Tautological &mdash; tests own assumption</td></tr>
         <tr><td>H4: Temporal Cascade</td><td><span class="verdict consistent">Consistent</span></td><td>Fast leads slow</td><td>Tautological &mdash; coupled oscillator math</td></tr>
         <tr><td>H5: Pitch Angle</td><td><span class="verdict inconclusive">Inconclusive</span></td><td>Peak at 4&deg; (actual 12&deg;)</td><td>Depends on free parameter, 55% robust</td></tr>
-        <tr><td>H6: Noise as Fuel</td><td><span class="verdict falsified">Falsified</span></td><td>Control peaks at D = 0.40 (Kramers 0.45); native drive none</td><td>Model drive too fast for any noise to match</td></tr>
+        <tr><td>H6: Noise as Fuel</td><td><span class="verdict inconclusive">Inconclusive</span></td><td>Control peaks at D = 0.40 (Kramers 0.45); native &le; 2.2&times; no-signal baseline</td><td>Not demonstrated at the model's drive</td></tr>
         <tr><td>H7: Schumann Alignment</td><td><span class="verdict unvalidated">Unvalidated</span></td><td>p = 0.183</td><td>Not significant; 18.3% of random matches</td></tr>
       </table>
     </section>
@@ -337,8 +337,8 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
         <tr><td>H2: Chirality &rarr; Triplets</td><td class="mono">~27%</td><td>Fragile &mdash; the single-run verdict flips with pitch and mode cutoffs</td></tr>
         <tr><td>H4: Temporal Cascade</td><td class="mono">~100%</td><td>Very robust</td></tr>
         <tr><td>H5: Pitch Angle</td><td class="mono">~55%</td><td>Fragile &mdash; sensitive to &alpha;<sub>c</sub></td></tr>
-        <tr><td>H6: Noise as Fuel</td><td class="mono">~95%</td><td>Holds except at A = 0.39, a supra-threshold drive where SR is undefined</td></tr>
-        <tr><td colspan="2"><strong>Overall</strong></td><td><strong>~74.7%</strong></td></tr>
+        <tr><td>H6: Noise as Fuel</td><td class="mono">~100%</td><td>Not demonstrated under every perturbation</td></tr>
+        <tr><td colspan="2"><strong>Overall</strong></td><td><strong>~75.7%</strong></td></tr>
       </table>
       <p>H2 (chirality) and H5 (pitch angle) are the weak points: H2's single-run verdict flips with pitch and mode cutoffs, and H5's with the critical angle parameter. Both are reported as inconclusive. H1 and H4 hold their verdicts under substantial parameter variation.</p>
 
@@ -378,7 +378,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
       <h2>7. Discussion</h2>
 
       <h3>What the Model Actually Shows</h3>
-      <p>The only positive finding that survives the audit is coherent amplification (H1), and it is not specific to the fractal pattern. Stochastic resonance (H6) does not appear at the model's settings, and the chirality test (H2) cannot decide.</p>
+      <p>The only positive finding that survives the audit is coherent amplification (H1), and it is not specific to the fractal pattern. Stochastic resonance (H6) is not demonstrated at the model's drive, and the chirality test (H2) cannot decide.</p>
       <p>Coherent amplification (H1) is mathematically real but not uniquely associated with the fractal structure. The key insight from Engine 9 is that <span class="highlight">order itself &mdash; any ordered phase arrangement &mdash; produces amplification</span>. The fractal pattern is one of many structures that would work.</p>
 
       <h3>The Tautology Problem</h3>
@@ -400,7 +400,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
       <p>The following questions could be addressed by laboratory experiments:</p>
       <ul class="param-list">
         <li><strong>Direct spectroscopy:</strong> Measure the electromagnetic emission/absorption spectrum of isolated microtubules at MHz-GHz frequencies. Does the triplet-of-triplet pattern appear?</li>
-        <li><strong>Temperature dependence:</strong> Stochastic resonance did not appear at this model's settings, but real microtubules may sit in a different regime. If it is the mechanism, the signal should peak at a specific temperature. Sweep temperature and measure SNR at resonant frequencies.</li>
+        <li><strong>Temperature dependence:</strong> Stochastic resonance was not demonstrated at this model's drive, but real microtubules may sit in a different regime. If it is the mechanism, the signal should peak at a specific temperature. Sweep temperature and measure SNR at resonant frequencies.</li>
         <li><strong>Protofilament number:</strong> Compare 13-protofilament microtubules (standard) vs. 14- or 15-protofilament variants. Does the resonance pattern change as predicted by the helical geometry?</li>
         <li><strong>Thermal noise PSD:</strong> Measure the actual power spectral density of thermal fluctuations at tubulin dimer dimensions. Is kT/2 at 37&deg;C sufficient to drive measurable oscillation?</li>
         <li><strong>Filament timing replication:</strong> Independent measurement of the 250 &mu;s filament-before-membrane timing reported by Bandyopadhyay et al.</li>

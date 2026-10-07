@@ -399,7 +399,9 @@ const Engine2 = {
   //   r_K(D) = (sqrt(2) / 2pi) exp(-dV / (D^2/2)) = (sqrt(2) / 2pi) exp(-1 / (2 D^2)).
   // Stochastic resonance peaks near time-scale matching, two escapes per drive period:
   //   r_K(D*) = w / pi  (McNamara & Wiesenfeld 1989; Gammaitoni et al. 1998).
-  // r_K can never exceed sqrt(2)/2pi ~ 0.225, so a drive with w/pi above that has no D* at all.
+  // Within this weak-noise approximation r_K never exceeds sqrt(2)/2pi ~ 0.225, so for a drive with
+  // w/pi above that the matching condition has no solution. That is a statement about the Kramers
+  // approximation and the matching heuristic, not a bound on the SDE's actual hopping rate at large D.
 
   /** Kramers escape rate for noise amplitude D. */
   kramersRate(D) {
@@ -414,7 +416,9 @@ const Engine2 = {
   },
 
   /**
-   * SNR of the two-state output sign(x) at the drive frequency, the standard SR observable:
+   * Coherent fundamental-to-residual power ratio of the two-state output sign(x) at the drive
+   * frequency (not the spectral SNR at that frequency, which uses the local noise floor; switching
+   * noise is coloured, so the two can differ). The two-state output is the usual SR observable:
    * it counts well-to-well hops, not the in-well wobble. Trials start in a random well.
    * @param {Object} opts - freqs (array), noiseLevels (array), signalAmplitude, nTrials, periods, dt
    */
@@ -1175,22 +1179,40 @@ const HypothesisRunner = {
   },
 
   /**
-   * H6 rule. Stochastic resonance means SNR rises with noise to an interior maximum and falls
-   * after it. A curve still rising at the largest noise tested has no resonance peak in range.
-   * @param {number[]} snr - mean SNR per noise level, in increasing noise order
+   * H6 rule for the fair test.
+   *  - The slow-drive control must show an interior peak within 50% of the Kramers-matched D*
+   *    (an operational window, not a confidence interval). If not, the test is not sensitive:
+   *    inconclusive.
+   *  - Each native drive frequency is judged on its own: stochastic resonance there needs an
+   *    interior peak in its curve AND a response at least 3x the no-signal (A = 0) baseline at the
+   *    same noise, so finite-record bias cannot pass as signal.
+   *  - Any native frequency passing: plausible. None: inconclusive ("not demonstrated"). A control
+   *    at another frequency shows the method works; it does not prove the native response is
+   *    absent, so this rule never returns "falsified".
+   * @param {Object} native - runTwoState result with signal
+   * @param {Object} nativeZero - the same run with signalAmplitude 0
    */
-  /**
-   * H6 rule for the fair test. The slow-drive control must show an interior peak within 50% of
-   * Kramers' predicted D*, or the test is not sensitive and the answer is inconclusive. Then the
-   * native-drive curve decides: interior peak = plausible, otherwise falsified.
-   */
-  verdictH6Fair(native, control, matchedD) {
+  verdictH6Fair(native, nativeZero, control, matchedD) {
     const controlOk = this.verdictH6(control.meanSNR) === 'plausible'
       && matchedD !== null && Math.abs(control.optimalNoise / matchedD - 1) <= 0.5;
     if (!controlOk) return 'inconclusive';
-    return this.verdictH6(native.meanSNR) === 'plausible' ? 'plausible' : 'falsified';
+    return this.h6DetectedFreqs(native, nativeZero).length > 0 ? 'plausible' : 'inconclusive';
   },
 
+  /** Native frequencies with an interior SNR peak and a response >= 3x the A = 0 baseline. */
+  h6DetectedFreqs(native, nativeZero) {
+    return native.freqs.filter((f, k) => {
+      const s = native.snrByFreq[k], z = nativeZero.snrByFreq[k];
+      const excess = Math.max(...s.map((v, j) => v / Math.max(z[j], 1e-12)));
+      return this.verdictH6(s) === 'plausible' && excess >= 3;
+    });
+  },
+
+  /**
+   * H6 curve rule. Stochastic resonance means SNR rises with noise to an interior maximum and falls
+   * after it. A curve still rising at the largest noise tested has no resonance peak in range.
+   * @param {number[]} snr - mean SNR per noise level, in increasing noise order
+   */
   verdictH6(snr) {
     let peakIdx = 0;
     for (let i = 1; i < snr.length; i++) if (snr[i] > snr[peakIdx]) peakIdx = i;
@@ -1382,41 +1404,51 @@ const HypothesisRunner = {
 
   testH6() {
     // Thermal noise as fuel (stochastic resonance), tested fairly:
-    //  1. Observable: SNR of the two-state output sign(x) at the drive frequency, the standard SR
-    //     measure (it counts well-to-well hops, not the in-well wobble).
-    //  2. Positive control: the same double well driven slowly (f = 0.01), where Kramers time-scale
-    //     matching r_K(D*) = w/pi has a solution. The test must find an interior SNR peak there,
-    //     near the predicted D*. If it cannot, it could not have seen SR at all: inconclusive.
-    //  3. Native drive (relative 0.7, 1.0, 1.4): SR counts only with an interior peak.
+    //  1. Observable: coherent fundamental-to-residual power ratio of the two-state output sign(x)
+    //     (it counts well-to-well hops, not the in-well wobble).
+    //  2. Positive control: the same double well driven slowly (f = 0.01), where the Kramers
+    //     matching heuristic r_K(D*) = w/pi has a solution. The test must find an interior peak near
+    //     D*; if it cannot, it could not have seen SR at all: inconclusive.
+    //  3. Native drives (0.7, 1.0, 1.4), each judged alone over a wide noise range (D = 0.2-7.5), with
+    //     a no-signal (A = 0) run as the negative control: SR needs an interior peak AND a response at
+    //     least 3x that baseline.
     const CONTROL_FREQ = 0.01;
+    const NATIVE_LEVELS = [0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0, 1.3, 1.7, 2.2, 3.0, 4.0, 5.5, 7.5];
     const control = Engine2.runTwoState({ freqs: [CONTROL_FREQ], nTrials: 40, periods: 20 });
-    const native = Engine2.runTwoState({ freqs: [0.7, 1.0, 1.4], nTrials: 40, periods: 70 });
+    const nativeOpts = { freqs: [0.7, 1.0, 1.4], noiseLevels: NATIVE_LEVELS, nTrials: 40, periods: 70 };
+    const native = Engine2.runTwoState(nativeOpts);
+    const nativeZero = Engine2.runTwoState({ ...nativeOpts, signalAmplitude: 0 });
     PhysicsResults.engine2 = native;
 
     const matchedD = Engine2.matchedNoise(CONTROL_FREQ);
-    const verdict = this.verdictH6Fair(native, control, matchedD);
+    const verdict = this.verdictH6Fair(native, nativeZero, control, matchedD);
     const controlOk = this.verdictH6(control.meanSNR) === 'plausible'
       && matchedD !== null && Math.abs(control.optimalNoise / matchedD - 1) <= 0.5;
-    const nativeMatched = [0.7, 1.0, 1.4].map((f) => Engine2.matchedNoise(f));
+    const detected = this.h6DetectedFreqs(native, nativeZero);
+    const maxExcess = Math.max(...native.snrByFreq.flatMap((s, k) =>
+      s.map((v, j) => v / Math.max(nativeZero.snrByFreq[k][j], 1e-12))));
     const maxRate = Math.SQRT2 / (2 * Math.PI);
 
     return {
       verdict,
       control: { freq: CONTROL_FREQ, matchedD, optimalNoise: control.optimalNoise, peakSNR: control.peakSNR, ok: controlOk },
+      detectedFreqs: detected,
       metrics: {
-        'Control (slow drive f=0.01) SNR peak': `D=${control.optimalNoise} (Kramers predicts D*=${matchedD.toFixed(3)}), SNR ${control.peakSNR.toFixed(3)}`,
-        'Control finds SR': controlOk ? 'Yes: the test can detect stochastic resonance' : 'No: the test is not sensitive, so no verdict',
-        'Native drive (0.7-1.4) peak SNR': `${native.peakSNR.toFixed(4)} at D=${native.optimalNoise}` + (this.verdictH6(native.meanSNR) === 'plausible' ? ' (interior peak)' : ' (no interior peak)'),
+        'Control (slow drive f=0.01) peak': `D=${control.optimalNoise} (Kramers matching predicts D*=${matchedD.toFixed(3)}), ratio ${control.peakSNR.toFixed(3)}`,
+        'Control finds SR': controlOk ? 'Yes: the method detects stochastic resonance' : 'No: the method is not sensitive here, so no verdict',
+        'Native drive (0.7, 1.0, 1.4), D 0.2-7.5': detected.length
+          ? `SR detected at f = ${detected.join(', ')}`
+          : `no frequency shows an interior peak 3x above the no-signal baseline (largest ratio to baseline ${maxExcess.toFixed(1)}x)`,
         'Native vs control peak': (native.peakSNR / control.peakSNR).toExponential(1) + 'x',
-        'Time-scale matching at native drive': nativeMatched.every((d) => d === null)
-          ? `impossible: needs an escape rate of w/pi >= ${(2 * 0.7).toFixed(1)}, but Kramers' rate never exceeds ${maxRate.toFixed(3)}`
-          : 'possible',
+        'Kramers matching at native drive': [0.7, 1.0, 1.4].every((f) => Engine2.matchedNoise(f) === null)
+          ? `no solution within the Kramers approximation (needs w/pi >= 1.4; the approximation tops out at ${maxRate.toFixed(3)})`
+          : 'has a solution',
       },
       detail: !controlOk
-        ? 'The slow-drive control did not show stochastic resonance where Kramers theory puts it, so this test cannot decide H6.'
+        ? 'The slow-drive control did not show stochastic resonance near the Kramers-matched noise, so this test cannot decide H6.'
         : verdict === 'plausible'
-          ? `Stochastic resonance appears at the native drive (peak at D=${native.optimalNoise}).`
-          : `The test finds stochastic resonance when it exists (control peak at D=${control.optimalNoise}, Kramers D*=${matchedD.toFixed(2)}), but not at the model's own drive: matching there needs a hopping rate the double well can never reach.`,
+          ? `Stochastic resonance detected at the native drive (f = ${detected.join(', ')}).`
+          : `The method detects stochastic resonance when the drive is slow (control peak at D=${control.optimalNoise}, Kramers-matched D*=${matchedD.toFixed(2)}). At the model's own drive no noise level from 0.2 to 7.5 gives a response clearly above the no-signal baseline, so SR is not demonstrated there.`,
     };
   },
 
@@ -1749,10 +1781,13 @@ const Engine8 = {
   analyzeH6(range, nSamples) {
     // The fair H6 test (two-state SNR, slow-drive control, native drive), with the same settings for
     // the baseline and every perturbed run. Signal amplitude is perturbed in both control and native.
+    const levels = [0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0, 1.3, 1.7, 2.2, 3.0, 4.0, 5.5, 7.5];
     const fair = (A, nTrials) => {
       const control = Engine2.runTwoState({ freqs: [0.01], signalAmplitude: A, nTrials, periods: 20 });
-      const native = Engine2.runTwoState({ freqs: [0.7, 1.0, 1.4], signalAmplitude: A, nTrials, periods: 70 });
-      return HypothesisRunner.verdictH6Fair(native, control, Engine2.matchedNoise(0.01));
+      const nativeOpts = { freqs: [0.7, 1.0, 1.4], noiseLevels: levels, nTrials, periods: 70 };
+      const native = Engine2.runTwoState({ ...nativeOpts, signalAmplitude: A });
+      const nativeZero = Engine2.runTwoState({ ...nativeOpts, signalAmplitude: 0 });
+      return HypothesisRunner.verdictH6Fair(native, nativeZero, control, Engine2.matchedNoise(0.01));
     };
     const baselineVerdict = fair(0.3, 40);
     const paramDefs = [

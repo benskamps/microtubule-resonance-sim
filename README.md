@@ -8,7 +8,7 @@ An interactive computational exploration of fractal electromagnetic resonance in
 
 ## Status: 🟡 Complete (exploratory tool — not formally validated)
 
-**This experiment is finished, not abandoned.** It shipped its full result set in one publication and reached its intended scope: 7 hypotheses tested honestly, with negative and undecided results reported as such. A 2026-10-05 math audit corrected several engines: H2 (chirality) moved from falsified to inconclusive, and H6 (stochastic resonance) from plausible to falsified in the tested range. H7 (Schumann alignment, p=0.183) stays not significant. There is no open backlog. If you find it sitting still, that stillness is *done*, not neglect.
+**This experiment is finished, not abandoned.** It shipped its full result set in one publication and reached its intended scope: 7 hypotheses tested honestly, with negative and undecided results reported as such. A 2026-10-05 math audit corrected several engines: H2 (chirality) moved from falsified to inconclusive, and H6 (stochastic resonance) from plausible to inconclusive, now tested with positive and negative controls. H7 (Schumann alignment, p=0.183) stays not significant. There is no open backlog. If you find it sitting still, that stillness is *done*, not neglect.
 
 It remains 🟡 (an exploratory **toy**, not a validated result) by design. It has **not** formally passed the Brokenbranch Lab validation gate (the "Four Tests" — reproduced, externally checked, pre-registered, and survives adversarial review). Promoting it to 🟢 would require, at minimum:
 
@@ -61,10 +61,10 @@ Monte Carlo runs use a fixed seed (`20260906`, mulberry32, `DEFAULT_SEED` in `ph
 | H3: Scale Invariance | Consistent | Tautological (model tests model) |
 | H4: Temporal Cascade | Consistent | Expected from oscillator structure |
 | H5: Pitch Angle Optimality | Inconclusive | Parameter-dependent (55% robust) |
-| H6: Noise-Fueled Resonance | Falsified (at the model's drive) | Fair test with a positive control: SR appears at a slow drive exactly where Kramers theory predicts, but the model's drive is too fast for any noise level to match. 95% robust |
+| H6: Noise-Fueled Resonance | Inconclusive (not demonstrated at the model's drive) | Fair test: driven slowly (f = 0.01), the same double well peaks at noise D = 0.40, close to the D* = 0.45 where the Kramers escape rate matches the drive; but at the model's own drive (0.7 to 1.4), across noise D = 0.2 to 7.5, no frequency responds more than 2.2x above a run with no signal at all, so stochastic resonance is not demonstrated there. |
 | H7: Schumann Alignment | Unvalidated | p=0.183, not significant |
 
-**Meta-analysis:** 74.7% overall robustness (recomputed after the audit and the fair H6 test). Regular lattice beats fractal for amplification. Active oscillation energetically implausible (~40x neuron budget).
+**Meta-analysis:** 75.7% overall robustness (recomputed after the audit and the fair H6 test). Regular lattice beats fractal for amplification. Active oscillation energetically implausible (~40x neuron budget).
 
 **2026-10-05 math audit:** the Flywheel math gate found errors in several engines and hypothesis tests; two verdicts changed (H2, H6). Every fix and its check are listed in [AUDIT-2026-10-05.md](AUDIT-2026-10-05.md).
 
