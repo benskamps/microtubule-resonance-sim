@@ -639,7 +639,7 @@ button.btn.active {
   display: flex;
   justify-content: space-between;
   padding: 0.25rem 0;
-  border-bottom: 1px solid rgba(30, 42, 74, 0.5);
+  border-bottom: 1px solid rgba(74, 59, 40, 0.5);
 }
 
 .results-content .metric-label {

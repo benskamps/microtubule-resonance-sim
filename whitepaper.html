@@ -93,7 +93,7 @@
 
       <h3>3.1 Microtubule Structure</h3>
       <p>Microtubules are composed of &alpha;/&beta;-tubulin heterodimers (~8 nm each) arranged in a hollow cylinder. Key structural parameters:</p>
-      <table class="wp-table">
+      <table class="wp-table" tabindex="0">
         <tr><th>Parameter</th><th>Value</th><th>Source</th></tr>
         <tr><td>Outer diameter</td><td class="mono">~25 nm</td><td>Structural biology</td></tr>
         <tr><td>Inner diameter</td><td class="mono">~15 nm</td><td>Structural biology</td></tr>
@@ -236,7 +236,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
       <h3>4.10 Engine 9: Alternative Structure Comparator</h3>
       <p><strong>Purpose:</strong> Test whether the fractal pattern is uniquely good at coherent amplification.</p>
       <p><strong>Method:</strong> Compute coherent amplification for 7 phase arrangements over N = 36 modes:</p>
-      <table class="wp-table">
+      <table class="wp-table" tabindex="0">
         <tr><th>Structure</th><th>Phase Rule</th></tr>
         <tr><td>Fractal triplet (ours)</td><td>Berry phase with 4-scale nesting</td></tr>
         <tr><td>Regular lattice</td><td>&phi;<sub>k</sub> = k &middot; &pi;/N (half-circle sweep)</td></tr>
@@ -251,7 +251,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
       <h3>4.11 Engine 10: Energy Budget</h3>
       <p><strong>Purpose:</strong> Test whether microtubule resonance is biophysically feasible.</p>
       <p><strong>Method:</strong> Calculate power requirements for active oscillation and compare to neuron energy budget:</p>
-      <table class="wp-table">
+      <table class="wp-table" tabindex="0">
         <tr><th>Constant</th><th>Value</th><th>Source</th></tr>
         <tr><td>kT at 37&deg;C</td><td class="mono">4.28 &times; 10<sup>-21</sup> J</td><td>Thermodynamics</td></tr>
         <tr><td>ATP hydrolysis energy</td><td class="mono">8.65 &times; 10<sup>-20</sup> J (0.54 eV)</td><td>Biochemistry (cellular conditions)</td></tr>
@@ -315,7 +315,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
       <p>However, Engine 7's Monte Carlo null comparison generates 10,000 random fractal patterns and finds that <span class="highlight">18.3% of random patterns match 4 or more Schumann harmonics</span>. The p-value of 0.183 is not statistically significant at any conventional threshold. The random mean is 2.58 &plusmn; 1.02 matches, and our observed 4 matches is within the distribution.</p>
 
       <h3>Summary of Results</h3>
-      <table class="wp-table">
+      <table class="wp-table" tabindex="0">
         <tr><th>Hypothesis</th><th>Verdict</th><th>Key Metric</th><th>Assessment</th></tr>
         <tr><td>H1: Fractal Amplification</td><td><span class="verdict plausible">Plausible</span></td><td>17.7x coherent vs 5.3x random</td><td>Real but not unique (regular lattice = 22.9)</td></tr>
         <tr><td>H2: Chirality &rarr; Triplets</td><td><span class="verdict inconclusive">Inconclusive</span></td><td>16 chiral triplets vs null 95th pct 15; 2/9 grid agree</td><td>Inside the random-splitting null; not robust</td></tr>
@@ -334,7 +334,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
 
       <h3>6.1 Sensitivity Analysis (Engine 8)</h3>
       <p>Each hypothesis was re-tested with key parameters perturbed by &plusmn;30% in 5 steps. A hypothesis is "robust" if the verdict is preserved across perturbations.</p>
-      <table class="wp-table">
+      <table class="wp-table" tabindex="0">
         <tr><th scope="col">Hypothesis</th><th scope="col">Robustness</th><th scope="col">Assessment</th></tr>
         <tr><td>H1: Fractal Amplification</td><td class="mono">~97%</td><td>Highly robust</td></tr>
         <tr><td>H2: Chirality &rarr; Triplets</td><td class="mono">~27%</td><td>Fragile &mdash; the single-run verdict flips with pitch and mode cutoffs</td></tr>
@@ -347,7 +347,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
 
       <h3>6.2 Alternative Structure Comparison (Engine 9)</h3>
       <p>If the fractal pattern is special, it should outperform other ordered structures at coherent amplification. It does not:</p>
-      <table class="wp-table">
+      <table class="wp-table" tabindex="0">
         <tr><th>Structure</th><th>Coherent Amplitude</th><th>Rank</th></tr>
         <tr><td>Perfect alignment (upper bound)</td><td class="mono">36.0</td><td>1</td></tr>
         <tr><td>Regular lattice</td><td class="mono">~22.9</td><td>2</td></tr>
@@ -363,7 +363,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
 
       <h3>6.3 Energy Budget (Engine 10)</h3>
       <p>Active oscillation of tubulin dimers at MHz frequencies requires energy. The question: can a neuron afford it?</p>
-      <table class="wp-table">
+      <table class="wp-table" tabindex="0">
         <tr><th>Metric</th><th>Value</th><th>Assessment</th></tr>
         <tr><td>Power per MT (1% active dimers, 1 MHz)</td><td class="mono">~1.6 &times; 10<sup>-13</sup> W</td><td>&mdash;</td></tr>
         <tr><td>Total MT power (10<sup>5</sup> MTs)</td><td class="mono">~1.6 &times; 10<sup>-8</sup> W</td><td>&mdash;</td></tr>
