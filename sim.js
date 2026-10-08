@@ -163,9 +163,9 @@ const COLORS = {
   khz:   { main: '#69f0ae', glow: 'rgba(105,240,174,', dim: '#2e7d32' },
   mhz:   { main: '#ffb300', glow: 'rgba(255,179,0,',   dim: '#e65100' },
   ghz:   { main: '#ff5252', glow: 'rgba(255,82,82,',   dim: '#b71c1c' },
-  cyan:  '#00e5ff',
-  amber: '#ffb300',
-  purple:'#b388ff',
+  cyan:  '#e8833a',
+  amber: '#d9a441',
+  purple:'#8fa3ad',
 };
 
 const SCALE_COLORS = [COLORS.hz, COLORS.khz, COLORS.mhz, COLORS.ghz];
@@ -318,7 +318,7 @@ function drawSpectrum(ctx, w, h) {
   const plotH = h - padT - padB;
 
   // Background grid
-  ctx.strokeStyle = 'rgba(30,42,74,0.5)';
+  ctx.strokeStyle = 'rgba(74,59,40,0.5)';
   ctx.lineWidth = 0.5;
   const [fMin, fMax] = getFreqRange();
   const logMin = Math.log10(fMin);
@@ -334,8 +334,8 @@ function drawSpectrum(ctx, w, h) {
     ctx.stroke();
 
     // Label
-    ctx.fillStyle = '#556688';
-    ctx.font = '10px Inter, sans-serif';
+    ctx.fillStyle = '#a0926f';
+    ctx.font = '10px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
     ctx.fillText(formatFreq(Math.pow(10, dec)), x, padT + plotH + 18);
   }
@@ -350,8 +350,8 @@ function drawSpectrum(ctx, w, h) {
   }
 
   // Axis labels
-  ctx.fillStyle = '#8899bb';
-  ctx.font = '11px Inter, sans-serif';
+  ctx.fillStyle = '#b8a98c';
+  ctx.font = '11px "JetBrains Mono", monospace';
   ctx.textAlign = 'center';
   ctx.fillText('Frequency (log scale)', padL + plotW / 2, h - 5);
   ctx.save();
@@ -490,7 +490,7 @@ function drawSpectrum(ctx, w, h) {
       const nx = (Math.log10(midF) - logMin) / (logMax - logMin);
       const x = padL + nx * plotW;
       ctx.fillStyle = SCALE_COLORS[s].main;
-      ctx.font = 'bold 12px Inter, sans-serif';
+      ctx.font = 'bold 12px "JetBrains Mono", monospace';
       ctx.textAlign = 'center';
       ctx.fillText(SCALE_NAMES[s], x, padT + 15);
     }
@@ -701,7 +701,7 @@ function drawMTCross(ctx, w, h, res) {
   if (res > 0.1) {
     const glowR = outerR * (1.1 + res * 0.3);
     const grad = ctx.createRadialGradient(cx, cy, outerR, cx, cy, glowR);
-    grad.addColorStop(0, `rgba(0,229,255,${res * 0.3})`);
+    grad.addColorStop(0, `rgba(232,131,58,${res * 0.3})`);
     grad.addColorStop(1, 'transparent');
     ctx.fillStyle = grad;
     ctx.beginPath();
@@ -711,8 +711,8 @@ function drawMTCross(ctx, w, h, res) {
 
   // Hollow center
   const centerGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, innerR);
-  centerGrad.addColorStop(0, 'rgba(10,14,26,0.9)');
-  centerGrad.addColorStop(1, 'rgba(15,21,38,0.5)');
+  centerGrad.addColorStop(0, 'rgba(28,21,16,0.9)');
+  centerGrad.addColorStop(1, 'rgba(36,27,19,0.5)');
   ctx.fillStyle = centerGrad;
   ctx.beginPath();
   ctx.arc(cx, cy, innerR, 0, TAU);
@@ -731,15 +731,15 @@ function drawMTCross(ctx, w, h, res) {
     if (mtState.showHelix) {
       const helixGroup = i % 3;
       const hcolors = [
-        { c: COLORS.cyan, g: 'rgba(0,229,255,' },
-        { c: COLORS.amber, g: 'rgba(255,179,0,' },
-        { c: COLORS.purple, g: 'rgba(179,136,255,' },
+        { c: COLORS.cyan, g: 'rgba(232,131,58,' },
+        { c: COLORS.amber, g: 'rgba(217,164,65,' },
+        { c: COLORS.purple, g: 'rgba(143,163,173,' },
       ];
       color = hcolors[helixGroup].c;
       glowColor = hcolors[helixGroup].g;
     } else {
       color = COLORS.cyan;
-      glowColor = 'rgba(0,229,255,';
+      glowColor = 'rgba(232,131,58,';
     }
 
     // Resonance pulsing per protofilament
@@ -780,7 +780,7 @@ function drawMTCross(ctx, w, h, res) {
 
     // Protofilament number
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.font = '9px Inter, sans-serif';
+    ctx.font = '9px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(i + 1, px, py);
@@ -788,7 +788,7 @@ function drawMTCross(ctx, w, h, res) {
 
   // Center label
   ctx.fillStyle = 'rgba(255,255,255,0.3)';
-  ctx.font = '11px Inter, sans-serif';
+  ctx.font = '11px "JetBrains Mono", monospace';
   ctx.textAlign = 'center';
   ctx.fillText('hollow', cx, cy - 8);
   ctx.fillText('lumen', cx, cy + 8);
@@ -814,7 +814,7 @@ function drawMTCross(ctx, w, h, res) {
   ctx.stroke();
   ctx.setLineDash([]);
 
-  ctx.fillStyle = '#8899bb';
+  ctx.fillStyle = '#b8a98c';
   ctx.font = '10px "JetBrains Mono", monospace';
   ctx.textAlign = 'center';
   ctx.fillText('~25 nm', cx, dimY + 15);
@@ -825,7 +825,7 @@ function drawMTCross(ctx, w, h, res) {
   const lineH = 22;
 
   ctx.textAlign = 'left';
-  ctx.font = 'bold 14px Inter, sans-serif';
+  ctx.font = 'bold 14px "JetBrains Mono", monospace';
   ctx.fillStyle = COLORS.cyan;
   ctx.fillText('Microtubule Structure', textX, textY); textY += lineH * 1.5;
 
@@ -838,32 +838,32 @@ function drawMTCross(ctx, w, h, res) {
     ['Chirality:', 'Left-handed'],
   ];
 
-  ctx.font = '12px Inter, sans-serif';
+  ctx.font = '12px "JetBrains Mono", monospace';
   for (const [label, value] of infoLines) {
-    ctx.fillStyle = '#8899bb';
+    ctx.fillStyle = '#b8a98c';
     ctx.fillText(label, textX, textY);
-    ctx.fillStyle = '#e0e6f0';
+    ctx.fillStyle = '#ece1cc';
     ctx.fillText(value, textX + 130, textY);
     textY += lineH;
   }
 
   // Resonance meter
   textY += lineH;
-  ctx.font = 'bold 12px Inter, sans-serif';
-  ctx.fillStyle = res > 0.5 ? COLORS.cyan : '#8899bb';
+  ctx.font = 'bold 12px "JetBrains Mono", monospace';
+  ctx.fillStyle = res > 0.5 ? COLORS.cyan : '#b8a98c';
   ctx.fillText('Resonance:', textX, textY);
 
   const barX = textX + 100;
   const barW = 150;
   const barH = 12;
-  ctx.fillStyle = 'rgba(30,42,74,0.8)';
+  ctx.fillStyle = 'rgba(74,59,40,0.8)';
   ctx.fillRect(barX, textY - 10, barW, barH);
   const grad = ctx.createLinearGradient(barX, 0, barX + barW, 0);
-  grad.addColorStop(0, 'rgba(0,229,255,0.3)');
+  grad.addColorStop(0, 'rgba(232,131,58,0.3)');
   grad.addColorStop(1, COLORS.cyan);
   ctx.fillStyle = grad;
   ctx.fillRect(barX, textY - 10, barW * res, barH);
-  ctx.strokeStyle = 'rgba(0,229,255,0.3)';
+  ctx.strokeStyle = 'rgba(232,131,58,0.3)';
   ctx.lineWidth = 1;
   ctx.strokeRect(barX, textY - 10, barW, barH);
 }
@@ -881,7 +881,7 @@ function drawMTSide(ctx, w, h, res) {
   // Outer glow at resonance
   if (res > 0.1) {
     const grad = ctx.createRadialGradient(cx, cy, tubeH * 0.5, cx, cy, tubeH * 1.5);
-    grad.addColorStop(0, `rgba(0,229,255,${res * 0.15})`);
+    grad.addColorStop(0, `rgba(232,131,58,${res * 0.15})`);
     grad.addColorStop(1, 'transparent');
     ctx.fillStyle = grad;
     ctx.fillRect(startX - 50, cy - tubeH * 1.5, tubeLen + 100, tubeH * 3);
@@ -937,7 +937,7 @@ function drawMTSide(ctx, w, h, res) {
   }
 
   // Tube outline
-  ctx.strokeStyle = `rgba(0,229,255,${0.3 + res * 0.4})`;
+  ctx.strokeStyle = `rgba(232,131,58,${0.3 + res * 0.4})`;
   ctx.lineWidth = 1.5;
 
   // Top edge
@@ -988,14 +988,14 @@ function drawMTSide(ctx, w, h, res) {
 
   // Wave propagation indicator
   if (res > 0.3) {
-    ctx.fillStyle = `rgba(0,229,255,${res * 0.5})`;
-    ctx.font = 'bold 12px Inter, sans-serif';
+    ctx.fillStyle = `rgba(232,131,58,${res * 0.5})`;
+    ctx.font = 'bold 12px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
     ctx.fillText('Wave propagating at resonance', cx, cy + tubeH / 2 + 40);
 
     // Arrow
     const arrowY = cy + tubeH / 2 + 55;
-    ctx.strokeStyle = `rgba(0,229,255,${res * 0.5})`;
+    ctx.strokeStyle = `rgba(232,131,58,${res * 0.5})`;
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(cx - 60, arrowY);
@@ -1007,12 +1007,12 @@ function drawMTSide(ctx, w, h, res) {
   }
 
   // Scale bar
-  ctx.fillStyle = '#8899bb';
+  ctx.fillStyle = '#b8a98c';
   ctx.font = '10px "JetBrains Mono", monospace';
   ctx.textAlign = 'center';
   const scaleW = tubeLen * 0.1;
   const scaleY = h - 30;
-  ctx.strokeStyle = '#8899bb';
+  ctx.strokeStyle = '#b8a98c';
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(cx - scaleW / 2, scaleY);
@@ -1098,8 +1098,8 @@ function drawCascade(ctx, w, h) {
   const t = (cascadeState.time % cycleLen) / cycleLen; // 0-1 normalized time
 
   // Title
-  ctx.fillStyle = '#e0e6f0';
-  ctx.font = 'bold 13px Inter, sans-serif';
+  ctx.fillStyle = '#ece1cc';
+  ctx.font = 'bold 13px "JetBrains Mono", monospace';
   ctx.textAlign = 'center';
   if (model === 'bandyopadhyay') {
     ctx.fillText(
@@ -1111,7 +1111,7 @@ function drawCascade(ctx, w, h) {
   }
 
   // Time axis
-  ctx.strokeStyle = 'rgba(30,42,74,0.5)';
+  ctx.strokeStyle = 'rgba(74,59,40,0.5)';
   ctx.lineWidth = 0.5;
   const timeLabels = ['0 ms', '0.5 ms', '1.0 ms', '1.5 ms', '2.0 ms'];
   for (let i = 0; i < 5; i++) {
@@ -1120,14 +1120,14 @@ function drawCascade(ctx, w, h) {
     ctx.moveTo(x, padT);
     ctx.lineTo(x, padT + plotH);
     ctx.stroke();
-    ctx.fillStyle = '#556688';
+    ctx.fillStyle = '#a0926f';
     ctx.font = '10px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
     ctx.fillText(timeLabels[i], x, padT + plotH + 20);
   }
 
-  ctx.fillStyle = '#8899bb';
-  ctx.font = '11px Inter, sans-serif';
+  ctx.fillStyle = '#b8a98c';
+  ctx.font = '11px "JetBrains Mono", monospace';
   ctx.textAlign = 'center';
   ctx.fillText('Time', padL + plotW / 2, h - 10);
 
@@ -1170,12 +1170,12 @@ function drawBandyopadhyayCascade(ctx, padL, padT, plotW, plotH, t, flipped) {
 
     // Label
     ctx.fillStyle = rowColors[r].main;
-    ctx.font = '11px Inter, sans-serif';
+    ctx.font = '11px "JetBrains Mono", monospace';
     ctx.textAlign = 'right';
     ctx.fillText(labels[r], padL - 8, rowY + rowH / 2 + 4);
 
     // Row separator
-    ctx.strokeStyle = 'rgba(30,42,74,0.3)';
+    ctx.strokeStyle = 'rgba(74,59,40,0.3)';
     ctx.lineWidth = 0.5;
     ctx.beginPath();
     ctx.moveTo(padL, rowY + rowH);
@@ -1226,7 +1226,7 @@ function drawBandyopadhyayCascade(ctx, padL, padT, plotW, plotH, t, flipped) {
 
     // Warning label
     ctx.fillStyle = COLORS.red;
-    ctx.font = 'bold 11px Inter, sans-serif';
+    ctx.font = 'bold 11px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
     ctx.fillText('DECOHERENT — timing jitter, signal degradation', padL + plotW / 2, padT - 8);
   }
@@ -1336,7 +1336,7 @@ function drawHHCascade(ctx, padL, padT, plotW, plotH, t) {
   const midY = padT + plotH / 2;
 
   ctx.fillStyle = COLORS.khz.main;
-  ctx.font = '11px Inter, sans-serif';
+  ctx.font = '11px "JetBrains Mono", monospace';
   ctx.textAlign = 'right';
   ctx.fillText('Membrane Potential (mV)', padL - 8, midY + 4);
 
@@ -1375,7 +1375,7 @@ function drawHHCascade(ctx, padL, padT, plotW, plotH, t) {
   ctx.stroke();
 
   // Labels
-  ctx.fillStyle = '#8899bb';
+  ctx.fillStyle = '#b8a98c';
   ctx.font = '10px "JetBrains Mono", monospace';
   ctx.textAlign = 'left';
   ctx.fillText('+40 mV', padL + 5, midY - plotH * 0.28);
@@ -1383,8 +1383,8 @@ function drawHHCascade(ctx, padL, padT, plotW, plotH, t) {
   ctx.fillText('-90 mV', padL + 5, midY + plotH * 0.25);
 
   // Note
-  ctx.fillStyle = '#556688';
-  ctx.font = '11px Inter, sans-serif';
+  ctx.fillStyle = '#a0926f';
+  ctx.font = '11px "JetBrains Mono", monospace';
   ctx.textAlign = 'center';
   ctx.fillText('Classical model: membrane-only, no filament precursor signal', padL + plotW / 2, padT + plotH + 35);
   ctx.fillText('Millisecond timescale only — no MHz component', padL + plotW / 2, padT + plotH + 52);
@@ -1452,7 +1452,7 @@ function drawHolographic(ctx, w, h) {
   const t = holoState.time;
 
   const clockColors = {
-    mhz:  { main: COLORS.cyan,   glow: 'rgba(0,229,255,',   r: [60, 110, 160] },
+    mhz:  { main: COLORS.cyan,   glow: 'rgba(232,131,58,',   r: [60, 110, 160] },
     ghz:  { main: COLORS.amber,  glow: 'rgba(255,179,0,',   r: [80, 130, 180] },
     thz:  { main: COLORS.purple, glow: 'rgba(179,136,255,',  r: [100, 150, 200] },
   };
@@ -1461,7 +1461,7 @@ function drawHolographic(ctx, w, h) {
   const coreR = 25;
   const coreGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreR * 2);
   coreGrad.addColorStop(0, 'rgba(255,255,255,0.2)');
-  coreGrad.addColorStop(0.5, 'rgba(0,229,255,0.15)');
+  coreGrad.addColorStop(0.5, 'rgba(232,131,58,0.15)');
   coreGrad.addColorStop(1, 'transparent');
   ctx.fillStyle = coreGrad;
   ctx.beginPath();
@@ -1475,7 +1475,7 @@ function drawHolographic(ctx, w, h) {
     const py = cy + Math.sin(angle) * coreR;
     ctx.beginPath();
     ctx.arc(px, py, 3, 0, TAU);
-    ctx.fillStyle = `rgba(0,229,255,${0.3 + stim * 0.5})`;
+    ctx.fillStyle = `rgba(232,131,58,${0.3 + stim * 0.5})`;
     ctx.fill();
   }
 
@@ -1550,7 +1550,7 @@ function drawHolographic(ctx, w, h) {
   // Labels for active clocks
   let labelY = 30;
   ctx.textAlign = 'left';
-  ctx.font = '12px Inter, sans-serif';
+  ctx.font = '12px "JetBrains Mono", monospace';
   for (const clockKey of activeClocks) {
     const clock = clockColors[clockKey];
     ctx.fillStyle = clock.main;
@@ -1565,7 +1565,7 @@ function drawHolographic(ctx, w, h) {
 
   // Corner annotation
   ctx.fillStyle = 'rgba(255,255,255,0.3)';
-  ctx.font = '10px Inter, sans-serif';
+  ctx.font = '10px "JetBrains Mono", monospace';
   ctx.textAlign = 'right';
   ctx.fillText('Each ring = distinct angular momentum state', w - 20, h - 20);
   ctx.fillText('EM stimulation selectively brightens components', w - 20, h - 35);
@@ -2338,12 +2338,12 @@ function drawPhysicsCascade(ctx, w, h) {
 
   // Title
   ctx.fillStyle = '#b388ff';
-  ctx.font = 'bold 13px Inter, sans-serif';
+  ctx.font = 'bold 13px "JetBrains Mono", monospace';
   ctx.textAlign = 'center';
   ctx.fillText('RK4 Coupled Oscillator — Real Physics', w / 2, 25);
 
   // Time axis
-  ctx.strokeStyle = 'rgba(30,42,74,0.5)';
+  ctx.strokeStyle = 'rgba(74,59,40,0.5)';
   ctx.lineWidth = 0.5;
   const maxT = ts.t[ts.t.length - 1];
   for (let i = 0; i <= 4; i++) {
@@ -2352,14 +2352,14 @@ function drawPhysicsCascade(ctx, w, h) {
     ctx.moveTo(x, padT);
     ctx.lineTo(x, padT + plotH);
     ctx.stroke();
-    ctx.fillStyle = '#556688';
+    ctx.fillStyle = '#a0926f';
     ctx.font = '10px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
     ctx.fillText((maxT * i / 4).toFixed(0) + ' us', x, padT + plotH + 20);
   }
 
-  ctx.fillStyle = '#8899bb';
-  ctx.font = '11px Inter, sans-serif';
+  ctx.fillStyle = '#b8a98c';
+  ctx.font = '11px "JetBrains Mono", monospace';
   ctx.textAlign = 'center';
   ctx.fillText('Time (microseconds)', padL + plotW / 2, h - 10);
 
@@ -2368,14 +2368,14 @@ function drawPhysicsCascade(ctx, w, h) {
 
   // Row labels
   ctx.fillStyle = COLORS.mhz.main;
-  ctx.font = '11px Inter, sans-serif';
+  ctx.font = '11px "JetBrains Mono", monospace';
   ctx.textAlign = 'right';
   ctx.fillText('Fast (MHz filament)', padL - 8, padT + rowH * 0.5 + 4);
   ctx.fillStyle = COLORS.khz.main;
   ctx.fillText('Slow (kHz membrane)', padL - 8, padT + rowH * 1.5 + 4);
 
   // Row separator
-  ctx.strokeStyle = 'rgba(30,42,74,0.3)';
+  ctx.strokeStyle = 'rgba(74,59,40,0.3)';
   ctx.lineWidth = 0.5;
   ctx.beginPath();
   ctx.moveTo(padL, padT + rowH);
@@ -2518,7 +2518,7 @@ function drawExtendedScaleOverlay(ctx, w, h, result) {
 
   // Annotation
   ctx.fillStyle = 'rgba(179,136,255,0.5)';
-  ctx.font = '10px Inter, sans-serif';
+  ctx.font = '10px "JetBrains Mono", monospace';
   ctx.textAlign = 'right';
   ctx.fillText('S = Schumann harmonic', padL + plotW, padT + plotH + 45);
 }
@@ -2530,7 +2530,7 @@ function drawStochasticOverlay(ctx, w, h, result) {
   const insetY = 30;
 
   // Background
-  ctx.fillStyle = 'rgba(10,14,26,0.85)';
+  ctx.fillStyle = 'rgba(28,21,16,0.85)';
   ctx.fillRect(insetX, insetY, insetW, insetH);
   ctx.strokeStyle = 'rgba(179,136,255,0.3)';
   ctx.lineWidth = 1;
@@ -2538,7 +2538,7 @@ function drawStochasticOverlay(ctx, w, h, result) {
 
   // Title
   ctx.fillStyle = 'rgba(179,136,255,0.8)';
-  ctx.font = '9px Inter, sans-serif';
+  ctx.font = '9px "JetBrains Mono", monospace';
   ctx.textAlign = 'left';
   ctx.fillText('SNR vs Noise', insetX + 5, insetY + 12);
 
@@ -2593,7 +2593,7 @@ function drawPitchSweepInset(ctx, w, h, result) {
   const insetY = h - 20 - insetH;
 
   // Background
-  ctx.fillStyle = 'rgba(10,14,26,0.85)';
+  ctx.fillStyle = 'rgba(28,21,16,0.85)';
   ctx.fillRect(insetX, insetY, insetW, insetH);
   ctx.strokeStyle = 'rgba(179,136,255,0.3)';
   ctx.lineWidth = 1;
@@ -2601,7 +2601,7 @@ function drawPitchSweepInset(ctx, w, h, result) {
 
   // Title
   ctx.fillStyle = 'rgba(179,136,255,0.8)';
-  ctx.font = '9px Inter, sans-serif';
+  ctx.font = '9px "JetBrains Mono", monospace';
   ctx.textAlign = 'left';
   ctx.fillText('Coupling vs Pitch Angle', insetX + 5, insetY + 12);
 
@@ -2653,7 +2653,7 @@ function drawPitchSweepInset(ctx, w, h, result) {
   }
 
   // Axis labels
-  ctx.fillStyle = '#556688';
+  ctx.fillStyle = '#a0926f';
   ctx.font = '8px "JetBrains Mono", monospace';
   ctx.textAlign = 'left';
   ctx.fillText('0', insetX + padI, insetY + insetH - 1);

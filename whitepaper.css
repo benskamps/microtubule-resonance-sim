@@ -4,34 +4,41 @@
    ============================================ */
 
 :root {
-  --bg-deep: #0a0e1a;
-  --bg-panel: #0f1526;
-  --bg-card: #141b2d;
-  --bg-hover: #1a2340;
-  --border: #1e2a4a;
-  --border-glow: #2a4a8a;
+  /* House palette (css/tokens.css), mapped onto this wing's own variable
+     names so the wing reads as part of brokenbranch.dev rather than a
+     separate navy app. Accent roles: cyan -> ember (the site's load-bearing
+     accent), amber -> gold, purple -> slate, green -> moss, red -> clay-red. */
+  --bg-deep: #1c1510;
+  --bg-panel: #241b13;
+  --bg-card: #2b2117;
+  --bg-hover: #332719;
+  --border: #3a2f26;
+  --border-glow: #4a3b28;
 
-  --cyan: #00e5ff;
-  --cyan-dim: #0088aa;
-  --cyan-glow: rgba(0, 229, 255, 0.3);
-  --amber: #ffb300;
-  --amber-dim: #aa7700;
-  --purple: #b388ff;
-  --purple-dim: #7c4dff;
-  --green: #69f0ae;
-  --green-dim: #2e7d32;
-  --red: #ff5252;
-  --red-dim: #c62828;
+  --cyan: #e8833a;
+  --cyan-dim: #c4744a;
+  --cyan-glow: rgba(232, 131, 58, 0.3);
+  --amber: #d9a441;
+  --amber-dim: #a88032;
+  --amber-glow: rgba(217, 164, 65, 0.3);
+  --purple: #8fa3ad;
+  --purple-dim: #6d8590;
+  --purple-glow: rgba(143, 163, 173, 0.3);
+  --green: #8aa86b;
+  --green-dim: #4a6741;
+  --red: #e0705a;
+  --red-dim: #a84b3a;
+  --pink: #d98b7a;
 
-  --text: #e0e6f0;
-  --text-dim: #8899bb;
-  --text-muted: #556688;
+  --text: #ece1cc;
+  --text-dim: #b8a98c;
+  --text-muted: #a0926f;
 
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'Fraunces', Georgia, serif;
 
-  --radius: 8px;
-  --radius-lg: 12px;
+  --radius: 6px;
+  --radius-lg: 10px;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -65,10 +72,12 @@ body {
 }
 
 .wp-header h1 {
-  font-size: 1.6rem;
-  font-weight: 700;
+  font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+  font-style: italic;
+  font-weight: 400;
+  font-variation-settings: 'opsz' 144;
   color: var(--text);
-  line-height: 1.4;
+  line-height: 1.15;
   max-width: 650px;
   margin: 0 auto;
 }
@@ -155,8 +164,9 @@ body {
 }
 
 .wp-section h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-style: italic;
+  font-weight: 400;
   color: var(--text);
   padding-bottom: 0.4rem;
   border-bottom: 1px solid var(--border);
@@ -231,7 +241,7 @@ body {
   color: var(--text);
 }
 
-.wp-table tr:hover td { background: rgba(0, 229, 255, 0.03); }
+.wp-table tr:hover td { background: rgba(232, 131, 58, 0.03); }
 
 .wp-table .mono {
   font-family: var(--font-mono);
@@ -249,11 +259,11 @@ body {
   white-space: nowrap;
 }
 
-.verdict.plausible { background: rgba(100,200,255,0.15); color: #64c8ff; border: 1px solid rgba(100,200,255,0.3); }
-.verdict.falsified { background: rgba(255,82,82,0.15); color: var(--red); border: 1px solid rgba(255,82,82,0.3); }
-.verdict.consistent { background: rgba(158,158,158,0.15); color: #9e9e9e; border: 1px solid rgba(158,158,158,0.3); }
-.verdict.inconclusive { background: rgba(255,179,0,0.15); color: var(--amber); border: 1px solid rgba(255,179,0,0.3); }
-.verdict.unvalidated { background: rgba(206,147,216,0.15); color: #ce93d8; border: 1px solid rgba(206,147,216,0.3); }
+.verdict.plausible { background: rgba(143,163,173,0.15); color: #8fa3ad; border: 1px solid rgba(143,163,173,0.3); }
+.verdict.falsified { background: rgba(224, 112, 90,0.15); color: var(--red); border: 1px solid rgba(224, 112, 90,0.3); }
+.verdict.consistent { background: rgba(160,146,111,0.15); color: #a0926f; border: 1px solid rgba(160,146,111,0.3); }
+.verdict.inconclusive { background: rgba(217, 164, 65,0.15); color: var(--amber); border: 1px solid rgba(217, 164, 65,0.3); }
+.verdict.unvalidated { background: rgba(201,168,106,0.15); color: #c9a86a; border: 1px solid rgba(201,168,106,0.3); }
 
 /* ---- Callout / Quote ---- */
 .wp-callout {
@@ -301,7 +311,7 @@ body {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--cyan);
-  background: rgba(0, 229, 255, 0.08);
+  background: rgba(232, 131, 58, 0.08);
   padding: 0.1rem 0.3rem;
   border-radius: 3px;
 }

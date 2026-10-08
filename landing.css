@@ -5,37 +5,41 @@
 
 /* Reuse the same design tokens as the simulator */
 :root {
-  --bg-deep: #0a0e1a;
-  --bg-panel: #0f1526;
-  --bg-card: #141b2d;
-  --bg-hover: #1a2340;
-  --border: #1e2a4a;
-  --border-glow: #2a4a8a;
+  /* House palette (css/tokens.css), mapped onto this wing's own variable
+     names so the wing reads as part of brokenbranch.dev rather than a
+     separate navy app. Accent roles: cyan -> ember (the site's load-bearing
+     accent), amber -> gold, purple -> slate, green -> moss, red -> clay-red. */
+  --bg-deep: #1c1510;
+  --bg-panel: #241b13;
+  --bg-card: #2b2117;
+  --bg-hover: #332719;
+  --border: #3a2f26;
+  --border-glow: #4a3b28;
 
-  --cyan: #00e5ff;
-  --cyan-dim: #0088aa;
-  --cyan-glow: rgba(0, 229, 255, 0.3);
-  --amber: #ffb300;
-  --amber-dim: #aa7700;
-  --amber-glow: rgba(255, 179, 0, 0.3);
-  --purple: #b388ff;
-  --purple-dim: #7c4dff;
-  --purple-glow: rgba(179, 136, 255, 0.3);
-  --green: #69f0ae;
-  --green-dim: #2e7d32;
-  --red: #ff5252;
-  --red-dim: #c62828;
-  --pink: #ff80ab;
+  --cyan: #e8833a;
+  --cyan-dim: #c4744a;
+  --cyan-glow: rgba(232, 131, 58, 0.3);
+  --amber: #d9a441;
+  --amber-dim: #a88032;
+  --amber-glow: rgba(217, 164, 65, 0.3);
+  --purple: #8fa3ad;
+  --purple-dim: #6d8590;
+  --purple-glow: rgba(143, 163, 173, 0.3);
+  --green: #8aa86b;
+  --green-dim: #4a6741;
+  --red: #e0705a;
+  --red-dim: #a84b3a;
+  --pink: #d98b7a;
 
-  --text: #e0e6f0;
-  --text-dim: #8899bb;
-  --text-muted: #556688;
+  --text: #ece1cc;
+  --text-dim: #b8a98c;
+  --text-muted: #a0926f;
 
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'Fraunces', Georgia, serif;
 
-  --radius: 8px;
-  --radius-lg: 12px;
+  --radius: 6px;
+  --radius-lg: 10px;
 }
 
 * {
@@ -80,7 +84,7 @@ body {
 }
 
 .hero-eyebrow {
-  color: var(--cyan);
+  color: var(--amber);
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.14em;
@@ -90,15 +94,16 @@ body {
 
 .hero h1 {
   font-size: clamp(3rem, 5.6vw, 5.7rem);
-  font-weight: 700;
-  letter-spacing: -0.055em;
+  font-style: italic;
+  font-weight: 400;
+  font-variation-settings: 'opsz' 144;
+  letter-spacing: -0.02em;
   color: var(--text);
-  line-height: 0.88;
+  line-height: 0.95;
 }
 
 .hero h1 em {
-  color: var(--red);
-  font-style: normal;
+  color: var(--cyan);
 }
 
 .hero .tagline {
@@ -129,7 +134,7 @@ body {
   overflow: hidden;
   border: 1px solid var(--border);
   background: var(--bg-panel);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.36), 0 0 70px rgba(0, 229, 255, 0.055);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.36), 0 0 70px rgba(232, 131, 58, 0.055);
 }
 
 .simulator-preview::after {
@@ -137,7 +142,7 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  box-shadow: inset 0 0 0 1px rgba(0, 229, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(232, 131, 58, 0.08);
 }
 
 .simulator-preview iframe {
@@ -159,7 +164,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 0.85rem 1rem;
-  background: rgba(10, 14, 26, 0.9);
+  background: rgba(28, 21, 16, 0.9);
   border-top: 1px solid var(--border);
   color: var(--text-dim);
   font-family: var(--font-mono);
@@ -185,12 +190,12 @@ body {
   align-items: center;
   gap: 0.5rem;
   padding: 0.7rem 1.5rem;
-  background: rgba(0, 229, 255, 0.12);
+  background: var(--cyan);
   border: 1px solid var(--cyan);
-  color: var(--cyan);
+  color: var(--bg-deep);
   font-size: 0.95rem;
   font-family: var(--font-sans);
-  font-weight: 500;
+  font-weight: 560;
   border-radius: var(--radius);
   cursor: pointer;
   text-decoration: none;
@@ -198,8 +203,8 @@ body {
 }
 
 .btn-primary:hover {
-  background: rgba(0, 229, 255, 0.2);
-  box-shadow: 0 0 16px var(--cyan-glow);
+  background: #f09048;
+  border-color: #f09048;
 }
 
 .btn-secondary {
@@ -207,8 +212,8 @@ body {
   align-items: center;
   gap: 0.5rem;
   padding: 0.7rem 1.5rem;
-  background: var(--bg-hover);
-  border: 1px solid var(--border);
+  background: transparent;
+  border: 1px solid var(--border-glow);
   color: var(--text);
   font-size: 0.95rem;
   font-family: var(--font-sans);
@@ -230,8 +235,9 @@ body {
 }
 
 .section-title {
-  font-size: 1.3rem;
-  font-weight: 600;
+  font-size: 1.6rem;
+  font-style: italic;
+  font-weight: 400;
   color: var(--text);
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
@@ -392,7 +398,7 @@ body {
 }
 
 .results-table tr:hover td {
-  background: rgba(0, 229, 255, 0.03);
+  background: rgba(232, 131, 58, 0.03);
 }
 
 .results-table .hypo-id-col {
@@ -415,31 +421,31 @@ body {
 
 .verdict-badge.plausible {
   background: rgba(100, 200, 255, 0.15);
-  color: #64c8ff;
+  color: #8fa3ad;
   border: 1px solid rgba(100, 200, 255, 0.3);
 }
 
 .verdict-badge.falsified {
-  background: rgba(255, 82, 82, 0.15);
+  background: rgba(224, 112, 90, 0.15);
   color: var(--red);
-  border: 1px solid rgba(255, 82, 82, 0.3);
+  border: 1px solid rgba(224, 112, 90, 0.3);
 }
 
 .verdict-badge.consistent {
   background: rgba(158, 158, 158, 0.15);
-  color: #9e9e9e;
+  color: #a0926f;
   border: 1px solid rgba(158, 158, 158, 0.3);
 }
 
 .verdict-badge.inconclusive {
-  background: rgba(255, 179, 0, 0.15);
+  background: rgba(217, 164, 65, 0.15);
   color: var(--amber);
-  border: 1px solid rgba(255, 179, 0, 0.3);
+  border: 1px solid rgba(217, 164, 65, 0.3);
 }
 
 .verdict-badge.unvalidated {
   background: rgba(206, 147, 216, 0.15);
-  color: #ce93d8;
+  color: #c9a86a;
   border: 1px solid rgba(206, 147, 216, 0.3);
 }
 
