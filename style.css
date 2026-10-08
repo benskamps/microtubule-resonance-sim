@@ -227,6 +227,11 @@ body {
   outline: none;
 }
 
+.control-group input[type="range"]:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
 .control-group input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 14px;
@@ -398,7 +403,7 @@ button.btn.active {
 
 .status-badge.untested {
   background: rgba(66, 165, 245, 0.15);
-  color: #8fa3ad;
+  color: #b4c4cc;
   border: 1px solid rgba(66, 165, 245, 0.3);
 }
 
@@ -421,15 +426,15 @@ button.btn.active {
 }
 
 .status-badge.plausible {
-  background: rgba(100, 200, 255, 0.15);
-  color: #8fa3ad;
-  border: 1px solid rgba(100, 200, 255, 0.3);
+  background: rgba(143, 163, 173, 0.15);
+  color: #b4c4cc;
+  border: 1px solid rgba(143, 163, 173, 0.3);
 }
 
 .status-badge.consistent {
-  background: rgba(158, 158, 158, 0.15);
-  color: #a0926f;
-  border: 1px solid rgba(158, 158, 158, 0.3);
+  background: rgba(160, 146, 111, 0.15);
+  color: #c4b796;
+  border: 1px solid rgba(160, 146, 111, 0.3);
 }
 
 .status-badge.unvalidated {
@@ -692,8 +697,8 @@ button.btn.active {
 }
 
 .hypo-verdict.supported { color: var(--green); }
-.hypo-verdict.plausible { color: #8fa3ad; }
-.hypo-verdict.consistent { color: #a0926f; }
+.hypo-verdict.plausible { color: #b4c4cc; }
+.hypo-verdict.consistent { color: #c4b796; }
 .hypo-verdict.unvalidated { color: #c9a86a; }
 .hypo-verdict.inconclusive { color: var(--amber); }
 .hypo-verdict.falsified { color: var(--red); }

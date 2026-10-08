@@ -22,6 +22,7 @@
   <meta property="twitter:description" content="Computational Exploration of Fractal Electromagnetic Resonance in Microtubule Structures: A 10-Engine Simulation Framework.">
   <meta property="twitter:image" content="https://www.brokenbranch.dev/labs/microtubule/assets/og.png">
   <meta name="twitter:image:alt" content="Whitepaper — Microtubule Resonance Simulator, a Broken Branch physics card.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
   <link rel="stylesheet" href="/css/tokens.css">
   <link rel="stylesheet" href="whitepaper.css">
   <script type="application/ld+json">
@@ -36,8 +37,9 @@
   </script>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 
-  <main>
+  <main id="main-content">
 
   <!-- ============ HEADER ============ -->
   <header class="wp-header">
@@ -135,7 +137,7 @@
       <h3>4.2 Engine 1: Coupled Oscillator (RK4)</h3>
       <p><strong>Purpose:</strong> Model the filament-membrane coupling that produces the temporal cascade.</p>
       <p><strong>Method:</strong> 4th-order Runge-Kutta integration of coupled ODEs with asymmetric coupling:</p>
-      <div class="equation">dx_fast/dt = v_fast
+      <div class="equation" tabindex="0">dx_fast/dt = v_fast
 dv_fast/dt = -&omega;_fast&sup2; x_fast - &gamma;_fast &omega;_fast v_fast + k_back x_slow + F_drive
 dx_slow/dt = v_slow
 dv_slow/dt = -&omega;_slow&sup2; x_slow - &gamma;_slow &omega;_slow v_slow + k_fwd x_fast</div>
@@ -154,7 +156,7 @@ dv_slow/dt = -&omega;_slow&sup2; x_slow - &gamma;_slow &omega;_slow v_slow + k_f
       <h3>4.3 Engine 2: Stochastic Resonance</h3>
       <p><strong>Purpose:</strong> Test whether noise enhances the signal in the fractal resonator.</p>
       <p><strong>Method:</strong> Euler-Maruyama integration of a bistable potential. The H6 test reads the two-state output sign(x), the standard stochastic-resonance observable, and runs a slow-drive positive control alongside the native drives:</p>
-      <div class="equation">dx_i/dt = x_i - x_i&sup3; + A cos(&omega;_i t) + D &eta;(t)</div>
+      <div class="equation" tabindex="0">dx_i/dt = x_i - x_i&sup3; + A cos(&omega;_i t) + D &eta;(t)</div>
       <p>where &omega;<sub>i</sub> is the mode's frequency relative to its triplet centre (0.7, 1.0 or 1.4), D is noise amplitude, &eta; is Gaussian white noise.</p>
       <p><strong>Parameters:</strong></p>
       <ul class="param-list">
@@ -168,7 +170,7 @@ dv_slow/dt = -&omega;_slow&sup2; x_slow - &gamma;_slow &omega;_slow v_slow + k_f
       <h3>4.4 Engine 3: Berry Phase Coherence (Monte Carlo)</h3>
       <p><strong>Purpose:</strong> Test whether the fractal structure produces N-fold vs. &radic;N amplification.</p>
       <p><strong>Method:</strong> Complex vector summation of phase contributions:</p>
-      <div class="equation">Coherent amplitude: A_c = |&Sigma; exp(i &phi;_k)| for k = 1..N
+      <div class="equation" tabindex="0">Coherent amplitude: A_c = |&Sigma; exp(i &phi;_k)| for k = 1..N
   where &phi;_k is the sum of the scale, triplet and sub-peak Berry terms below
 Random amplitude:   A_r = &langle;|&Sigma; exp(i &theta;_k)|&rangle; where &theta;_k ~ Uniform[0, 2&pi;]
   averaged over 10,000 trials</div>
@@ -183,7 +185,7 @@ Random amplitude:   A_r = &langle;|&Sigma; exp(i &theta;_k)|&rangle; where &thet
       <h3>4.5 Engine 4: Chiral Resonance Comparator</h3>
       <p><strong>Purpose:</strong> Test whether chirality produces the triplet pattern.</p>
       <p><strong>Method:</strong> Cylindrical standing wave modes with and without helical pitch:</p>
-      <div class="equation">Achiral: f_mn = (c/2&pi;) &radic;((m&pi;/L)&sup2; + (n/R)&sup2;)
+      <div class="equation" tabindex="0">Achiral: f_mn = (c/2&pi;) &radic;((m&pi;/L)&sup2; + (n/R)&sup2;)
 Chiral:  f_mn = (c/2&pi;) &radic;((m&pi;/L)&sup2; + ((n + m tan &alpha;)/R)&sup2;)</div>
       <p><strong>Parameters:</strong></p>
       <ul class="param-list">
@@ -197,7 +199,7 @@ Chiral:  f_mn = (c/2&pi;) &radic;((m&pi;/L)&sup2; + ((n + m tan &alpha;)/R)&sup2
       <h3>4.6 Engine 5: Pitch Angle Sweep</h3>
       <p><strong>Purpose:</strong> Test whether the microtubule's actual pitch angle is optimal.</p>
       <p><strong>Method:</strong> Berry phase resonance condition and coupling efficiency vs. angle:</p>
-      <div class="equation">Berry phase per turn: &Phi;(&alpha;) = &pi;(1 - cos &alpha;)
+      <div class="equation" tabindex="0">Berry phase per turn: &Phi;(&alpha;) = &pi;(1 - cos &alpha;)
 Resonance condition: N &middot; &Phi;(&alpha;) = 2&pi;k (constructive)
 Coupling efficiency: &eta;(&alpha;) = |sin(2&alpha;)| &middot; exp(-&alpha;&sup2; / 2&alpha;_c&sup2;)
 Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = distance of N&middot;&Phi;(&alpha;) from the nearest 2&pi;k</div>

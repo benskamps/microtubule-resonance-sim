@@ -259,9 +259,9 @@ body {
   white-space: nowrap;
 }
 
-.verdict.plausible { background: rgba(143,163,173,0.15); color: #8fa3ad; border: 1px solid rgba(143,163,173,0.3); }
+.verdict.plausible { background: rgba(143,163,173,0.15); color: #b4c4cc; border: 1px solid rgba(143,163,173,0.3); }
 .verdict.falsified { background: rgba(224, 112, 90,0.15); color: var(--red); border: 1px solid rgba(224, 112, 90,0.3); }
-.verdict.consistent { background: rgba(160,146,111,0.15); color: #a0926f; border: 1px solid rgba(160,146,111,0.3); }
+.verdict.consistent { background: rgba(160,146,111,0.15); color: #c4b796; border: 1px solid rgba(160,146,111,0.3); }
 .verdict.inconclusive { background: rgba(217, 164, 65,0.15); color: var(--amber); border: 1px solid rgba(217, 164, 65,0.3); }
 .verdict.unvalidated { background: rgba(201,168,106,0.15); color: #c9a86a; border: 1px solid rgba(201,168,106,0.3); }
 
@@ -392,3 +392,10 @@ body {
 ::-webkit-scrollbar-track { background: var(--bg-deep); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--border-glow); }
+
+/* The equation blocks scroll sideways on narrow screens; tabindex="0" makes
+   them keyboard-scrollable, and this shows where focus is. */
+.equation:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
