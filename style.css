@@ -884,3 +884,61 @@ button.btn.active {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--border-glow);
 }
+
+/* ---- Bench atmosphere (2026-10-08 visual pass) ----
+   A lamp-lit workbench: a warm glow over the header, faint plotting-paper
+   dots, panels as raised plates, canvases as dark glass with corner ticks. */
+body {
+  background:
+    radial-gradient(ellipse 70% 42% at 50% -6%, rgba(232, 131, 58, 0.10), transparent 70%),
+    radial-gradient(rgba(236, 225, 204, 0.035) 1px, transparent 1.2px) 0 0 / 22px 22px,
+    var(--bg-deep);
+}
+
+.app-header h1 {
+  font-size: clamp(1.7rem, 4.2vw, 2.5rem);
+  text-shadow: 0 0 40px rgba(232, 131, 58, 0.18);
+}
+
+.panel-tab.active {
+  background: linear-gradient(180deg, rgba(232, 131, 58, 0.12), rgba(232, 131, 58, 0.03)), var(--bg-hover);
+}
+
+.panel {
+  background:
+    linear-gradient(180deg, rgba(236, 225, 204, 0.025), transparent 120px),
+    var(--bg-panel);
+  box-shadow:
+    inset 0 1px 0 rgba(236, 225, 204, 0.05),
+    0 24px 60px -30px rgba(0, 0, 0, 0.7);
+}
+
+.panel-title {
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.35rem;
+  letter-spacing: -0.005em;
+}
+
+.canvas-wrap {
+  background: radial-gradient(ellipse 80% 70% at 50% 45%, #1f1710 0%, #140e09 100%);
+  border-color: #33281f;
+  box-shadow:
+    inset 0 0 0 1px rgba(232, 131, 58, 0.04),
+    inset 0 18px 50px rgba(0, 0, 0, 0.35),
+    0 1px 0 rgba(236, 225, 204, 0.04);
+}
+
+/* Corner ticks, like the registration marks on a plotter sheet. */
+.canvas-wrap::before,
+.canvas-wrap::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  border-color: rgba(232, 131, 58, 0.45);
+  border-style: solid;
+}
+.canvas-wrap::before { top: 6px; left: 6px; border-width: 1px 0 0 1px; }
+.canvas-wrap::after { right: 6px; bottom: 6px; border-width: 0 1px 1px 0; }
