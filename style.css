@@ -438,9 +438,9 @@ button.btn.active {
 }
 
 .status-badge.unvalidated {
-  background: rgba(206, 147, 216, 0.15);
+  background: rgba(201, 168, 106, 0.15);
   color: #c9a86a;
-  border: 1px solid rgba(206, 147, 216, 0.3);
+  border: 1px solid rgba(201, 168, 106, 0.3);
 }
 
 .hypo-detail {
