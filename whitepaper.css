@@ -366,6 +366,14 @@ body {
   .wp-header h1 { font-size: 1.3rem; }
   .wp-container { padding: 0 1rem 3rem; }
   .wp-table { font-size: 0.7rem; }
+  /* Wide data tables scroll inside their own box instead of pushing the
+     whole page sideways. */
+  .wp-table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
   .equation { font-size: 0.7rem; }
 }
 

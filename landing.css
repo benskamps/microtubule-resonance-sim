@@ -623,6 +623,32 @@ body {
   .hero-actions { flex-direction: column; align-items: flex-start; }
 }
 
+/* Phones: the four-column results table is wider than the screen, so each
+   hypothesis becomes a stacked row — id and name, then verdict, then summary. */
+@media (max-width: 600px) {
+  .results-table,
+  .results-table tbody,
+  .results-table td { display: block; }
+  .results-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .results-table tr {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.35rem 0.75rem;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid rgba(30, 42, 74, 0.5);
+  }
+  .results-table td { padding: 0; border-bottom: 0; }
+  .results-table td:nth-child(n + 3) { grid-column: 1 / -1; }
+  .results-table td:nth-child(2) { font-weight: 600; }
+  .results-table tr:hover td { background: none; }
+}
+
 /* ---- Scrollbar (match simulator) ---- */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-deep); }
