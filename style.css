@@ -4,37 +4,41 @@
    ============================================ */
 
 :root {
-  --bg-deep: #0a0e1a;
-  --bg-panel: #0f1526;
-  --bg-card: #141b2d;
-  --bg-hover: #1a2340;
-  --border: #1e2a4a;
-  --border-glow: #2a4a8a;
+  /* House palette (css/tokens.css), mapped onto this wing's own variable
+     names so the wing reads as part of brokenbranch.dev rather than a
+     separate navy app. Accent roles: cyan -> ember (the site's load-bearing
+     accent), amber -> gold, purple -> slate, green -> moss, red -> clay-red. */
+  --bg-deep: #1c1510;
+  --bg-panel: #241b13;
+  --bg-card: #2b2117;
+  --bg-hover: #332719;
+  --border: #3a2f26;
+  --border-glow: #4a3b28;
 
-  --cyan: #00e5ff;
-  --cyan-dim: #0088aa;
-  --cyan-glow: rgba(0, 229, 255, 0.3);
-  --amber: #ffb300;
-  --amber-dim: #aa7700;
-  --amber-glow: rgba(255, 179, 0, 0.3);
-  --purple: #b388ff;
-  --purple-dim: #7c4dff;
-  --purple-glow: rgba(179, 136, 255, 0.3);
-  --green: #69f0ae;
-  --green-dim: #2e7d32;
-  --red: #ff5252;
-  --red-dim: #c62828;
-  --pink: #ff80ab;
+  --cyan: #e8833a;
+  --cyan-dim: #c4744a;
+  --cyan-glow: rgba(232, 131, 58, 0.3);
+  --amber: #d9a441;
+  --amber-dim: #a88032;
+  --amber-glow: rgba(217, 164, 65, 0.3);
+  --purple: #8fa3ad;
+  --purple-dim: #6d8590;
+  --purple-glow: rgba(143, 163, 173, 0.3);
+  --green: #8aa86b;
+  --green-dim: #4a6741;
+  --red: #e0705a;
+  --red-dim: #a84b3a;
+  --pink: #d98b7a;
 
-  --text: #e0e6f0;
-  --text-dim: #8899bb;
-  --text-muted: #556688;
+  --text: #ece1cc;
+  --text-dim: #b8a98c;
+  --text-muted: #a0926f;
 
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'Fraunces', Georgia, serif;
 
-  --radius: 8px;
-  --radius-lg: 12px;
+  --radius: 6px;
+  --radius-lg: 10px;
 }
 
 * {
@@ -82,13 +86,11 @@ body {
 }
 
 .app-header h1 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  background: linear-gradient(135deg, var(--cyan), var(--purple));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 2rem;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--text);
 }
 
 .app-header .subtitle {
@@ -225,6 +227,11 @@ body {
   outline: none;
 }
 
+.control-group input[type="range"]:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
 .control-group input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 14px;
@@ -260,7 +267,7 @@ button.btn:hover {
 }
 
 button.btn.active {
-  background: rgba(0, 229, 255, 0.1);
+  background: rgba(232, 131, 58, 0.1);
   border-color: var(--cyan);
   color: var(--cyan);
 }
@@ -396,43 +403,43 @@ button.btn.active {
 
 .status-badge.untested {
   background: rgba(66, 165, 245, 0.15);
-  color: #42a5f5;
+  color: #b4c4cc;
   border: 1px solid rgba(66, 165, 245, 0.3);
 }
 
 .status-badge.supported {
-  background: rgba(105, 240, 174, 0.15);
+  background: rgba(138, 168, 107, 0.15);
   color: var(--green);
-  border: 1px solid rgba(105, 240, 174, 0.3);
+  border: 1px solid rgba(138, 168, 107, 0.3);
 }
 
 .status-badge.inconclusive {
-  background: rgba(255, 179, 0, 0.15);
+  background: rgba(217, 164, 65, 0.15);
   color: var(--amber);
-  border: 1px solid rgba(255, 179, 0, 0.3);
+  border: 1px solid rgba(217, 164, 65, 0.3);
 }
 
 .status-badge.falsified {
-  background: rgba(255, 82, 82, 0.15);
+  background: rgba(224, 112, 90, 0.15);
   color: var(--red);
-  border: 1px solid rgba(255, 82, 82, 0.3);
+  border: 1px solid rgba(224, 112, 90, 0.3);
 }
 
 .status-badge.plausible {
-  background: rgba(100, 200, 255, 0.15);
-  color: #64c8ff;
-  border: 1px solid rgba(100, 200, 255, 0.3);
+  background: rgba(143, 163, 173, 0.15);
+  color: #b4c4cc;
+  border: 1px solid rgba(143, 163, 173, 0.3);
 }
 
 .status-badge.consistent {
-  background: rgba(158, 158, 158, 0.15);
-  color: #9e9e9e;
-  border: 1px solid rgba(158, 158, 158, 0.3);
+  background: rgba(160, 146, 111, 0.15);
+  color: #c4b796;
+  border: 1px solid rgba(160, 146, 111, 0.3);
 }
 
 .status-badge.unvalidated {
   background: rgba(206, 147, 216, 0.15);
-  color: #ce93d8;
+  color: #c9a86a;
   border: 1px solid rgba(206, 147, 216, 0.3);
 }
 
@@ -535,7 +542,7 @@ button.btn.active {
 }
 
 .physics-toggle-btn.active {
-  background: rgba(179, 136, 255, 0.15) !important;
+  background: rgba(143, 163, 173, 0.15) !important;
   border-color: var(--purple) !important;
   color: var(--purple) !important;
   box-shadow: 0 0 12px var(--purple-glow);
@@ -549,8 +556,8 @@ button.btn.active {
 
 /* ---- Physics Controls Bar ---- */
 .physics-controls {
-  border: 1px solid rgba(179, 136, 255, 0.2);
-  background: rgba(179, 136, 255, 0.03);
+  border: 1px solid rgba(143, 163, 173, 0.2);
+  background: rgba(143, 163, 173, 0.03);
 }
 
 .physics-controls label {
@@ -567,7 +574,7 @@ button.btn.active {
 }
 
 .physics-action-btn {
-  background: rgba(179, 136, 255, 0.1) !important;
+  background: rgba(143, 163, 173, 0.1) !important;
   border-color: var(--purple-dim) !important;
   color: var(--purple) !important;
 }
@@ -587,28 +594,28 @@ button.btn.active {
 }
 
 .computation-badge.computing {
-  background: rgba(255, 179, 0, 0.15);
+  background: rgba(217, 164, 65, 0.15);
   color: var(--amber);
-  border: 1px solid rgba(255, 179, 0, 0.3);
+  border: 1px solid rgba(217, 164, 65, 0.3);
   animation: pulse-glow 1s infinite;
 }
 
 .computation-badge.done {
-  background: rgba(105, 240, 174, 0.15);
+  background: rgba(138, 168, 107, 0.15);
   color: var(--green);
-  border: 1px solid rgba(105, 240, 174, 0.3);
+  border: 1px solid rgba(138, 168, 107, 0.3);
 }
 
 .computation-badge.error {
-  background: rgba(255, 82, 82, 0.15);
+  background: rgba(224, 112, 90, 0.15);
   color: var(--red);
-  border: 1px solid rgba(255, 82, 82, 0.3);
+  border: 1px solid rgba(224, 112, 90, 0.3);
 }
 
 /* ---- Results Overlay ---- */
 .results-overlay {
   background: var(--bg-card);
-  border: 1px solid rgba(179, 136, 255, 0.3);
+  border: 1px solid rgba(143, 163, 173, 0.3);
   border-radius: var(--radius);
   padding: 1rem;
   margin-top: 1rem;
@@ -632,7 +639,7 @@ button.btn.active {
   display: flex;
   justify-content: space-between;
   padding: 0.25rem 0;
-  border-bottom: 1px solid rgba(30, 42, 74, 0.5);
+  border-bottom: 1px solid rgba(74, 59, 40, 0.5);
 }
 
 .results-content .metric-label {
@@ -667,8 +674,8 @@ button.btn.active {
 
 /* ---- Hypothesis Computed Results ---- */
 .hypo-computed-results {
-  background: rgba(179, 136, 255, 0.05);
-  border: 1px solid rgba(179, 136, 255, 0.15);
+  background: rgba(143, 163, 173, 0.05);
+  border: 1px solid rgba(143, 163, 173, 0.15);
   border-radius: var(--radius);
   padding: 0.8rem;
   margin-top: 0.8rem;
@@ -690,9 +697,9 @@ button.btn.active {
 }
 
 .hypo-verdict.supported { color: var(--green); }
-.hypo-verdict.plausible { color: #64c8ff; }
-.hypo-verdict.consistent { color: #9e9e9e; }
-.hypo-verdict.unvalidated { color: #ce93d8; }
+.hypo-verdict.plausible { color: #b4c4cc; }
+.hypo-verdict.consistent { color: #c4b796; }
+.hypo-verdict.unvalidated { color: #c9a86a; }
 .hypo-verdict.inconclusive { color: var(--amber); }
 .hypo-verdict.falsified { color: var(--red); }
 
@@ -765,7 +772,7 @@ button.btn.active {
 }
 
 .meta-btn:hover {
-  background: rgba(0, 229, 255, 0.1);
+  background: rgba(232, 131, 58, 0.1);
 }
 
 .meta-btn:disabled {
@@ -829,7 +836,7 @@ button.btn.active {
 }
 
 .meta-table tr:hover td {
-  background: rgba(0, 229, 255, 0.05);
+  background: rgba(232, 131, 58, 0.05);
 }
 
 .meta-table .robust { color: var(--green); }
@@ -857,8 +864,8 @@ button.btn.active {
 .bar-fill.green { background: var(--green); }
 .bar-fill.amber { background: var(--amber); }
 .bar-fill.red { background: var(--red); }
-.bar-fill.grey { background: #9e9e9e; }
-.bar-fill.purple { background: #ce93d8; }
+.bar-fill.grey { background: #a0926f; }
+.bar-fill.purple { background: #c9a86a; }
 
 /* ---- Scrollbar ---- */
 ::-webkit-scrollbar {

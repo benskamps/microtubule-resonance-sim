@@ -22,6 +22,8 @@
   <meta property="twitter:description" content="Computational Exploration of Fractal Electromagnetic Resonance in Microtubule Structures: A 10-Engine Simulation Framework.">
   <meta property="twitter:image" content="https://www.brokenbranch.dev/labs/microtubule/assets/og.png">
   <meta name="twitter:image:alt" content="Whitepaper — Microtubule Resonance Simulator, a Broken Branch physics card.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/css/tokens.css">
   <link rel="stylesheet" href="whitepaper.css">
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
@@ -35,8 +37,9 @@
   </script>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 
-  <main>
+  <main id="main-content">
 
   <!-- ============ HEADER ============ -->
   <header class="wp-header">
@@ -90,7 +93,7 @@
 
       <h3>3.1 Microtubule Structure</h3>
       <p>Microtubules are composed of &alpha;/&beta;-tubulin heterodimers (~8 nm each) arranged in a hollow cylinder. Key structural parameters:</p>
-      <table class="wp-table">
+      <table class="wp-table" tabindex="0">
         <tr><th>Parameter</th><th>Value</th><th>Source</th></tr>
         <tr><td>Outer diameter</td><td class="mono">~25 nm</td><td>Structural biology</td></tr>
         <tr><td>Inner diameter</td><td class="mono">~15 nm</td><td>Structural biology</td></tr>
@@ -134,7 +137,7 @@
       <h3>4.2 Engine 1: Coupled Oscillator (RK4)</h3>
       <p><strong>Purpose:</strong> Model the filament-membrane coupling that produces the temporal cascade.</p>
       <p><strong>Method:</strong> 4th-order Runge-Kutta integration of coupled ODEs with asymmetric coupling:</p>
-      <div class="equation">dx_fast/dt = v_fast
+      <div class="equation" tabindex="0">dx_fast/dt = v_fast
 dv_fast/dt = -&omega;_fast&sup2; x_fast - &gamma;_fast &omega;_fast v_fast + k_back x_slow + F_drive
 dx_slow/dt = v_slow
 dv_slow/dt = -&omega;_slow&sup2; x_slow - &gamma;_slow &omega;_slow v_slow + k_fwd x_fast</div>
@@ -153,7 +156,7 @@ dv_slow/dt = -&omega;_slow&sup2; x_slow - &gamma;_slow &omega;_slow v_slow + k_f
       <h3>4.3 Engine 2: Stochastic Resonance</h3>
       <p><strong>Purpose:</strong> Test whether noise enhances the signal in the fractal resonator.</p>
       <p><strong>Method:</strong> Euler-Maruyama integration of a bistable potential. The H6 test reads the two-state output sign(x), the standard stochastic-resonance observable, and runs a slow-drive positive control alongside the native drives:</p>
-      <div class="equation">dx_i/dt = x_i - x_i&sup3; + A cos(&omega;_i t) + D &eta;(t)</div>
+      <div class="equation" tabindex="0">dx_i/dt = x_i - x_i&sup3; + A cos(&omega;_i t) + D &eta;(t)</div>
       <p>where &omega;<sub>i</sub> is the mode's frequency relative to its triplet centre (0.7, 1.0 or 1.4), D is noise amplitude, &eta; is Gaussian white noise.</p>
       <p><strong>Parameters:</strong></p>
       <ul class="param-list">
@@ -167,7 +170,7 @@ dv_slow/dt = -&omega;_slow&sup2; x_slow - &gamma;_slow &omega;_slow v_slow + k_f
       <h3>4.4 Engine 3: Berry Phase Coherence (Monte Carlo)</h3>
       <p><strong>Purpose:</strong> Test whether the fractal structure produces N-fold vs. &radic;N amplification.</p>
       <p><strong>Method:</strong> Complex vector summation of phase contributions:</p>
-      <div class="equation">Coherent amplitude: A_c = |&Sigma; exp(i &phi;_k)| for k = 1..N
+      <div class="equation" tabindex="0">Coherent amplitude: A_c = |&Sigma; exp(i &phi;_k)| for k = 1..N
   where &phi;_k is the sum of the scale, triplet and sub-peak Berry terms below
 Random amplitude:   A_r = &langle;|&Sigma; exp(i &theta;_k)|&rangle; where &theta;_k ~ Uniform[0, 2&pi;]
   averaged over 10,000 trials</div>
@@ -182,7 +185,7 @@ Random amplitude:   A_r = &langle;|&Sigma; exp(i &theta;_k)|&rangle; where &thet
       <h3>4.5 Engine 4: Chiral Resonance Comparator</h3>
       <p><strong>Purpose:</strong> Test whether chirality produces the triplet pattern.</p>
       <p><strong>Method:</strong> Cylindrical standing wave modes with and without helical pitch:</p>
-      <div class="equation">Achiral: f_mn = (c/2&pi;) &radic;((m&pi;/L)&sup2; + (n/R)&sup2;)
+      <div class="equation" tabindex="0">Achiral: f_mn = (c/2&pi;) &radic;((m&pi;/L)&sup2; + (n/R)&sup2;)
 Chiral:  f_mn = (c/2&pi;) &radic;((m&pi;/L)&sup2; + ((n + m tan &alpha;)/R)&sup2;)</div>
       <p><strong>Parameters:</strong></p>
       <ul class="param-list">
@@ -196,7 +199,7 @@ Chiral:  f_mn = (c/2&pi;) &radic;((m&pi;/L)&sup2; + ((n + m tan &alpha;)/R)&sup2
       <h3>4.6 Engine 5: Pitch Angle Sweep</h3>
       <p><strong>Purpose:</strong> Test whether the microtubule's actual pitch angle is optimal.</p>
       <p><strong>Method:</strong> Berry phase resonance condition and coupling efficiency vs. angle:</p>
-      <div class="equation">Berry phase per turn: &Phi;(&alpha;) = &pi;(1 - cos &alpha;)
+      <div class="equation" tabindex="0">Berry phase per turn: &Phi;(&alpha;) = &pi;(1 - cos &alpha;)
 Resonance condition: N &middot; &Phi;(&alpha;) = 2&pi;k (constructive)
 Coupling efficiency: &eta;(&alpha;) = |sin(2&alpha;)| &middot; exp(-&alpha;&sup2; / 2&alpha;_c&sup2;)
 Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = distance of N&middot;&Phi;(&alpha;) from the nearest 2&pi;k</div>
@@ -233,7 +236,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
       <h3>4.10 Engine 9: Alternative Structure Comparator</h3>
       <p><strong>Purpose:</strong> Test whether the fractal pattern is uniquely good at coherent amplification.</p>
       <p><strong>Method:</strong> Compute coherent amplification for 7 phase arrangements over N = 36 modes:</p>
-      <table class="wp-table">
+      <table class="wp-table" tabindex="0">
         <tr><th>Structure</th><th>Phase Rule</th></tr>
         <tr><td>Fractal triplet (ours)</td><td>Berry phase with 4-scale nesting</td></tr>
         <tr><td>Regular lattice</td><td>&phi;<sub>k</sub> = k &middot; &pi;/N (half-circle sweep)</td></tr>
@@ -248,7 +251,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
       <h3>4.11 Engine 10: Energy Budget</h3>
       <p><strong>Purpose:</strong> Test whether microtubule resonance is biophysically feasible.</p>
       <p><strong>Method:</strong> Calculate power requirements for active oscillation and compare to neuron energy budget:</p>
-      <table class="wp-table">
+      <table class="wp-table" tabindex="0">
         <tr><th>Constant</th><th>Value</th><th>Source</th></tr>
         <tr><td>kT at 37&deg;C</td><td class="mono">4.28 &times; 10<sup>-21</sup> J</td><td>Thermodynamics</td></tr>
         <tr><td>ATP hydrolysis energy</td><td class="mono">8.65 &times; 10<sup>-20</sup> J (0.54 eV)</td><td>Biochemistry (cellular conditions)</td></tr>
@@ -312,7 +315,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
       <p>However, Engine 7's Monte Carlo null comparison generates 10,000 random fractal patterns and finds that <span class="highlight">18.3% of random patterns match 4 or more Schumann harmonics</span>. The p-value of 0.183 is not statistically significant at any conventional threshold. The random mean is 2.58 &plusmn; 1.02 matches, and our observed 4 matches is within the distribution.</p>
 
       <h3>Summary of Results</h3>
-      <table class="wp-table">
+      <table class="wp-table" tabindex="0">
         <tr><th>Hypothesis</th><th>Verdict</th><th>Key Metric</th><th>Assessment</th></tr>
         <tr><td>H1: Fractal Amplification</td><td><span class="verdict plausible">Plausible</span></td><td>17.7x coherent vs 5.3x random</td><td>Real but not unique (regular lattice = 22.9)</td></tr>
         <tr><td>H2: Chirality &rarr; Triplets</td><td><span class="verdict inconclusive">Inconclusive</span></td><td>16 chiral triplets vs null 95th pct 15; 2/9 grid agree</td><td>Inside the random-splitting null; not robust</td></tr>
@@ -331,7 +334,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
 
       <h3>6.1 Sensitivity Analysis (Engine 8)</h3>
       <p>Each hypothesis was re-tested with key parameters perturbed by &plusmn;30% in 5 steps. A hypothesis is "robust" if the verdict is preserved across perturbations.</p>
-      <table class="wp-table">
+      <table class="wp-table" tabindex="0">
         <tr><th scope="col">Hypothesis</th><th scope="col">Robustness</th><th scope="col">Assessment</th></tr>
         <tr><td>H1: Fractal Amplification</td><td class="mono">~97%</td><td>Highly robust</td></tr>
         <tr><td>H2: Chirality &rarr; Triplets</td><td class="mono">~27%</td><td>Fragile &mdash; the single-run verdict flips with pitch and mode cutoffs</td></tr>
@@ -344,7 +347,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
 
       <h3>6.2 Alternative Structure Comparison (Engine 9)</h3>
       <p>If the fractal pattern is special, it should outperform other ordered structures at coherent amplification. It does not:</p>
-      <table class="wp-table">
+      <table class="wp-table" tabindex="0">
         <tr><th>Structure</th><th>Coherent Amplitude</th><th>Rank</th></tr>
         <tr><td>Perfect alignment (upper bound)</td><td class="mono">36.0</td><td>1</td></tr>
         <tr><td>Regular lattice</td><td class="mono">~22.9</td><td>2</td></tr>
@@ -360,7 +363,7 @@ Combined score:      &eta;(&alpha;) &middot; exp(-25 &middot; r&sup2;),  r = dis
 
       <h3>6.3 Energy Budget (Engine 10)</h3>
       <p>Active oscillation of tubulin dimers at MHz frequencies requires energy. The question: can a neuron afford it?</p>
-      <table class="wp-table">
+      <table class="wp-table" tabindex="0">
         <tr><th>Metric</th><th>Value</th><th>Assessment</th></tr>
         <tr><td>Power per MT (1% active dimers, 1 MHz)</td><td class="mono">~1.6 &times; 10<sup>-13</sup> W</td><td>&mdash;</td></tr>
         <tr><td>Total MT power (10<sup>5</sup> MTs)</td><td class="mono">~1.6 &times; 10<sup>-8</sup> W</td><td>&mdash;</td></tr>
