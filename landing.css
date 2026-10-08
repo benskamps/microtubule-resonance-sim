@@ -393,7 +393,7 @@ body {
 
 .results-table td {
   padding: 0.6rem 0.8rem;
-  border-bottom: 1px solid rgba(30, 42, 74, 0.5);
+  border-bottom: 1px solid rgba(74, 59, 40, 0.5);
   color: var(--text);
 }
 
@@ -647,7 +647,7 @@ body {
     grid-template-columns: auto 1fr;
     gap: 0.35rem 0.75rem;
     padding: 0.9rem 0;
-    border-bottom: 1px solid rgba(30, 42, 74, 0.5);
+    border-bottom: 1px solid rgba(74, 59, 40, 0.5);
   }
   .results-table td { padding: 0; border-bottom: 0; }
   .results-table td:nth-child(n + 3) { grid-column: 1 / -1; }
