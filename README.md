@@ -44,7 +44,7 @@ Monte Carlo runs use a fixed seed (`20260906`, mulberry32, `DEFAULT_SEED` in `ph
 | `assets/og.png` | Open Graph / Twitter card image (1200×630) |
 | `scripts/recompute-figures.mjs` | Node harness: recomputes every quoted figure from the fixed seed |
 | `docs/figures-20260906.txt` | Receipt: the harness output the pages' numbers come from |
-| `docs/SYNC-DESIGN.md` | How brokenbranch.dev mirrors this repo (daily pull, verbatim) |
+| `docs/SYNC-DESIGN.md` | How brokenbranch.dev mirrors this repo (daily pull; verbatim except the site chrome on two pages) |
 
 ## Tech Stack
 

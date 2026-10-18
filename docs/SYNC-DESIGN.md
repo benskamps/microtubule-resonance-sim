@@ -9,17 +9,26 @@ truth for the simulator. The live page at
 <https://www.brokenbranch.dev/labs/microtubule/> is a **pull mirror**: the
 website repo (`benskamps/brokenbranchdevwebsite`) runs
 `scripts/mirror-pull.mjs` daily (and on demand), checks out this repo's
-`main`, and copies these ten files verbatim into `labs/microtubule/`:
+`main`, and copies these eleven files into `labs/microtubule/`:
 
 ```
 index.html   simulator.html   whitepaper.html
 landing.css  style.css        whitepaper.css
 sim.js       physics.js       README.md
-assets/og.png
+LICENSE      assets/og.png
 ```
 
-Nothing is rewritten in transit. Whatever these files contain on `main` is
-what the site serves the next morning.
+Nine of them arrive byte for byte. `index.html` and `whitepaper.html` get one
+site-side delta, the shared chrome (since 2026-09-06): the site stylesheet
+before `</head>`, the site header after `<body>` (after the skip link when the
+page has one), and the site footer before `</body>`. `index.html` also gets a
+one-rule `<style>` that hides its own fixed "← the lab" link, because the
+header now carries that route. `simulator.html` is a full-screen app and stays
+bare. The chrome comes from the site's `scripts/gen-chrome.mjs`; the
+site's `test/chrome.contract.test.mjs` checks every mirrored page against it.
+
+Apart from that delta, whatever these files contain on `main` is what the
+site serves the next morning.
 
 ## What that means for edits here
 
@@ -27,7 +36,12 @@ what the site serves the next morning.
   (`https://www.brokenbranch.dev/labs/microtubule/...`), Open Graph and
   Twitter cards, `og:image` (`assets/og.png`), `theme-color`, and the JSON-LD
   blocks (BreadcrumbList, SoftwareApplication, TechArticle) are all part of
-  the source HTML. Edit them here; there is no site-side splice.
+  the source HTML. Edit them here; the only thing the site adds to the head
+  is its chrome stylesheet.
+- **Keep the chrome's anchors.** The delta needs `</head>`, `<body>` on a
+  line of its own and `</body>` to appear exactly once in `index.html` and
+  `whitepaper.html`. If a change here breaks that, the daily pull fails
+  loudly instead of publishing a page without the site's header.
 - **The site serves an enforced CSP:** `script-src 'self'`, no inline
   scripts and no inline event handlers (`onclick=`, `onmouseover=`);
   `style-src 'self' 'unsafe-inline'`; `font-src 'self'`. Keep all behaviour
@@ -57,6 +71,6 @@ secret because this repo is public.
 ## Related
 
 - `windowsill-lab` and `leanto` are pulled by the same `mirror-pull.mjs`.
-  The leanto page gets a handful of asserted site-side deltas; this project
-  needs none, because the source already carries the site's head, `<main>`
-  landmark, and analytics include.
+  The leanto page gets a handful of asserted site-side deltas. This project
+  gets only the shared chrome, because the source already carries the site's
+  head, `<main>` landmark, and analytics include.
