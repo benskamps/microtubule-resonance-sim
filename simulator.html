@@ -20,6 +20,56 @@
   <meta property="twitter:image" content="https://www.brokenbranch.dev/promo/brokenbranch-tile.jpg">
   <meta name="twitter:image:alt" content="Microtubule Resonance Simulator — Broken Branch Studios">
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Laboratory Light Theme */
+    [data-theme="light"] {
+      --bg-deep: #f4f6fa;
+      --bg-panel: #ffffff;
+      --bg-card: #f8fafc;
+      --bg-hover: #e2e8f0;
+      --border: #cbd5e1;
+      --border-glow: #94a3b8;
+      --text: #0f172a;
+      --text-dim: #475569;
+      --text-muted: #64748b;
+      --cyan: #0284c7;
+      --cyan-dim: #0369a1;
+      --cyan-glow: rgba(2, 132, 199, 0.25);
+      --amber: #d97706;
+      --amber-dim: #b45309;
+      --amber-glow: rgba(217, 119, 6, 0.25);
+      --purple: #7c3aed;
+      --purple-dim: #6d28d9;
+      --purple-glow: rgba(124, 58, 237, 0.25);
+      --green: #16a34a;
+      --green-dim: #15803d;
+      --red: #dc2626;
+      --red-dim: #b91c1c;
+    }
+    [data-theme="light"] canvas {
+      background: #f8fafc !important;
+    }
+    [data-theme="light"] .panel-desc {
+      color: var(--text-dim);
+    }
+    [data-theme="light"] .btn {
+      background: #e2e8f0;
+      color: #0f172a;
+      border-color: #cbd5e1;
+    }
+    [data-theme="light"] .btn.active, [data-theme="light"] .btn:hover {
+      background: rgba(2, 132, 199, 0.15);
+      color: #0284c7;
+      border-color: #0284c7;
+    }
+    [data-theme="light"] .panel-tab {
+      color: #64748b;
+    }
+    [data-theme="light"] .panel-tab.active {
+      color: #0284c7;
+      border-bottom-color: #0284c7;
+    }
+  </style>
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
     {"@type":"ListItem","position":1,"name":"Home","item":"https://www.brokenbranch.dev/"},
@@ -36,6 +86,7 @@
     <h1>Microtubule Resonance Simulator</h1>
     <p class="subtitle">Interactive exploration of Bandyopadhyay's fractal electromagnetic resonance findings</p>
     <div class="physics-toggle-wrap">
+      <button type="button" class="btn" id="themeToggle" style="margin-right: 8px;">☀️ Light</button>
       <button type="button" class="btn physics-toggle-btn" id="physicsToggle">Physics: Visual</button>
       <span class="physics-toggle-hint" id="physicsHint">Switch to computed physics engine</span>
     </div>
@@ -134,7 +185,8 @@
         </div>
         <div class="control-group">
           <label>View</label>
-          <button type="button" class="btn active" id="mtViewCross">Cross-Section</button>
+          <button type="button" class="btn active" id="mtView3D">3D Cylinder</button>
+          <button type="button" class="btn" id="mtViewCross">Cross-Section</button>
           <button type="button" class="btn" id="mtViewSide">Side View</button>
         </div>
         <div class="control-group">
@@ -303,5 +355,30 @@
 
   <script src="physics.js"></script>
   <script src="sim.js"></script>
+  <script>
+    (function() {
+      const themeToggle = document.getElementById('themeToggle');
+      if (themeToggle) {
+        const saved = localStorage.getItem('coherence_theme') || 'dark';
+        if (saved === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+          themeToggle.textContent = '🌙 Dark';
+        }
+        themeToggle.addEventListener('click', () => {
+          const current = document.documentElement.getAttribute('data-theme');
+          const isLight = current === 'light';
+          if (isLight) {
+            document.documentElement.removeAttribute('data-theme');
+            themeToggle.textContent = '☀️ Light';
+            localStorage.setItem('coherence_theme', 'dark');
+          } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+            themeToggle.textContent = '🌙 Dark';
+            localStorage.setItem('coherence_theme', 'light');
+          }
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

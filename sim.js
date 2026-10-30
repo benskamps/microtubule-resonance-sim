@@ -489,12 +489,19 @@ window.updateBreadcrumbs = updateBreadcrumbs;
    PANEL 2: Microtubule Cross-Section
    =========================================================== */
 const mtState = {
-  view: 'cross', // 'cross' or 'side'
+  view: '3d', // '3d', 'cross', or 'side'
   showHelix: false,
   driveFreq: 0,
   time: 0,
   resonanceIntensity: 0,
   wavePhase: 0,
+  // 3D camera controls
+  camYaw: -0.55,
+  camPitch: 0.32,
+  camDist: 380,
+  autoSpin: true,
+  velYaw: 0,
+  velPitch: 0
 };
 
 function initMicrotubule() {
@@ -503,6 +510,7 @@ function initMicrotubule() {
 
   const slider = document.getElementById('mtFreqSlider');
   const freqLabel = document.getElementById('mtFreqValue');
+  const btn3D = document.getElementById('mtView3D');
   const crossBtn = document.getElementById('mtViewCross');
   const sideBtn = document.getElementById('mtViewSide');
   const helixBtn = document.getElementById('mtHelixToggle');
@@ -519,17 +527,69 @@ function initMicrotubule() {
     }
   });
 
+  if (btn3D) {
+    btn3D.addEventListener('click', () => {
+      mtState.view = '3d';
+      btn3D.classList.add('active');
+      crossBtn.classList.remove('active');
+      sideBtn.classList.remove('active');
+    });
+  }
+
   crossBtn.addEventListener('click', () => {
     mtState.view = 'cross';
     crossBtn.classList.add('active');
     sideBtn.classList.remove('active');
+    if (btn3D) btn3D.classList.remove('active');
   });
 
   sideBtn.addEventListener('click', () => {
     mtState.view = 'side';
     sideBtn.classList.add('active');
     crossBtn.classList.remove('active');
+    if (btn3D) btn3D.classList.remove('active');
   });
+
+  // Interactive 3D Orbit Controls
+  let dragging = false;
+  let lastX = 0, lastY = 0;
+  canvas.addEventListener('mousedown', e => {
+    dragging = true; lastX = e.clientX; lastY = e.clientY;
+    mtState.autoSpin = false;
+    mtState.velYaw = 0; mtState.velPitch = 0;
+  });
+  window.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const dx = e.clientX - lastX, dy = e.clientY - lastY;
+    lastX = e.clientX; lastY = e.clientY;
+    mtState.camYaw += dx * 0.007;
+    mtState.camPitch = Math.max(-1.4, Math.min(1.4, mtState.camPitch + dy * 0.007));
+    mtState.velYaw = dx * 0.15;
+    mtState.velPitch = dy * 0.15;
+  });
+  window.addEventListener('mouseup', () => { dragging = false; });
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    mtState.camDist = Math.max(140, Math.min(800, mtState.camDist + Math.sign(e.deltaY) * 22));
+  }, { passive: false });
+
+  let lastTouch = null;
+  canvas.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) {
+      lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      mtState.autoSpin = false;
+    }
+  }, { passive: true });
+  canvas.addEventListener('touchmove', e => {
+    if (e.touches.length === 1 && lastTouch) {
+      const dx = e.touches[0].clientX - lastTouch.x;
+      const dy = e.touches[0].clientY - lastTouch.y;
+      lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      mtState.camYaw += dx * 0.008;
+      mtState.camPitch = Math.max(-1.4, Math.min(1.4, mtState.camPitch + dy * 0.008));
+    }
+  }, { passive: true });
+  canvas.addEventListener('touchend', () => { lastTouch = null; });
 
   helixBtn.addEventListener('click', () => {
     mtState.showHelix = !mtState.showHelix;
@@ -539,6 +599,14 @@ function initMicrotubule() {
 
   function tick() {
     mtState.time += 0.016;
+    if (mtState.autoSpin && !dragging) {
+      mtState.camYaw += 0.005;
+    } else if (!dragging) {
+      mtState.camYaw += mtState.velYaw * 0.016;
+      mtState.camPitch = Math.max(-1.4, Math.min(1.4, mtState.camPitch + mtState.velPitch * 0.016));
+      mtState.velYaw *= 0.92;
+      mtState.velPitch *= 0.92;
+    }
 
     // Compute resonance intensity
     let maxRes = 0;
@@ -561,11 +629,255 @@ function initMicrotubule() {
   tick();
 }
 
+
+/* =========================================================================
+   3D TUBULIN DIMER CYLINDER RENDERER (13 PROTOFILAMENTS & DIPOLE VECTORS)
+   ========================================================================= */
+function drawMT3DCylinder(ctx, w, h, res) {
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+  // Background
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  if (isLight) {
+    grad.addColorStop(0, '#f8fafc');
+    grad.addColorStop(1, '#eaeff7');
+  } else {
+    grad.addColorStop(0, '#0a0e1c');
+    grad.addColorStop(1, '#060812');
+  }
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+
+  // 3D Camera Projection Math
+  const cy = Math.cos(mtState.camYaw), sy = Math.sin(mtState.camYaw);
+  const cp = Math.cos(mtState.camPitch), sp = Math.sin(mtState.camPitch);
+  const dist = mtState.camDist;
+  const fov = 440;
+
+  function project3D(x, y, z) {
+    const x1 = x * cy - z * sy;
+    const z1 = x * sy + z * cy;
+    const y2 = y * cp - z1 * sp;
+    const z2 = y * sp + z1 * cp;
+    const zCam = z2 + dist;
+    const s = fov / Math.max(15, zCam);
+    return {
+      px: w * 0.5 + x1 * s,
+      py: h * 0.5 - y2 * s,
+      zCam: zCam,
+      scale: s,
+      visible: zCam > 10
+    };
+  }
+
+  // Microtubule structural geometry
+  const nProto = 13;
+  const nRings = 24;
+  const dz = 13.5;                  // axial spacing between dimer rings
+  const outerR = 92;                // 25nm outer radius scale
+  const innerR = 52;                // 14nm lumen radius scale
+  const totalL = (nRings - 1) * dz;
+
+  // Fröhlich acoustic phononic condensation wave parameters
+  const omega = mtState.time * (3.5 + res * 9.0);
+  const kz = 0.055;                 // wave vector along cylinder axis
+
+  // Collect 3D elements for depth sorting
+  const elements = [];
+
+  // 1. Protofilament Backbone Rails & 3-Start Helical Ribbons
+  for (let p = 0; p < nProto; p++) {
+    const theta = (p / nProto) * TAU;
+    const pts = [];
+    let avgZCam = 0;
+
+    for (let k = 0; k < nRings; k++) {
+      const z = -totalL * 0.5 + k * dz + (p * (3 / nProto) * dz);
+      const wave = Math.sin(kz * z + 3 * theta - omega);
+      const r = outerR * (1 + 0.05 * wave * (0.3 + 0.7 * res));
+      const x = r * Math.cos(theta);
+      const y = r * Math.sin(theta);
+      const pr = project3D(x, y, z);
+      pts.push(pr);
+      avgZCam += pr.zCam;
+    }
+    avgZCam /= nRings;
+
+    const helixGroup = p % 3;
+    let railCol;
+    if (mtState.showHelix) {
+      railCol = [COLORS.cyan, COLORS.amber, COLORS.purple][helixGroup];
+    } else {
+      railCol = isLight ? '#0284c7' : '#00e5ff';
+    }
+
+    elements.push({
+      type: 'rail',
+      zCam: avgZCam,
+      pts: pts,
+      color: railCol,
+      isSeam: (p === 0 || p === 12)
+    });
+  }
+
+  // 2. Individual Tubulin Heterodimers (alpha- and beta-monomers) & Dipoles
+  for (let p = 0; p < nProto; p++) {
+    const theta = (p / nProto) * TAU;
+    const helixGroup = p % 3;
+
+    for (let k = 0; k < nRings; k++) {
+      const zCenter = -totalL * 0.5 + k * dz + (p * (3 / nProto) * dz);
+      const wavePhase = kz * zCenter + 3 * theta - omega;
+      const breathing = Math.sin(wavePhase);
+
+      const r = outerR * (1 + 0.05 * breathing * (0.3 + 0.7 * res));
+      const cx = r * Math.cos(theta);
+      const cy_dimer = r * Math.sin(theta);
+
+      // Alpha-tubulin (upstream) and Beta-tubulin (downstream)
+      const za = zCenter - 3.2;
+      const zb = zCenter + 3.2;
+
+      const prA = project3D(cx, cy_dimer, za);
+      const prB = project3D(cx, cy_dimer, zb);
+      const prCenter = project3D(cx, cy_dimer, zCenter);
+
+      if (!prCenter.visible) continue;
+
+      // Dipole Vector: perturbed by phononic condensation phase
+      const dipoleAngle = 0.38 * Math.cos(wavePhase);
+      const dipoleLen = 13 * (1 + 0.45 * res);
+      const dxTip = Math.cos(theta) * Math.sin(dipoleAngle) * dipoleLen;
+      const dyTip = Math.sin(theta) * Math.sin(dipoleAngle) * dipoleLen;
+      const dzTip = Math.cos(dipoleAngle) * dipoleLen;
+
+      const prTip = project3D(cx + dxTip, cy_dimer + dyTip, zCenter + dzTip);
+
+      // Cyclic phase hue for dipole vector
+      const normPhase = ((wavePhase % TAU) + TAU) % TAU;
+      const phaseDeg = Math.round((normPhase / TAU) * 360);
+      const dipoleHue = `hsl(${phaseDeg}, 95%, ${isLight ? 45 : 62}%)`;
+
+      elements.push({
+        type: 'dimer',
+        zCam: prCenter.zCam,
+        prA, prB, prCenter, prTip,
+        pIdx: p,
+        kIdx: k,
+        helixGroup,
+        wavePhase,
+        breathing,
+        dipoleHue
+      });
+    }
+  }
+
+  // Sort back-to-front by depth (zCam descending)
+  elements.sort((a, b) => b.zCam - a.zCam);
+
+  // Render sorted elements
+  for (const el of elements) {
+    if (el.type === 'rail') {
+      ctx.strokeStyle = el.isSeam
+        ? (isLight ? '#dc2626' : '#ff5252')
+        : (isLight ? 'rgba(2, 132, 199, 0.22)' : 'rgba(0, 229, 255, 0.20)');
+      ctx.lineWidth = el.isSeam ? 2.2 : 1.2;
+      if (el.isSeam) ctx.setLineDash([4, 3]);
+
+      ctx.beginPath();
+      for (let i = 0; i < el.pts.length; i++) {
+        const pt = el.pts[i];
+        if (i === 0) ctx.moveTo(pt.px, pt.py);
+        else ctx.lineTo(pt.px, pt.py);
+      }
+      ctx.stroke();
+      if (el.isSeam) ctx.setLineDash([]);
+    } else if (el.type === 'dimer') {
+      const s = el.prCenter.scale;
+      const radius = Math.max(3.0, 5.8 * s);
+
+      // Alpha monomer (Cyan/Blue)
+      let colA = isLight ? '#0284c7' : '#00e5ff';
+      let colB = isLight ? '#d97706' : '#ffb300';
+      if (mtState.showHelix) {
+        const hCols = isLight
+          ? ['#0284c7', '#d97706', '#7c3aed']
+          : [COLORS.cyan, COLORS.amber, COLORS.purple];
+        colA = hCols[el.helixGroup];
+        colB = hCols[(el.helixGroup + 1) % 3];
+      }
+
+      // Draw Alpha tubulin
+      ctx.fillStyle = colA;
+      ctx.beginPath();
+      ctx.arc(el.prA.px, el.prA.py, radius, 0, TAU);
+      ctx.fill();
+
+      // Draw Beta tubulin
+      ctx.fillStyle = colB;
+      ctx.beginPath();
+      ctx.arc(el.prB.px, el.prB.py, radius, 0, TAU);
+      ctx.fill();
+
+      // Draw Dipole Orientation Vector Arrow
+      ctx.strokeStyle = el.dipoleHue;
+      ctx.lineWidth = Math.max(1.2, 2.2 * s);
+      ctx.beginPath();
+      ctx.moveTo(el.prCenter.px, el.prCenter.py);
+      ctx.lineTo(el.prTip.px, el.prTip.py);
+      ctx.stroke();
+
+      // Dipole Arrow Tip Dot
+      ctx.fillStyle = el.dipoleHue;
+      ctx.beginPath();
+      ctx.arc(el.prTip.px, el.prTip.py, Math.max(1.8, 3.2 * s), 0, TAU);
+      ctx.fill();
+
+      // Resonance condensation glow
+      if (res > 0.25) {
+        ctx.fillStyle = isLight ? 'rgba(2, 132, 199, 0.12)' : 'rgba(0, 229, 255, 0.18)';
+        ctx.beginPath();
+        ctx.arc(el.prCenter.px, el.prCenter.py, radius * (1.8 + res * 1.5), 0, TAU);
+        ctx.fill();
+      }
+    }
+  }
+
+  // 3D HUD & Scientific Legend Overlay
+  ctx.textAlign = 'left';
+  ctx.fillStyle = isLight ? '#0f172a' : '#e0e6f0';
+  ctx.font = 'bold 13px Inter, sans-serif';
+  ctx.fillText('13-Protofilament Chiral Cylinder (B-Lattice, 3-Start Pitch)', 18, 26);
+
+  ctx.font = '11px ui-monospace, "JetBrains Mono", monospace';
+  ctx.fillStyle = isLight ? '#475569' : '#8899bb';
+  ctx.fillText('Geometry: Ø 25nm outer · Ø 14nm lumen · 8nm dimer pitch · 13 protofilaments', 18, 44);
+  ctx.fillText(`Drive: ${mtState.driveFreq > 0 ? formatFreq(mtState.driveFreq) : 'OFF'} | Resonance: ${(res * 100).toFixed(0)}%`, 18, 60);
+
+  if (res > 0.3) {
+    ctx.fillStyle = isLight ? '#16a34a' : '#69f0ae';
+    ctx.font = 'bold 11px ui-monospace, monospace';
+    ctx.fillText('⚡ Fröhlich Acoustic Condensation Active: Coherent Dipole Alignment', 18, 78);
+  } else {
+    ctx.fillStyle = isLight ? '#64748b' : '#667799';
+    ctx.font = '11px ui-monospace, monospace';
+    ctx.fillText('○ Sub-threshold: Thermal Phonon Dissipation Dominated', 18, 78);
+  }
+
+  // Bottom interactive hint
+  ctx.textAlign = 'right';
+  ctx.fillStyle = isLight ? '#64748b' : '#667799';
+  ctx.font = '10.5px Inter, sans-serif';
+  ctx.fillText('Drag to orbit 3D view · Scroll to zoom', w - 18, h - 16);
+}
+
 function drawMicrotubule(ctx, w, h) {
   ctx.clearRect(0, 0, w, h);
   const res = mtState.resonanceIntensity;
 
-  if (mtState.view === 'cross') {
+  if (mtState.view === '3d') {
+    drawMT3DCylinder(ctx, w, h, res);
+  } else if (mtState.view === 'cross') {
     drawMTCross(ctx, w, h, res);
   } else {
     drawMTSide(ctx, w, h, res);
